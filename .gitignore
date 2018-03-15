@@ -1,0 +1,10 @@
+.project
+.classpath
+target/
+tagent/
+canal/
+logs/
+*.log
+.settings/
+*.iml
+.idea/
