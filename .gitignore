@@ -6,6 +6,7 @@ test/reports/
 canal/
 logs/
 *.log
+*.log.1
 .settings/
 *.iml
 .idea/

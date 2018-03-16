@@ -21,23 +21,31 @@ public class ProcessMonitor {
     private static final String CANAL_MONITOR_CMD = "canal.monitor.cmd";
     private static final String TAGENT_MONITOR_CMD = "tagent.monitor.cmd";
 
-    private static final String CANAL_PROCESS_NAME = "Canal Server";
+    private static final String CANAL_PROCESS_NAME = "Canal";
     private static final String TAGENT_PROCESS_NAME = "TAgent";
+
+    private static final String KAFKA_MONITOR_TOPIC = "kafka.monitor.topic";
+    private static final String KAFKA_BOOTSTRAP_SERVERS = "kafka.bootstrap.servers";
+    private static final String KAFKA_CLIENT_ID = "kafka.client.id";
+    private static final String KAFKA_ACKS = "kafka.acks";
+    private static final String KAFKA_RETRIES = "kafka.retries";
 
     private ScheduledExecutorService executorService;
     private ApplicationConf conf;
-
+    private String monitorTopic;
     private SimpleKafkaProducer<String, String> producer;
-    public ProcessMonitor() {
-         conf = ApplicationConf.getInstance();
 
+    public ProcessMonitor() {
+        conf = ApplicationConf.getInstance();
+
+        monitorTopic = conf.getConfig(KAFKA_MONITOR_TOPIC);
         Properties producerConfig = new Properties();
 
-        String brokerList = "192.168.2.25:9092";
-        producerConfig.put("bootstrap.servers", brokerList);
-        producerConfig.put("client.id", "basic-producer");
-        producerConfig.put("acks", "all");
-        producerConfig.put("retries", "3");
+        producerConfig.put("bootstrap.servers", conf.getConfig(KAFKA_BOOTSTRAP_SERVERS));
+        producerConfig.put("client.id", conf.getConfig(KAFKA_CLIENT_ID));
+        producerConfig.put("acks", conf.getConfig(KAFKA_ACKS));
+        producerConfig.put("retries", conf.getConfig(KAFKA_RETRIES));
+
         producerConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
                 "org.apache.kafka.common.serialization.StringSerializer");
         producerConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
@@ -53,11 +61,14 @@ public class ProcessMonitor {
         executorService = Executors.newSingleThreadScheduledExecutor(
                 new ThreadFactoryBuilder().setNameFormat("process-monitor-%d")
                         .build());
+        // 分两个线程单独监控
+        processWatchRunnable canalWatch = new processWatchRunnable(
+                conf.getConfig(CANAL_MONITOR_CMD), CANAL_PROCESS_NAME);
+        processWatchRunnable tAgentWatch = new processWatchRunnable(
+                conf.getConfig(TAGENT_MONITOR_CMD), TAGENT_PROCESS_NAME);
 
-        processWatchRunnable processWatchRunnable = new processWatchRunnable();
-
-        executorService.scheduleWithFixedDelay(processWatchRunnable, 0, interval,
-                TimeUnit.SECONDS);
+        executorService.scheduleWithFixedDelay(canalWatch, 0, interval, TimeUnit.SECONDS);
+        executorService.scheduleWithFixedDelay(tAgentWatch, 0, interval, TimeUnit.SECONDS);
     }
 
     public void stop() {
@@ -74,9 +85,11 @@ public class ProcessMonitor {
         }
     }
 
+    /*
+    * 发送消息到kafka
+    * */
     private void sendStageToKafka(String stateMessage) {
-        String topic = "process_monitor";
-        producer.send(topic, UUID.randomUUID().toString(), stateMessage);
+        producer.send(monitorTopic, UUID.randomUUID().toString(), stateMessage);
     }
 
     /*
@@ -84,19 +97,18 @@ public class ProcessMonitor {
     * */
     private class processWatchRunnable implements Runnable {
         private ShellExecutor executor;
-
-        private processWatchRunnable() {
+        private String cmd;
+        private String processName;
+        private processWatchRunnable(String cmd, String processName) {
             executor = new ShellExecutor();
+            this.cmd = cmd;
+            this.processName = processName;
         }
-
         @Override
         public void run() {
             try {
-                String canalState = executor.monitorProcess(conf.getConfig(CANAL_MONITOR_CMD), CANAL_PROCESS_NAME);
-                String tAgentState = executor.monitorProcess(conf.getConfig(TAGENT_MONITOR_CMD), TAGENT_PROCESS_NAME);
-
-                sendStageToKafka(canalState);
-                sendStageToKafka(tAgentState);
+                String state = executor.monitorProcess(this.cmd, this.processName);
+                sendStageToKafka(state);
             } catch (Exception e) {
                 LOGGER.error(e.getMessage(), e);
             }

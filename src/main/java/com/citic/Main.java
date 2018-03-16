@@ -13,10 +13,8 @@ import java.net.URI;
 
 /**
  * Main class.
- *
  */
 public class Main {
-    // private static final URI BASE_URI = URI.create("http://localhost:8080/");
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
     private static final String AGENT_BASE_URI = "agent.base.uri";
 
@@ -41,8 +39,9 @@ public class Main {
             }
         }));
 
-        ProcessMonitor monitor = new ProcessMonitor();
-        monitor.start();
+        // 启动对进程的监控
+//        ProcessMonitor monitor = new ProcessMonitor();
+//        monitor.start();
 
         try {
             Thread.currentThread().join();

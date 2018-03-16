@@ -1,10 +1,12 @@
 package com.citic.control;
 
 import com.citic.ApplicationConf;
+import com.citic.Main;
 import com.citic.entity.CanalInstance;
 import com.citic.entity.CanalServer;
 import com.citic.entity.TAgent;
 import com.citic.helper.ClassHelper;
+import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -31,20 +33,38 @@ public class GenerateConf {
     private static final String TAGENT_TEMPLATE = "tagent.template";
     private static final String TAGENT_CONF = "tagent.conf";
 
+    private static final String CLASSPATH_URL_PREFIX = "classpath:";
+
     private ClassHelper helper;
     private VelocityEngine ve;
     private ApplicationConf appConf;
+    private String templateDir = System.getProperty("template.dir", "classpath:template");
 
     public GenerateConf() {
         this.helper = new ClassHelper();
 
         ve = new VelocityEngine();
-        ve.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
-        ve.setProperty("classpath.resource.loader.class",
-                ClasspathResourceLoader.class.getName());
-        ve.init();
 
         appConf = ApplicationConf.getInstance();
+
+        if (templateDir.startsWith(CLASSPATH_URL_PREFIX)) {
+            templateDir = StringUtils.substringAfter(templateDir, CLASSPATH_URL_PREFIX);
+            ve.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
+            ve.setProperty("classpath.resource.loader.class",
+                    ClasspathResourceLoader.class.getName());
+        } else {
+            //设置velocity资源加载方式为file
+            ve.setProperty(RuntimeConstants.RESOURCE_LOADER, "file");
+            //设置velocity资源加载方式为file时的处理类
+            ve.setProperty("file.resource.loader.class", "org.apache.velocity.runtime.resource.loader.FileResourceLoader");
+        }
+
+        ve.init();
+    }
+
+    private String getTemplatePath(String templateName) {
+        String sep = System.getProperty("file.separator");
+        return templateDir + "/" + appConf.getConfig(templateName);
     }
 
     /*
@@ -103,7 +123,8 @@ public class GenerateConf {
     public void generateCanalServer(CanalServer config) {
         VelocityContext vx = getVelContext(config);
         // canal server configuration
-        Template canalServer = ve.getTemplate(appConf.getConfig(CANAL_SERVER_TEMPLATE), "utf-8");
+        LOGGER.info("{} path: {}", CANAL_SERVER_TEMPLATE, getTemplatePath(CANAL_SERVER_TEMPLATE));
+        Template canalServer = ve.getTemplate(getTemplatePath(CANAL_SERVER_TEMPLATE), "utf-8");
         this.writeConf(canalServer, appConf.getConfig(CANAL_SERVER_CONF), vx);
     }
 
@@ -117,7 +138,7 @@ public class GenerateConf {
             config.setInstance("citic");
         }
         // canal instance configuration
-        Template canalInstance = ve.getTemplate(appConf.getConfig(CANAL_INSTANCE_TEMPLATE), "utf-8");
+        Template canalInstance = ve.getTemplate(getTemplatePath(CANAL_INSTANCE_TEMPLATE), "utf-8");
         String instancePath = String.format(appConf.getConfig(CANAL_INSTANCE_CONF), config.getInstance());
         this.writeConf(canalInstance, instancePath, vx);
     }
@@ -128,7 +149,7 @@ public class GenerateConf {
     public void generateTAgent(TAgent config) {
         VelocityContext vx = getVelContext(config);
         // TAgent configuration
-        Template canalServer = ve.getTemplate(appConf.getConfig(TAGENT_TEMPLATE), "utf-8");
+        Template canalServer = ve.getTemplate(getTemplatePath(TAGENT_TEMPLATE), "utf-8");
         this.writeConf(canalServer, appConf.getConfig(TAGENT_CONF), vx);
     }
 }

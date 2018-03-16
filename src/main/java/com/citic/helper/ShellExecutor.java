@@ -45,7 +45,7 @@ public class ShellExecutor {
         private String getProcessState() {
             String state;
             if (data.isEmpty()) {
-                state = String.format("%s is dead", processName);
+                state = String.format("%s was dead", processName);
             } else if (data.size() == 1) {
                 state = String.format("%s is running, pid: %s", processName, data.toString());
             } else {
@@ -108,10 +108,7 @@ public class ShellExecutor {
         Executors.newSingleThreadExecutor().submit(error);
 
         process.waitFor();
-        // TODO: save to Kafka
-        String state = responseData.getProcessState();
-        LOGGER.debug(state);
-        return state;
+        return responseData.getProcessState();
     }
 
 }

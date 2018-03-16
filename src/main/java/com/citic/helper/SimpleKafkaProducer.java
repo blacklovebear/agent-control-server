@@ -8,7 +8,9 @@ import java.io.*;
 import java.util.Properties;
 import java.util.concurrent.Future;
 
-
+/*
+* 发送消息到 kafka
+* */
 public class SimpleKafkaProducer<K extends Serializable, V extends Serializable> {
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleKafkaProducer.class);
 
@@ -78,7 +80,8 @@ public class SimpleKafkaProducer<K extends Serializable, V extends Serializable>
             if (e != null) {
                 LOGGER.error("Error while producing message to topic : {}", recordMetadata.topic(), e);
             } else
-                LOGGER.debug("sent message to topic:{} partition:{}  offset:{}", recordMetadata.topic(), recordMetadata.partition(), recordMetadata.offset());
+                LOGGER.debug("sent message to topic:{} partition:{}  offset:{}",
+                        recordMetadata.topic(), recordMetadata.partition(), recordMetadata.offset());
         }
     }
 }

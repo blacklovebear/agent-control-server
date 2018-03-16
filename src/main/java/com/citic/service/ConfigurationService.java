@@ -12,9 +12,6 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
-/**
- * Root resource (exposed at "configuration" path)
- */
 @Path("config")
 public class ConfigurationService {
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
