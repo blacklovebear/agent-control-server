@@ -1,10 +1,11 @@
-package com.example.service;
+package com.citic.service;
 
-import com.example.*;
-import com.example.entity.TAgent;
-import com.example.entity.CanalInstance;
-import com.example.entity.CanalServer;
-import org.apache.velocity.app.VelocityEngine;
+import com.citic.*;
+import com.citic.entity.ResponseResult;
+import com.citic.control.GenerateConf;
+import com.citic.entity.TAgent;
+import com.citic.entity.CanalInstance;
+import com.citic.entity.CanalServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,47 +17,42 @@ import javax.ws.rs.core.MediaType;
  */
 @Path("config")
 public class ConfigurationService {
-    private static final Logger logger = LoggerFactory.getLogger(Main.class);
-
-    private VelocityEngine ve;
-
-    public ConfigurationService() {
-    }
+    private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
     @POST
     @Path("canal/server")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public ConfigurationResult postCanalServer(CanalServer config) {
-        logger.debug("CanalServer: {}", config.toString());
+    public ResponseResult configCanalServer(CanalServer config) {
+        LOGGER.debug("CanalServer: {}", config.toString());
 
         GenerateConf generateConf = new GenerateConf();
         generateConf.generateCanalServer(config);
-        return new ConfigurationResult("POST", "success");
+        return new ResponseResult("POST", "success");
     }
 
     @POST
     @Path("canal/instance")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public ConfigurationResult postCanalInstance(CanalInstance config) {
-        logger.debug("CanalInstance: {}", config.toString());
+    public ResponseResult configCanalInstance(CanalInstance config) {
+        LOGGER.debug("CanalInstance: {}", config.toString());
 
         GenerateConf generateConf = new GenerateConf();
         generateConf.generateCanalInstance(config);
-        return new ConfigurationResult("POST", "success");
+        return new ResponseResult("POST", "success");
     }
 
     @POST
     @Path("tagent")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public ConfigurationResult postAgent(TAgent config) {
-        logger.debug("TAgent: {}", config.toString());
+    public ResponseResult configAgent(TAgent config) {
+        LOGGER.debug("TAgent: {}", config.toString());
 
         GenerateConf generateConf = new GenerateConf();
         generateConf.generateTAgent(config);
-        return new ConfigurationResult("POST", "success");
+        return new ResponseResult("POST", "success");
     }
 
     /**

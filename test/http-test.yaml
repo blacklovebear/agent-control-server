@@ -1,15 +1,5 @@
 ﻿# - test:
-#     name: get test
-#     request:
-#         url: http://127.0.0.1:9000/config?format=json
-#         method: GET
-#     validate:
-#         - {"check": "body.action", "comparator": "eq", "expect": "GET"}
-#         - {"check": "body.message", "comparator": "eq", "expect": "success"}
-
-
-# - test:
-#     name: test Canal server generate config file
+#     name: Canal server generate config file
 #     request:
 #         url: http://127.0.0.1:8080/config/canal/server
 #         method: POST
@@ -18,14 +8,14 @@
 #         #     token: F8prvGryC5beBr4g
 #         json:
 #             zkServers: "172.18.84.224:2181"
-#             destinations: "example"
+#             destinations: "citic"
 #     validate:
 #         - {"check": "body.action", "comparator": "eq", "expect": "POST"}
 #         - {"check": "body.message", "comparator": "eq", "expect": "success"}
 
 
 # - test:
-#     name: test Canal instance generate config file
+#     name: Canal instance generate config file
 #     request:
 #         url: http://127.0.0.1:8080/config/canal/instance
 #         method: POST
@@ -41,17 +31,55 @@
 #         - {"check": "body.message", "comparator": "eq", "expect": "success"}
 
 
-- test:
-    name: test TAgent generate config file
-    request:
-        url: http://127.0.0.1:8080/config/tagent
-        method: POST
-        json:
-            sourceZkServers: 192.168.2.25:2181
-            sourceDestination: example
-            sinkServers: 192.168.2.25:9092
-            sinkTopicHeader: table
+# - test:
+#     name: TAgent generate config file
+#     request:
+#         url: http://127.0.0.1:8080/config/tagent
+#         method: POST
+#         json:
+#             sourceZkServers: 192.168.2.25:2181
+#             sourceDestination: citic
+#             sinkServers: 192.168.2.25:9092
+#             sinkTopicHeader: table
 
+#     validate:
+#         - {"check": "body.action", "comparator": "eq", "expect": "POST"}
+#         - {"check": "body.message", "comparator": "eq", "expect": "success"}
+
+
+# - test:
+#     name: start canal server
+#     request:
+#         url: http://127.0.0.1:8080/executor/start/canal
+#         method: GET
+#     validate:
+#         - {"check": "body.action", "comparator": "eq", "expect": "GET"}
+#         - {"check": "body.message", "comparator": "eq", "expect": "success"}
+
+# - test:
+#     name: stop canal server
+#     request:
+#         url: http://127.0.0.1:8080/executor/stop/canal
+#         method: GET
+#     validate:
+#         - {"check": "body.action", "comparator": "eq", "expect": "GET"}
+#         - {"check": "body.message", "comparator": "eq", "expect": "success"}
+
+
+# - test:
+#     name: start TAgent
+#     request:
+#         url: http://127.0.0.1:8080/executor/start/tagent
+#         method: GET
+#     validate:
+#         - {"check": "body.action", "comparator": "eq", "expect": "GET"}
+#         - {"check": "body.message", "comparator": "eq", "expect": "success"}
+
+- test:
+    name: stop TAgent
+    request:
+        url: http://127.0.0.1:8080/executor/stop/tagent
+        method: GET
     validate:
-        - {"check": "body.action", "comparator": "eq", "expect": "POST"}
+        - {"check": "body.action", "comparator": "eq", "expect": "GET"}
         - {"check": "body.message", "comparator": "eq", "expect": "success"}

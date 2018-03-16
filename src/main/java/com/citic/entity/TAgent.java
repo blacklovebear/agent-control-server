@@ -1,4 +1,4 @@
-package com.example.entity;
+package com.citic.entity;
 
 /*
 * TAgent 配置获取实体类

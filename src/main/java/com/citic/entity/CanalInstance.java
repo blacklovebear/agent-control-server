@@ -1,4 +1,4 @@
-package com.example.entity;
+package com.citic.entity;
 
 /*
 * Canal Instance 配置获取实体类

@@ -1,10 +1,10 @@
-package com.example;
+package com.citic.entity;
 
-public class ConfigurationResult {
+public class ResponseResult {
     private String action;
     private String message;
 
-    public ConfigurationResult(String action, String message) {
+    public ResponseResult(String action, String message) {
         this.action = action;
         this.message = message;
     }

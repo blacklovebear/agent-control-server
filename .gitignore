@@ -2,6 +2,7 @@
 .classpath
 target/
 tagent/
+test/reports/
 canal/
 logs/
 *.log

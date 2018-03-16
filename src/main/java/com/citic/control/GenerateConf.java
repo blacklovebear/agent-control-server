@@ -1,9 +1,10 @@
-package com.example;
+package com.citic.control;
 
-import com.example.entity.CanalInstance;
-import com.example.entity.CanalServer;
-import com.example.entity.TAgent;
-import com.example.helper.ClassHelper;
+import com.citic.ApplicationConf;
+import com.citic.entity.CanalInstance;
+import com.citic.entity.CanalServer;
+import com.citic.entity.TAgent;
+import com.citic.helper.ClassHelper;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -19,7 +20,7 @@ import java.nio.file.Paths;
 
 
 public class GenerateConf {
-    private static final Logger logger = LoggerFactory.getLogger(GenerateConf.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GenerateConf.class);
 
     private static final String CANAL_SERVER_TEMPLATE = "canal.server.template";
     private static final String CANAL_SERVER_CONF = "canal.server.conf";
@@ -46,6 +47,9 @@ public class GenerateConf {
         appConf = ApplicationConf.getInstance();
     }
 
+    /*
+    * 根据传入的路径生成父文件夹路径
+    * */
     private void createParentDirs(String filePath) {
         Path file = Paths.get(filePath);
         Path parent = file.getParent();
@@ -54,11 +58,14 @@ public class GenerateConf {
                 Files.createDirectories(parent);
             } catch (IOException e) {
                 //fail to create directory
-                logger.error(e.getMessage(), e);
+                LOGGER.error(e.getMessage(), e);
             }
         }
     }
 
+    /*
+    * 根据请求的参数批量放入 VelocityContext
+    * */
     private VelocityContext getVelContext(Object config) {
         VelocityContext ctx = new VelocityContext();
         String[] fieldNameList =  helper.getFiledName(config);
@@ -69,6 +76,9 @@ public class GenerateConf {
         return ctx;
     }
 
+    /*
+    * 根据目标和参数写配置文件
+    * */
     private void writeConf(Template template, String confFilePath, VelocityContext ctx) {
         StringWriter sw = new StringWriter();
         template.merge(ctx, sw);
@@ -79,7 +89,7 @@ public class GenerateConf {
             out.print(sw.toString());
             out.flush();
         } catch (FileNotFoundException e) {
-            logger.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         } finally {
             if (out != null) {
                 out.close();
@@ -104,7 +114,7 @@ public class GenerateConf {
         VelocityContext vx = getVelContext(config);
         // default instance name
         if (config.getInstance() == null) {
-            config.setInstance("example");
+            config.setInstance("citic");
         }
         // canal instance configuration
         Template canalInstance = ve.getTemplate(appConf.getConfig(CANAL_INSTANCE_TEMPLATE), "utf-8");
