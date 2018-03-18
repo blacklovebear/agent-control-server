@@ -1,7 +1,6 @@
 package com.citic.control;
 
-import com.citic.ApplicationConf;
-import com.citic.Main;
+import com.citic.AppConf;
 import com.citic.entity.CanalInstance;
 import com.citic.entity.CanalServer;
 import com.citic.entity.TAgent;
@@ -20,24 +19,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static com.citic.AppConstants.*;
+
 
 public class GenerateConf {
     private static final Logger LOGGER = LoggerFactory.getLogger(GenerateConf.class);
 
-    private static final String CANAL_SERVER_TEMPLATE = "canal.server.template";
-    private static final String CANAL_SERVER_CONF = "canal.server.conf";
 
-    private static final String CANAL_INSTANCE_TEMPLATE = "canal.instance.template";
-    private static final String CANAL_INSTANCE_CONF = "canal.instance.conf";
-
-    private static final String TAGENT_TEMPLATE = "tagent.template";
-    private static final String TAGENT_CONF = "tagent.conf";
-
-    private static final String CLASSPATH_URL_PREFIX = "classpath:";
 
     private ClassHelper helper;
     private VelocityEngine ve;
-    private ApplicationConf appConf;
+    private AppConf appConf;
     private String templateDir = System.getProperty("template.dir", "classpath:template");
 
     public GenerateConf() {
@@ -45,7 +37,7 @@ public class GenerateConf {
 
         ve = new VelocityEngine();
 
-        appConf = ApplicationConf.getInstance();
+        appConf = AppConf.getInstance();
 
         if (templateDir.startsWith(CLASSPATH_URL_PREFIX)) {
             templateDir = StringUtils.substringAfter(templateDir, CLASSPATH_URL_PREFIX);

@@ -2,7 +2,6 @@ package com.citic;
 
 import com.citic.control.GenerateConf;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,12 +9,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-public class ApplicationConf {
-    private static final Logger LOGGER = LoggerFactory.getLogger(GenerateConf.class);
-    private static ApplicationConf singleton = new ApplicationConf();
-    private static Properties configProp =  new Properties();
+import static com.citic.AppConstants.*;
 
-    private static final String CLASSPATH_URL_PREFIX = "classpath:";
+public class AppConf {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AppConf.class);
+    private static AppConf singleton = new AppConf();
+    private static Properties configProp =  new Properties();
 
     static {
 //        PropertyConfigurator.configure("config/log4j.properties");
@@ -25,7 +24,7 @@ public class ApplicationConf {
         try {
             if (conf.startsWith(CLASSPATH_URL_PREFIX)) {
                 conf = StringUtils.substringAfter(conf, CLASSPATH_URL_PREFIX);
-                configProp.load(Main.class.getClassLoader().getResourceAsStream(conf));
+                configProp.load(AppMain.class.getClassLoader().getResourceAsStream(conf));
             } else {
                 configProp.load(new FileInputStream(conf));
             }
@@ -34,7 +33,7 @@ public class ApplicationConf {
         }
     }
 
-    public static ApplicationConf getInstance() {
+    public static AppConf getInstance() {
         return singleton;
     }
 
@@ -42,5 +41,5 @@ public class ApplicationConf {
         return configProp.getProperty(key);
     }
 
-    private ApplicationConf() { }
+    private AppConf() { }
 }

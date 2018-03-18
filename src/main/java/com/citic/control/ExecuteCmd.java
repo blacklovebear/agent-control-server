@@ -1,25 +1,20 @@
 package com.citic.control;
 
-import com.citic.ApplicationConf;
+import com.citic.AppConf;
 import com.citic.helper.ShellExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.citic.AppConstants.*;
+
 public class ExecuteCmd {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExecuteCmd.class);
 
-    private static final String CANAL_HOME_DIR = "canal.home.dir";
-    private static final String CANAL_START_CMD = "canal.start.cmd";
-    private static final String CANAL_STOP_CMD = "canal.stop.cmd";
 
-    private static final String TAGENT_HOME_DIR = "tagent.home.dir";
-    private static final String TAGENT_START_CMD = "tagent.start.cmd";
-    private static final String TAGENT_STOP_CMD = "tagent.stop.cmd";
-
-    private ApplicationConf appConf;
+    private AppConf appConf;
 
     public ExecuteCmd() {
-        appConf = ApplicationConf.getInstance();
+        appConf = AppConf.getInstance();
     }
 
     private int exeCmd(String homeDir, String cmd) {

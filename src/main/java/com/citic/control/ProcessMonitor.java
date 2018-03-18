@@ -6,7 +6,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import com.citic.ApplicationConf;
+import com.citic.AppConf;
 import com.citic.helper.ShellExecutor;
 import com.citic.helper.SimpleKafkaProducer;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -14,29 +14,18 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.citic.AppConstants.*;
+
 public class ProcessMonitor {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessMonitor.class);
-    private static final String PROCESS_MONITOR_INTERVAL = "process.monitor.interval";
-
-    private static final String CANAL_MONITOR_CMD = "canal.monitor.cmd";
-    private static final String TAGENT_MONITOR_CMD = "tagent.monitor.cmd";
-
-    private static final String CANAL_PROCESS_NAME = "Canal";
-    private static final String TAGENT_PROCESS_NAME = "TAgent";
-
-    private static final String KAFKA_MONITOR_TOPIC = "kafka.monitor.topic";
-    private static final String KAFKA_BOOTSTRAP_SERVERS = "kafka.bootstrap.servers";
-    private static final String KAFKA_CLIENT_ID = "kafka.client.id";
-    private static final String KAFKA_ACKS = "kafka.acks";
-    private static final String KAFKA_RETRIES = "kafka.retries";
 
     private ScheduledExecutorService executorService;
-    private ApplicationConf conf;
+    private AppConf conf;
     private String monitorTopic;
     private SimpleKafkaProducer<String, String> producer;
 
     public ProcessMonitor() {
-        conf = ApplicationConf.getInstance();
+        conf = AppConf.getInstance();
 
         monitorTopic = conf.getConfig(KAFKA_MONITOR_TOPIC);
         Properties producerConfig = new Properties();

@@ -92,7 +92,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <mainClass>com.citic.Main</mainClass>
+                    <mainClass>com.citic.AppMain</mainClass>
                 </configuration>
             </plugin>
 
@@ -112,7 +112,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>./lib/</classpathPrefix>
-                            <mainClass>com.citic.Main</mainClass>
+                            <mainClass>com.citic.AppMain</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -148,7 +148,7 @@
                         <configuration>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.citic.Main</mainClass>
+                                    <mainClass>com.citic.AppMainain</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>

@@ -14,7 +14,7 @@ import javax.ws.rs.core.MediaType;
 
 @Path("config")
 public class ConfigurationService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AppMain.class);
 
     @POST
     @Path("canal/server")

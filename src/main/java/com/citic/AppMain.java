@@ -1,6 +1,5 @@
 package com.citic;
 
-import com.citic.control.ProcessMonitor;
 import com.citic.service.ConfigurationService;
 import com.citic.service.ExecutorService;
 import io.netty.channel.Channel;
@@ -11,21 +10,21 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 
+
 /**
- * Main class.
+ * AppMain class.
  */
-public class Main {
-    private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
-    private static final String AGENT_BASE_URI = "agent.base.uri";
+public class AppMain {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AppMain.class);
 
     public static void main(String[] args) {
-        ApplicationConf conf = ApplicationConf.getInstance();
-        String baseUri = conf.getConfig(AGENT_BASE_URI);
+        AppConf conf = AppConf.getInstance();
+        String baseUri = conf.getConfig(AppConstants.AGENT_BASE_URI);
 
         URI BASE_URI = URI.create(baseUri);
 
         ResourceConfig resourceConfig = new ResourceConfig(
-                ConfigurationService.class,
+                ConfigqurationService.class,
                 ExecutorService.class
                 );
         final Channel server = NettyHttpContainerProvider.createHttp2Server(BASE_URI, resourceConfig, null);
