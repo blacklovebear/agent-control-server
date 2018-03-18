@@ -56,7 +56,7 @@ public class GenerateConf {
 
     private String getTemplatePath(String templateName) {
         String sep = System.getProperty("file.separator");
-        return templateDir + "/" + appConf.getConfig(templateName);
+        return templateDir + sep + appConf.getConfig(templateName);
     }
 
     /*

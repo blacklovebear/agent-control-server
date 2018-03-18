@@ -24,7 +24,7 @@ public class AppMain {
         URI BASE_URI = URI.create(baseUri);
 
         ResourceConfig resourceConfig = new ResourceConfig(
-                ConfigqurationService.class,
+                ConfigurationService.class,
                 ExecutorService.class
                 );
         final Channel server = NettyHttpContainerProvider.createHttp2Server(BASE_URI, resourceConfig, null);
