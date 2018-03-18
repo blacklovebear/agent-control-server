@@ -37,10 +37,19 @@
 		</fileSet>
 
 		<fileSet>
+			<directory>src/main/resources</directory>
+			<outputDirectory>/conf</outputDirectory>
+			<includes>
+				<include>*.properties</include>
+			</includes>
+		</fileSet>
+
+		<fileSet>
 			<directory>src/main/scripts</directory>
-			<outputDirectory>/bin</outputDirectory>
+			<outputDirectory>/</outputDirectory>
 			<includes>
 				<include>start.bat</include>
+				<include>start.sh</include>
 			</includes>
 		</fileSet>
 

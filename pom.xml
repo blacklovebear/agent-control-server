@@ -105,7 +105,7 @@
                     <excludes>
                         <exclude>conf/</exclude>
                         <exclude>template/</exclude>
-                        <!--<exclude>*.properties</exclude>-->
+                        <exclude>*.properties</exclude>
                     </excludes>
                     <archive>
                         <addMavenDescriptor>false</addMavenDescriptor>
