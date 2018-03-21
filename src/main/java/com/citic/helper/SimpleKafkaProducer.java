@@ -1,5 +1,6 @@
 package com.citic.helper;
 
+import com.citic.AppConf;
 import org.apache.kafka.clients.producer.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,6 +8,8 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.util.Properties;
 import java.util.concurrent.Future;
+
+import static com.citic.AppConstants.*;
 
 /*
 * 发送消息到 kafka
@@ -18,12 +21,18 @@ public class SimpleKafkaProducer<K extends Serializable, V extends Serializable>
     private boolean syncSend;
     private volatile boolean shutDown = false;
 
+    public SimpleKafkaProducer( boolean syncSend) {
+        AppConf conf = AppConf.getInstance();
+        Properties producerConfig = new Properties();
 
-    public SimpleKafkaProducer(Properties producerConfig) {
-        this(producerConfig, true);
-    }
+        producerConfig.put("bootstrap.servers", conf.getConfig(KAFKA_BOOTSTRAP_SERVERS));
+        producerConfig.put("client.id", conf.getConfig(KAFKA_CLIENT_ID));
+        producerConfig.put("acks", conf.getConfig(KAFKA_ACKS));
+        producerConfig.put("retries", conf.getConfig(KAFKA_RETRIES));
 
-    public SimpleKafkaProducer(Properties producerConfig, boolean syncSend) {
+        producerConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KAFKA_STRING_SERIALIZER);
+        producerConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, KAFKA_STRING_SERIALIZER);
+
         this.syncSend = syncSend;
         this.producer = new KafkaProducer<>(producerConfig);
         LOGGER.info("Started Producer.  sync  : {}", syncSend);

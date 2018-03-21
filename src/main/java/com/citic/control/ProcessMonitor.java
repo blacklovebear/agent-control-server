@@ -24,23 +24,11 @@ public class ProcessMonitor {
     private String monitorTopic;
     private SimpleKafkaProducer<String, String> producer;
 
-    public ProcessMonitor() {
+    public ProcessMonitor(SimpleKafkaProducer<String, String> producer) {
         conf = AppConf.getInstance();
-
         monitorTopic = conf.getConfig(KAFKA_MONITOR_TOPIC);
-        Properties producerConfig = new Properties();
 
-        producerConfig.put("bootstrap.servers", conf.getConfig(KAFKA_BOOTSTRAP_SERVERS));
-        producerConfig.put("client.id", conf.getConfig(KAFKA_CLIENT_ID));
-        producerConfig.put("acks", conf.getConfig(KAFKA_ACKS));
-        producerConfig.put("retries", conf.getConfig(KAFKA_RETRIES));
-
-        producerConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
-                "org.apache.kafka.common.serialization.StringSerializer");
-        producerConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
-                "org.apache.kafka.common.serialization.StringSerializer");
-
-        producer = new SimpleKafkaProducer<>(producerConfig, false);
+        this.producer = producer;
     }
 
     public void start() {
@@ -62,14 +50,13 @@ public class ProcessMonitor {
 
     public void stop() {
         executorService.shutdown();
-        producer.close();
 
         try {
             while (!executorService.awaitTermination(500, TimeUnit.MILLISECONDS)) {
-                LOGGER.debug("Waiting for file watcher to terminate");
+                LOGGER.debug("Waiting for process monitor to terminate");
             }
         } catch (InterruptedException e) {
-            LOGGER.debug("Interrupted while waiting for file watcher to terminate");
+            LOGGER.debug("Interrupted while waiting for process monitor to terminate");
             Thread.currentThread().interrupt();
         }
     }

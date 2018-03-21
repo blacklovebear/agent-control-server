@@ -25,8 +25,6 @@ import static com.citic.AppConstants.*;
 public class GenerateConf {
     private static final Logger LOGGER = LoggerFactory.getLogger(GenerateConf.class);
 
-
-
     private ClassHelper helper;
     private VelocityEngine ve;
     private AppConf appConf;
