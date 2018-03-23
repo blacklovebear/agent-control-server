@@ -1,6 +1,5 @@
 package com.citic.control;
 
-import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -10,7 +9,6 @@ import com.citic.AppConf;
 import com.citic.helper.ShellExecutor;
 import com.citic.helper.SimpleKafkaProducer;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import org.apache.kafka.clients.producer.ProducerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,8 +81,12 @@ public class ProcessMonitor {
         @Override
         public void run() {
             try {
-                String state = executor.monitorProcess(this.cmd, this.processName);
-                sendStageToKafka(state);
+                if (IS_WINDOWS) {
+                    LOGGER.debug("windows platform monitor process");
+                } else {
+                    String state = executor.monitorProcess(this.cmd, this.processName);
+                    sendStageToKafka(state);
+                }
             } catch (Exception e) {
                 LOGGER.error(e.getMessage(), e);
             }

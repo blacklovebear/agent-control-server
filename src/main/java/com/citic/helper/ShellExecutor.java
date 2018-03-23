@@ -9,8 +9,9 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
+import static com.citic.AppConstants.IS_WINDOWS;
+
 public class ShellExecutor {
-    private static final boolean IS_WINDOWS = System.getProperty("os.name").toLowerCase().startsWith("windows");
     private static final Logger LOGGER = LoggerFactory.getLogger(ShellExecutor.class);
 
     private static class StreamGobbler implements Runnable {
