@@ -1,11 +1,13 @@
 package com.citic.entity;
 
+import static com.citic.AppConstants.DEFAULT_DESTINATION;
+
 /*
 * Canal Instance 配置获取实体类
 */
 public class CanalInstance {
     // canal instance
-    private String instance;
+    private String instance = DEFAULT_DESTINATION;
     private String slaveId;
     private String masterAddress;
     private String dbUsername;

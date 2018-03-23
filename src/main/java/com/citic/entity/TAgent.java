@@ -7,7 +7,8 @@ public class TAgent {
     private String sourceZkServers;
     private String sourceDestination;
     private String sinkServers;
-    private String sinkTopicHeader;
+    private String tableToTopicMap;
+    private String tableFieldsFilter;
 
     public String getSourceZkServers() {
         return sourceZkServers;
@@ -33,12 +34,20 @@ public class TAgent {
         this.sinkServers = sinkServers;
     }
 
-    public String getSinkTopicHeader() {
-        return sinkTopicHeader;
+    public String getTableToTopicMap() {
+        return tableToTopicMap;
     }
 
-    public void setSinkTopicHeader(String sinkTopicHeader) {
-        this.sinkTopicHeader = sinkTopicHeader;
+    public void setTableToTopicMap(String tableToTopicMap) {
+        this.tableToTopicMap = tableToTopicMap;
+    }
+
+    public String getTableFieldsFilter() {
+        return tableFieldsFilter;
+    }
+
+    public void setTableFieldsFilter(String tableFieldsFilter) {
+        this.tableFieldsFilter = tableFieldsFilter;
     }
 
     @Override
@@ -47,7 +56,8 @@ public class TAgent {
                 "sourceZkServers='" + sourceZkServers + '\'' +
                 ", sourceDestination='" + sourceDestination + '\'' +
                 ", sinkServers='" + sinkServers + '\'' +
-                ", sinkTopicHeader='" + sinkTopicHeader + '\'' +
+                ", tableToTopicMap='" + tableToTopicMap + '\'' +
+                ", tableFieldsFilter='" + tableFieldsFilter + '\'' +
                 '}';
     }
 }

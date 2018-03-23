@@ -123,10 +123,6 @@ public class GenerateConf {
     */
     public void generateCanalInstance(CanalInstance config) {
         VelocityContext vx = getVelContext(config);
-        // default instance name
-        if (config.getInstance() == null) {
-            config.setInstance("citic");
-        }
         // canal instance configuration
         Template canalInstance = ve.getTemplate(getTemplatePath(CANAL_INSTANCE_TEMPLATE), "utf-8");
         String instancePath = String.format(appConf.getConfig(CANAL_INSTANCE_CONF), config.getInstance());

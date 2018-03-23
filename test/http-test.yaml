@@ -7,85 +7,117 @@
         # headers:
         #     device_sn: $device_sn
 
-- test:
-    name: Canal server generate config file
-    request:
-        url: /config/canal/server
-        method: POST
-        json:
-            zkServers: "172.18.84.224:2181"
-            destinations: "citic"
-    validate:
-        - {"check": "body.action", "comparator": "eq", "expect": "POST"}
-        - {"check": "body.message", "comparator": "eq", "expect": "success"}
+ - test:
+     name: Canal server generate config file
+     request:
+         url: /config/canal/server
+         method: POST
+         json:
+             zkServers: 192.168.2.25:2181
+#             destinations: example
+     validate:
+         - {"check": "body.action", "comparator": "eq", "expect": "POST"}
+         - {"check": "body.message", "comparator": "eq", "expect": "success"}
 
 
-- test:
-    name: Canal instance generate config file
-    request:
-        url: /config/canal/instance
-        method: POST
-        json:
-            instance: 'test'
-            slaveId: 1234
-            masterAddress: "127.0.0.1:3306"
-            dbUsername: "root"
-            dbPassword: "123456"
-            filterRegex: ".*\\\\..*"
-    validate:
-        - {"check": "body.action", "comparator": "eq", "expect": "POST"}
-        - {"check": "body.message", "comparator": "eq", "expect": "success"}
+ - test:
+     name: Canal instance generate config file
+     request:
+         url: /config/canal/instance
+         method: POST
+         json:
+#             instance: example
+             slaveId: 1234
+             masterAddress: 127.0.0.1:3306
+             dbUsername: root
+             dbPassword: 123456
+             filterRegex: .*\\\\..*
+     validate:
+         - {"check": "body.action", "comparator": "eq", "expect": "POST"}
+         - {"check": "body.message", "comparator": "eq", "expect": "success"}
 
 
-- test:
-    name: TAgent generate config file
-    request:
-        url: /config/tagent
-        method: POST
-        json:
-            sourceZkServers: 192.168.2.25:2181
-            sourceDestination: citic
-            sinkServers: 192.168.2.25:9092
-            sinkTopicHeader: table
+ - test:
+     name: TAgent generate config file
+     request:
+         url: /config/tagent
+         method: POST
+         json:
+             sourceZkServers: 192.168.2.25:2181
+             sourceDestination: example
+             sinkServers: 192.168.2.25:9092
+             # schema.table_name:topic_name;schema.table_name:topic_name
+             tableToTopicMap: test.test:test123;test.test1:test234
+             # schema.table_name:field_name,field_name;schema.table_name:field_name,field_name
+             tableFieldsFilter: test.test:uid,name;test.test1:id,name;test.user_info:name,age
 
-    validate:
-        - {"check": "body.action", "comparator": "eq", "expect": "POST"}
-        - {"check": "body.message", "comparator": "eq", "expect": "success"}
+     validate:
+         - {"check": "body.action", "comparator": "eq", "expect": "POST"}
+         - {"check": "body.message", "comparator": "eq", "expect": "success"}
+
+#- test:
+#    name: TAgent generate all config file
+#    request:
+#        url: /config/all
+#        method: POST
+#        json:
+#            tagent:
+#                sourceZkServers: 192.168.2.25:2181
+#                sourceDestination: example
+#                sinkServers: 192.168.2.25:9092
+#                # schema.table_name:topic_name;schema.table_name:topic_name
+#                tableToTopicMap: test.test:test123;test.test1:test234
+#                # schema.table_name:field_name,field_name;schema.table_name:field_name,field_name
+#                tableFieldsFilter: test.test:uid,name;test.test1:id,name;test.user_info:name,age
+#            canalServer:
+#                zkServers: 192.168.2.25:2181
+#                destinations: example
+#            canalInstance:
+#                instance: example
+#                slaveId: 1234
+#                masterAddress: 127.0.0.1:3306
+#                dbUsername: root
+#                dbPassword: 123456
+#                filterRegex: .*\\\\..*
+#
+#    validate:
+#        - {"check": "body.action", "comparator": "eq", "expect": "POST"}
+#        - {"check": "body.message", "comparator": "eq", "expect": "success"}
 
 
-- test:
-    name: start canal server
-    request:
-        url: /executor/start/canal
-        method: GET
-    validate:
-        - {"check": "body.action", "comparator": "eq", "expect": "GET"}
-        - {"check": "body.message", "comparator": "eq", "expect": "success"}
+# - test:
+#     name: start canal server
+#     request:
+#         url: /executor/start/canal
+#         method: GET
+#     validate:
+#         - {"check": "body.action", "comparator": "eq", "expect": "GET"}
+#         - {"check": "body.message", "comparator": "eq", "expect": "success"}
 
-- test:
-    name: stop canal server
-    request:
-        url: /executor/stop/canal
-        method: GET
-    validate:
-        - {"check": "body.action", "comparator": "eq", "expect": "GET"}
-        - {"check": "body.message", "comparator": "eq", "expect": "success"}
+# - test:
+#     name: stop canal server
+#     request:
+#         url: /executor/stop/canal
+#         method: GET
+#     validate:
+#         - {"check": "body.action", "comparator": "eq", "expect": "GET"}
+#         - {"check": "body.message", "comparator": "eq", "expect": "success"}
 
 
-- test:
-    name: start TAgent
-    request:
-        url: /executor/start/tagent
-        method: GET
-    validate:
-        - {"check": "body.action", "comparator": "eq", "expect": "GET"}
-        - {"check": "body.message", "comparator": "eq", "expect": "success"}
+# - test:
+#     name: start TAgent
+#     request:
+#         url: /executor/start/tagent
+#         method: GET
+#     validate:
+#         - {"check": "body.action", "comparator": "eq", "expect": "GET"}
+#         - {"check": "body.message", "comparator": "eq", "expect": "success"}
 
-- test:
-    name: stop TAgent
-    request:
-        url: /executor/stop/tagent
-        method: GET
-    validate:
-        - {"check": "body.action", "comparator": "eq", "expect": "GET"}
-        - {"check": "body.message", "comparator": "eq", "expect": "success"}
+# - test:
+#     name: stop TAgent
+#     request:
+#         url: /executor/stop/tagent
+#         method: GET
+#     validate:
+#         - {"check": "body.action", "comparator": "eq", "expect": "GET"}
+#         - {"check": "body.message", "comparator": "eq", "expect": "success"}

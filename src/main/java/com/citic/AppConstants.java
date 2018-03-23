@@ -2,6 +2,7 @@ package com.citic;
 
 public class AppConstants {
     public static final String CLASSPATH_URL_PREFIX = "classpath:";
+    public static final String DEFAULT_DESTINATION = "example";
 
     public static final String AGENT_BASE_URI = "agent.base.uri";
     

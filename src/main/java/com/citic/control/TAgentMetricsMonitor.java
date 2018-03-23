@@ -25,6 +25,7 @@ import static com.citic.AppConstants.*;
 
 public class TAgentMetricsMonitor {
     private static final Logger LOGGER = LoggerFactory.getLogger(TAgentMetricsMonitor.class);
+    private static final String CHECK_TIME = "CheckTime";
 
     private ScheduledExecutorService executorService;
     private AppConf conf;
@@ -42,7 +43,6 @@ public class TAgentMetricsMonitor {
         String result = null;
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpGet getRequest = new HttpGet(conf.getConfig(TAGENT_METRICS_URL));
-//        getRequest.addHeader("accept", "application/json");
 
         HttpResponse response;
         try {
@@ -71,12 +71,10 @@ public class TAgentMetricsMonitor {
             JSONParser parser = new JSONParser();
             Object obj = parser.parse( content );
             JSONObject jsonObject = (JSONObject) obj;
-            jsonObject.put("CheckTime", String.valueOf(System.currentTimeMillis()));
-
+            jsonObject.put(CHECK_TIME, String.valueOf(System.currentTimeMillis()));
             result = jsonObject.toJSONString();
-            LOGGER.debug(result);
-            // JSONObject test = (JSONObject) jsonObject.get("CHANNEL.memoryChannel");
 
+            LOGGER.debug(result);
         } catch (ParseException e) {
             LOGGER.error(e.getMessage(), e);
         }
@@ -86,13 +84,11 @@ public class TAgentMetricsMonitor {
     public void start() {
         // 进程检查时间间隔
         int interval = Integer.parseInt(conf.getConfig(TAGENT_METRICS_CHECK_INTERVAL));
-
         executorService = Executors.newSingleThreadScheduledExecutor(
                 new ThreadFactoryBuilder().setNameFormat("tAgent-metrics-%d")
                         .build());
 
         GetMetricsRunnable tAgentMetrics = new GetMetricsRunnable();
-
         executorService.scheduleWithFixedDelay(tAgentMetrics, 0, interval, TimeUnit.SECONDS);
     }
 
@@ -115,9 +111,6 @@ public class TAgentMetricsMonitor {
         producer.send(metricsTopic, UUID.randomUUID().toString(), stateMessage);
     }
 
-    /*
-    * 进程监控执行线程
-    * */
     private class GetMetricsRunnable implements Runnable {
         private GetMetricsRunnable() { }
         @Override
