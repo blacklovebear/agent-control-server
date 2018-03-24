@@ -1,6 +1,5 @@
 package com.citic;
 
-import com.citic.control.GenerateConf;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +12,6 @@ import static com.citic.AppConstants.*;
 
 public class AppConf {
     private static final Logger LOGGER = LoggerFactory.getLogger(AppConf.class);
-    private static AppConf singleton = new AppConf();
     private static Properties configProp =  new Properties();
 
     static {
@@ -33,13 +31,7 @@ public class AppConf {
         }
     }
 
-    public static AppConf getInstance() {
-        return singleton;
-    }
-
-    public String getConfig(String key) {
+    public static String getConfig(String key) {
         return configProp.getProperty(key);
     }
-
-    private AppConf() { }
 }

@@ -1,7 +1,6 @@
 package com.citic.control;
 
 import com.citic.AppConf;
-import com.citic.helper.ShellExecutor;
 import com.citic.helper.SimpleKafkaProducer;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.apache.http.HttpResponse;
@@ -28,13 +27,11 @@ public class TAgentMetricsMonitor {
     private static final String CHECK_TIME = "CheckTime";
 
     private ScheduledExecutorService executorService;
-    private AppConf conf;
     private String metricsTopic;
     private SimpleKafkaProducer<String, String> producer;
 
     public TAgentMetricsMonitor(SimpleKafkaProducer<String, String> producer) {
-        conf = AppConf.getInstance();
-        metricsTopic = conf.getConfig(TAGENT_METRICS_TOPIC);
+        metricsTopic = AppConf.getConfig(TAGENT_METRICS_TOPIC);
 
         this.producer = producer;
     }
@@ -42,13 +39,13 @@ public class TAgentMetricsMonitor {
     public String getMetricsInfo() {
         String result = null;
         DefaultHttpClient httpClient = new DefaultHttpClient();
-        HttpGet getRequest = new HttpGet(conf.getConfig(TAGENT_METRICS_URL));
+        HttpGet getRequest = new HttpGet(AppConf.getConfig(TAGENT_METRICS_URL));
 
         HttpResponse response;
         try {
             response = httpClient.execute(getRequest);
         } catch (IOException e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.error("TAgent was dead: {}", e.getMessage(), e);
             return result;
         }
 
@@ -83,7 +80,7 @@ public class TAgentMetricsMonitor {
 
     public void start() {
         // 进程检查时间间隔
-        int interval = Integer.parseInt(conf.getConfig(TAGENT_METRICS_CHECK_INTERVAL));
+        int interval = Integer.parseInt(AppConf.getConfig(TAGENT_METRICS_CHECK_INTERVAL));
         executorService = Executors.newSingleThreadScheduledExecutor(
                 new ThreadFactoryBuilder().setNameFormat("tAgent-metrics-%d")
                         .build());
@@ -115,6 +112,10 @@ public class TAgentMetricsMonitor {
         private GetMetricsRunnable() { }
         @Override
         public void run() {
+            // tAgent 还没启动不监控
+            if (ExecuteCmd.getInstance().getTAgentState() == STATE_DEAD)
+                return;
+
             try {
                 String info = getMetricsInfo();
                 if (info != null) {

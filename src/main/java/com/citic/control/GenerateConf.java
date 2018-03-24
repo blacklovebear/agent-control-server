@@ -27,15 +27,12 @@ public class GenerateConf {
 
     private ClassHelper helper;
     private VelocityEngine ve;
-    private AppConf appConf;
     private String templateDir = System.getProperty("template.dir", "classpath:template");
 
     public GenerateConf() {
         this.helper = new ClassHelper();
 
         ve = new VelocityEngine();
-
-        appConf = AppConf.getInstance();
 
         if (templateDir.startsWith(CLASSPATH_URL_PREFIX)) {
             templateDir = StringUtils.substringAfter(templateDir, CLASSPATH_URL_PREFIX);
@@ -54,7 +51,7 @@ public class GenerateConf {
 
     private String getTemplatePath(String templateName) {
         String sep = System.getProperty("file.separator");
-        return templateDir + sep + appConf.getConfig(templateName);
+        return templateDir + sep + AppConf.getConfig(templateName);
     }
 
     /*
@@ -115,7 +112,7 @@ public class GenerateConf {
         // canal server configuration
         LOGGER.info("{} path: {}", CANAL_SERVER_TEMPLATE, getTemplatePath(CANAL_SERVER_TEMPLATE));
         Template canalServer = ve.getTemplate(getTemplatePath(CANAL_SERVER_TEMPLATE), "utf-8");
-        this.writeConf(canalServer, appConf.getConfig(CANAL_SERVER_CONF), vx);
+        this.writeConf(canalServer, AppConf.getConfig(CANAL_SERVER_CONF), vx);
     }
 
     /*
@@ -125,7 +122,7 @@ public class GenerateConf {
         VelocityContext vx = getVelContext(config);
         // canal instance configuration
         Template canalInstance = ve.getTemplate(getTemplatePath(CANAL_INSTANCE_TEMPLATE), "utf-8");
-        String instancePath = String.format(appConf.getConfig(CANAL_INSTANCE_CONF), config.getInstance());
+        String instancePath = String.format(AppConf.getConfig(CANAL_INSTANCE_CONF), config.getInstance());
         this.writeConf(canalInstance, instancePath, vx);
     }
 
@@ -136,6 +133,6 @@ public class GenerateConf {
         VelocityContext vx = getVelContext(config);
         // TAgent configuration
         Template canalServer = ve.getTemplate(getTemplatePath(TAGENT_TEMPLATE), "utf-8");
-        this.writeConf(canalServer, appConf.getConfig(TAGENT_CONF), vx);
+        this.writeConf(canalServer, AppConf.getConfig(TAGENT_CONF), vx);
     }
 }

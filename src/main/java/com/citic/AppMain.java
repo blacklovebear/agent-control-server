@@ -4,7 +4,7 @@ import com.citic.control.ProcessMonitor;
 import com.citic.control.TAgentMetricsMonitor;
 import com.citic.helper.SimpleKafkaProducer;
 import com.citic.service.ConfigurationService;
-import com.citic.service.ExecutorService;
+import com.citic.service.ExeService;
 import io.netty.channel.Channel;
 import org.glassfish.jersey.netty.httpserver.NettyHttpContainerProvider;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -25,13 +25,12 @@ public class AppMain {
     private static TAgentMetricsMonitor metricsMonitor;
 
     public static void start() {
-        AppConf conf = AppConf.getInstance();
-        String baseUri = conf.getConfig(AppConstants.AGENT_BASE_URI);
+        String baseUri = AppConf.getConfig(AppConstants.AGENT_BASE_URI);
         URI BASE_URI = URI.create(baseUri);
 
         ResourceConfig resourceConfig = new ResourceConfig(
                 ConfigurationService.class,
-                ExecutorService.class
+                ExeService.class
         );
         server = NettyHttpContainerProvider.createHttp2Server(BASE_URI, resourceConfig, null);
 
@@ -39,11 +38,11 @@ public class AppMain {
 
         producer = new SimpleKafkaProducer<>(false);
         // 启动对进程的监控
-//        processMonitor = new ProcessMonitor(producer);
-//        processMonitor.start();
-//
-//        metricsMonitor = new TAgentMetricsMonitor(producer);
-//        metricsMonitor.start();
+        processMonitor = new ProcessMonitor(producer);
+        processMonitor.start();
+
+        metricsMonitor = new TAgentMetricsMonitor(producer);
+        metricsMonitor.start();
 
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             @Override

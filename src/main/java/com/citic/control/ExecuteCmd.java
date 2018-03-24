@@ -9,12 +9,39 @@ import static com.citic.AppConstants.*;
 
 public class ExecuteCmd {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExecuteCmd.class);
+    private static final ExecuteCmd single = new ExecuteCmd();
 
+    private Boolean canalState = STATE_DEAD;
+    private Boolean tAgentState = STATE_DEAD;
 
-    private AppConf appConf;
+    private ExecuteCmd() {}
 
-    public ExecuteCmd() {
-        appConf = AppConf.getInstance();
+    public static ExecuteCmd getInstance() {
+        return single;
+    }
+
+    public boolean getCanalState() {
+        synchronized (canalState) {
+            return canalState;
+        }
+    }
+
+    public void setCanalState(boolean state) {
+        synchronized (canalState) {
+            this.canalState = state;
+        }
+    }
+
+    public boolean getTAgentState() {
+        synchronized (tAgentState) {
+            return tAgentState;
+        }
+    }
+
+    public void setTAgentState(boolean state) {
+        synchronized (tAgentState) {
+            this.tAgentState = state;
+        }
     }
 
     private int exeCmd(String homeDir, String cmd) {
@@ -32,32 +59,66 @@ public class ExecuteCmd {
     * 启动 canal server
     * */
     public int startCanal() {
-        return exeCmd(appConf.getConfig(CANAL_HOME_DIR),
-                appConf.getConfig(CANAL_START_CMD));
+        int exitCode = 0;
+        synchronized (canalState) {
+            if (canalState == STATE_ALIVE)
+                return exitCode;
+
+            exitCode = exeCmd(AppConf.getConfig(CANAL_HOME_DIR),
+                    AppConf.getConfig(CANAL_START_CMD));
+            if (exitCode == 0) {
+                canalState = STATE_ALIVE;
+            }
+        }
+        return exitCode;
     }
 
     /*
     * 停止 canal server
     * */
     public int stopCanal() {
-        return exeCmd(appConf.getConfig(CANAL_HOME_DIR),
-                appConf.getConfig(CANAL_STOP_CMD));
+        int exitCode = 0;
+        synchronized (canalState) {
+            exitCode = exeCmd(AppConf.getConfig(CANAL_HOME_DIR),
+                    AppConf.getConfig(CANAL_STOP_CMD));
+            if (exitCode == 0) {
+                canalState = STATE_DEAD;
+            }
+        }
+        return exitCode;
     }
 
     /*
     * 启动 TAgent
     * */
     public int startTAgent() {
-        return exeCmd(appConf.getConfig(TAGENT_HOME_DIR),
-                appConf.getConfig(TAGENT_START_CMD));
+        int exitCode = 0;
+        synchronized (tAgentState) {
+            if (tAgentState == STATE_ALIVE)
+                return exitCode;
+
+            exitCode = exeCmd(AppConf.getConfig(TAGENT_HOME_DIR),
+                    AppConf.getConfig(TAGENT_START_CMD));
+            if (exitCode == 0) {
+                tAgentState = STATE_ALIVE;
+            }
+        }
+        return exitCode;
     }
 
     /*
     * 停止 TAgent
     * */
     public int stopTAgent() {
-        return exeCmd(appConf.getConfig(TAGENT_HOME_DIR),
-                appConf.getConfig(TAGENT_STOP_CMD));
+        int exitCode = 0;
+        synchronized (tAgentState) {
+            exitCode = exeCmd(AppConf.getConfig(TAGENT_HOME_DIR),
+                    AppConf.getConfig(TAGENT_STOP_CMD));
+            if (exitCode == 0) {
+                tAgentState = STATE_DEAD;
+            }
+        }
+        return exitCode;
     }
 
 }

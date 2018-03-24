@@ -7,13 +7,14 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 @Path("executor")
-public class ExecutorService {
+public class ExeService {
+    private static final ExecuteCmd EXECUTE_CMD = ExecuteCmd.getInstance();
+
     @GET
     @Path("start/canal")
     @Produces(MediaType.APPLICATION_JSON)
     public ResponseResult startCanal() {
-        ExecuteCmd exeCmd = new ExecuteCmd();
-        int exitCode = exeCmd.startCanal();
+        int exitCode = EXECUTE_CMD.startCanal();
         String message = "success";
         if (exitCode != 0) {
             message = "error";
@@ -25,8 +26,7 @@ public class ExecutorService {
     @Path("stop/canal")
     @Produces(MediaType.APPLICATION_JSON)
     public ResponseResult stopCanal() {
-        ExecuteCmd exeCmd = new ExecuteCmd();
-        int exitCode = exeCmd.stopCanal();
+        int exitCode = EXECUTE_CMD.stopCanal();
         String message = "success";
         if (exitCode != 0) {
             message = "error";
@@ -38,8 +38,7 @@ public class ExecutorService {
     @Path("start/tagent")
     @Produces(MediaType.APPLICATION_JSON)
     public ResponseResult startTAgent() {
-        ExecuteCmd exeCmd = new ExecuteCmd();
-        int exitCode = exeCmd.startTAgent();
+        int exitCode = EXECUTE_CMD.startTAgent();
         String message = "success";
         if (exitCode != 0) {
             message = "error";
@@ -51,8 +50,7 @@ public class ExecutorService {
     @Path("stop/tagent")
     @Produces(MediaType.APPLICATION_JSON)
     public ResponseResult stopTAgent() {
-        ExecuteCmd exeCmd = new ExecuteCmd();
-        int exitCode = exeCmd.stopTAgent();
+        int exitCode = EXECUTE_CMD.stopTAgent();
         String message = "success";
         if (exitCode != 0) {
             message = "error";

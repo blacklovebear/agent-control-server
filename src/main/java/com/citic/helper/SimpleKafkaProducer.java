@@ -22,13 +22,12 @@ public class SimpleKafkaProducer<K extends Serializable, V extends Serializable>
     private volatile boolean shutDown = false;
 
     public SimpleKafkaProducer( boolean syncSend) {
-        AppConf conf = AppConf.getInstance();
         Properties producerConfig = new Properties();
 
-        producerConfig.put("bootstrap.servers", conf.getConfig(KAFKA_BOOTSTRAP_SERVERS));
-        producerConfig.put("client.id", conf.getConfig(KAFKA_CLIENT_ID));
-        producerConfig.put("acks", conf.getConfig(KAFKA_ACKS));
-        producerConfig.put("retries", conf.getConfig(KAFKA_RETRIES));
+        producerConfig.put("bootstrap.servers", AppConf.getConfig(KAFKA_BOOTSTRAP_SERVERS));
+        producerConfig.put("client.id", AppConf.getConfig(KAFKA_CLIENT_ID));
+        producerConfig.put("acks", AppConf.getConfig(KAFKA_ACKS));
+        producerConfig.put("retries", AppConf.getConfig(KAFKA_RETRIES));
 
         producerConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KAFKA_STRING_SERIALIZER);
         producerConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, KAFKA_STRING_SERIALIZER);

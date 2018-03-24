@@ -6,6 +6,9 @@ public class AppConstants {
     public static final String CLASSPATH_URL_PREFIX = "classpath:";
     public static final String DEFAULT_DESTINATION = "example";
 
+    public static final boolean STATE_ALIVE = true;
+    public static final boolean STATE_DEAD = false;
+
     public static final String AGENT_BASE_URI = "agent.base.uri";
     
     // cmd
