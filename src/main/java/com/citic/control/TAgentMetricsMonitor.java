@@ -1,6 +1,7 @@
 package com.citic.control;
 
 import com.citic.AppConf;
+import com.citic.helper.Utility;
 import com.citic.helper.SimpleKafkaProducer;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.apache.http.HttpResponse;
@@ -25,6 +26,7 @@ import static com.citic.AppConstants.*;
 public class TAgentMetricsMonitor {
     private static final Logger LOGGER = LoggerFactory.getLogger(TAgentMetricsMonitor.class);
     private static final String CHECK_TIME = "CheckTime";
+    private static final String AGENT_IP = "AgentIP";
 
     private ScheduledExecutorService executorService;
     private String metricsTopic;
@@ -69,6 +71,7 @@ public class TAgentMetricsMonitor {
             Object obj = parser.parse( content );
             JSONObject jsonObject = (JSONObject) obj;
             jsonObject.put(CHECK_TIME, String.valueOf(System.currentTimeMillis()));
+            jsonObject.put(AGENT_IP, Utility.getLocalIP(AppConf.getConfig(AGENT_IP_INTERFACE)));
             result = jsonObject.toJSONString();
 
             LOGGER.debug(result);

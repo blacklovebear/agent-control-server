@@ -10,7 +10,8 @@ public class AppConstants {
     public static final boolean STATE_DEAD = false;
 
     public static final String AGENT_BASE_URI = "agent.base.uri";
-    
+    public static final String AGENT_IP_INTERFACE = "agent.metrics.ip.interface";
+
     // cmd
     public static final String CANAL_HOME_DIR = "canal.home.dir";
     public static final String CANAL_START_CMD = "canal.start.cmd";
