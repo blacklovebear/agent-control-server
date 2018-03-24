@@ -6,9 +6,18 @@ package com.citic.entity;
 public class TAgent {
     private String sourceZkServers;
     private String sourceDestination;
+    private String tableFilter;
     private String sinkServers;
     private String tableToTopicMap;
     private String tableFieldsFilter;
+
+    public String getTableFilter() {
+        return tableFilter;
+    }
+
+    public void setTableFilter(String tableFilter) {
+        this.tableFilter = tableFilter;
+    }
 
     public String getSourceZkServers() {
         return sourceZkServers;
@@ -55,6 +64,7 @@ public class TAgent {
         return "TAgent{" +
                 "sourceZkServers='" + sourceZkServers + '\'' +
                 ", sourceDestination='" + sourceDestination + '\'' +
+                ", tableFilter='" + tableFilter + '\'' +
                 ", sinkServers='" + sinkServers + '\'' +
                 ", tableToTopicMap='" + tableToTopicMap + '\'' +
                 ", tableFieldsFilter='" + tableFieldsFilter + '\'' +

@@ -112,6 +112,9 @@ public class ExecuteCmd {
     public int stopTAgent() {
         int exitCode = 0;
         synchronized (tAgentState) {
+            if (tAgentState == STATE_DEAD)
+                return exitCode;
+
             exitCode = exeCmd(AppConf.getConfig(TAGENT_HOME_DIR),
                     AppConf.getConfig(TAGENT_STOP_CMD));
             if (exitCode == 0) {

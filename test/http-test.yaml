@@ -4,6 +4,7 @@
     #     - device_sn: ${gen_random_string(15)}
     request:
         base_url: http://192.168.2.24:8080
+        # base_url: http://127.0.0.1:8080
         # headers:
         #     device_sn: $device_sn
 
@@ -31,58 +32,56 @@
 #             masterAddress: 127.0.0.1:3306
 #             dbUsername: root
 #             dbPassword: 123456
-#             filterRegex: .*\\..*
 #     validate:
 #         - {"check": "body.action", "comparator": "eq", "expect": "POST"}
 #         - {"check": "body.message", "comparator": "eq", "expect": "success"}
 
 
-# - test:
-#     name: TAgent generate config file
-#     request:
-#         url: /config/tagent
-#         method: POST
-#         json:
-#             sourceZkServers: 192.168.2.25:2181
-#             sourceDestination: example
-#             sinkServers: 192.168.2.25:9092
-#             # schema.table_name:topic_name;schema.table_name:topic_name
-#             tableToTopicMap: test.test:test123;test.test1:test234
-#             # schema.table_name:field_name,field_name;schema.table_name:field_name,field_name
-#             tableFieldsFilter: test.test:uid,name;test.test1:id,name;test.user_info:name,age
+- test:
+    name: TAgent generate config file
+    request:
+        url: /config/tagent
+        method: POST
+        json:
+            sourceZkServers: 192.168.2.25:2181
+            tableFilter: test.test,test.test1
+            sourceDestination: example
+            sinkServers: 192.168.2.25:9092
+            # schema.table_name:topic_name;schema.table_name:topic_name
+            tableToTopicMap: test.test:test123;test.test1:test234
+            # schema.table_name:field_name,field_name;schema.table_name:field_name,field_name
+            tableFieldsFilter: test.test:uid,name;test.test1:id,name;test.user_info:name,age
 
-#     validate:
-#         - {"check": "body.action", "comparator": "eq", "expect": "POST"}
-#         - {"check": "body.message", "comparator": "eq", "expect": "success"}
+    validate:
+        - {"check": "body.action", "comparator": "eq", "expect": "POST"}
+        - {"check": "body.message", "comparator": "eq", "expect": "success"}
 
-#- test:
-#   name: TAgent generate all config file
-#   request:
-#       url: /config/all
-#       method: POST
-#       json:
-#           tagent:
-#               sourceZkServers: 192.168.2.25:2181
-#               sourceDestination: example
-#               sinkServers: 192.168.2.25:9092
-#               # schema.table_name:topic_name;schema.table_name:topic_name
-#               tableToTopicMap: test.test:test123;test.test1:test234
-#               # schema.table_name:field_name,field_name;schema.table_name:field_name,field_name
-#               tableFieldsFilter: test.test:uid,name;test.test1:id,name;test.user_info:name,age
-#           canalServer:
-#               zkServers: 192.168.2.25:2181
-#               destinations: example
-#           canalInstance:
-#               instance: example
-#               slaveId: 1234
-#               masterAddress: 127.0.0.1:3306
-#               dbUsername: root
-#               dbPassword: 123456
-#               filterRegex: .*\\\\..*
+- test:
+  name: TAgent generate all config file
+  request:
+      url: /config/all
+      method: POST
+      json:
+          tagent:
+            sourceZkServers: 192.168.2.25:2181
+            tableFilter: test.test,test.test1
+            sourceDestination: example
+            sinkServers: 192.168.2.25:9092
+            # schema.table_name:topic_name;schema.table_name:topic_name
+            tableToTopicMap: test.test:test123;test.test1:test234
+            # schema.table_name:field_name,field_name;schema.table_name:field_name,field_name
+            tableFieldsFilter: test.test:uid,name;test.test1:id,name;test.user_info:name,age
+          canalServer:
+            zkServers: 192.168.2.25:2181
+          canalInstance:
+            slaveId: 1234
+            masterAddress: 127.0.0.1:3306
+            dbUsername: root
+            dbPassword: 123456
 
-#   validate:
-#       - {"check": "body.action", "comparator": "eq", "expect": "POST"}
-#       - {"check": "body.message", "comparator": "eq", "expect": "success"}
+  validate:
+      - {"check": "body.action", "comparator": "eq", "expect": "POST"}
+      - {"check": "body.message", "comparator": "eq", "expect": "success"}
 
 
 # - test:
@@ -104,14 +103,14 @@
 #        - {"check": "body.message", "comparator": "eq", "expect": "success"}
 
 
-- test:
-   name: start TAgent
-   request:
-       url: /executor/start/tagent
-       method: GET
-   validate:
-       - {"check": "body.action", "comparator": "eq", "expect": "GET"}
-       - {"check": "body.message", "comparator": "eq", "expect": "success"}
+# - test:
+#    name: start TAgent
+#    request:
+#        url: /executor/start/tagent
+#        method: GET
+#    validate:
+#        - {"check": "body.action", "comparator": "eq", "expect": "GET"}
+#        - {"check": "body.message", "comparator": "eq", "expect": "success"}
 
 # - test:
 #    name: stop TAgent

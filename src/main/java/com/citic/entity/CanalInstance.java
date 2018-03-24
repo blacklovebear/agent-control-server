@@ -12,7 +12,6 @@ public class CanalInstance {
     private String masterAddress;
     private String dbUsername;
     private String dbPassword;
-    private String filterRegex;
 
     public String getInstance() {
         return instance;
@@ -54,14 +53,6 @@ public class CanalInstance {
         this.dbPassword = dbPassword;
     }
 
-    public String getFilterRegex() {
-        return filterRegex;
-    }
-
-    public void setFilterRegex(String filterRegex) {
-        this.filterRegex = filterRegex;
-    }
-
     @Override
     public String toString() {
         return "CanalInstance{" +
@@ -69,7 +60,6 @@ public class CanalInstance {
                 ", masterAddress='" + masterAddress + '\'' +
                 ", dbUsername='" + dbUsername + '\'' +
                 ", dbPassword='" + dbPassword + '\'' +
-                ", filterRegex='" + filterRegex + '\'' +
                 '}';
     }
 }
