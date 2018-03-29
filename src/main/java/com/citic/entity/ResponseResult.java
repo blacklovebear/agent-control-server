@@ -1,24 +1,30 @@
 package com.citic.entity;
 
 public class ResponseResult {
-    private String action;
-    private String message;
+    public final static int ERROR = -1;
+    private final static int SUCCESS = 0;
+    private final static String SUCCESS_MESSAGE = "success";
 
-    public ResponseResult(String action, String message) {
-        this.action = action;
+    private int code = SUCCESS;
+    private String message = SUCCESS_MESSAGE;
+
+    public ResponseResult(int code, String message) {
+        this.code = code;
         this.message = message;
     }
 
-    public void setAction(String action) {
-        this.action = action;
+    public ResponseResult() { }
+
+    public void setCode(int code) {
+        this.code = code;
     }
 
     public void setMessage(String message) {
         this.message = message;
     }
 
-    public String getAction() {
-        return action;
+    public int getCode() {
+        return code;
     }
 
     public String getMessage() {

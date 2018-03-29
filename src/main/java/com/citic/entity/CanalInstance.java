@@ -4,6 +4,7 @@ import static com.citic.AppConstants.DEFAULT_DESTINATION;
 
 /*
 * Canal Instance 配置获取实体类
+* instance 区别唯一 Instance
 */
 public class CanalInstance {
     // canal instance
@@ -51,6 +52,20 @@ public class CanalInstance {
 
     public void setDbPassword(String dbPassword) {
         this.dbPassword = dbPassword;
+    }
+
+    /*
+    * instance 是判断的唯一值
+    * */
+    @Override
+    public int hashCode() {
+        return instance.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return (o instanceof CanalInstance) &&
+                (((CanalInstance)o).getInstance()).equals(this.getInstance());
     }
 
     @Override

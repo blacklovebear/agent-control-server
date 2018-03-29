@@ -19,7 +19,7 @@ public class ExeService {
         if (exitCode != 0) {
             message = "error";
         }
-        return new ResponseResult("GET", message);
+        return new ResponseResult();
     }
 
     @GET
@@ -31,7 +31,7 @@ public class ExeService {
         if (exitCode != 0) {
             message = "error";
         }
-        return new ResponseResult("GET", message);
+        return new ResponseResult();
     }
 
     @GET
@@ -43,7 +43,7 @@ public class ExeService {
         if (exitCode != 0) {
             message = "error";
         }
-        return new ResponseResult("GET", message);
+        return new ResponseResult();
     }
 
     @GET
@@ -55,6 +55,6 @@ public class ExeService {
         if (exitCode != 0) {
             message = "error";
         }
-        return new ResponseResult("GET", message);
+        return new ResponseResult();
     }
 }

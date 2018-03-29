@@ -38,11 +38,11 @@ public class AppMain {
 
         producer = new SimpleKafkaProducer<>(false);
         // 启动对进程的监控
-        processMonitor = new ProcessMonitor(producer);
-        processMonitor.start();
-
-        metricsMonitor = new TAgentMetricsMonitor(producer);
-        metricsMonitor.start();
+//        processMonitor = new ProcessMonitor(producer);
+//        processMonitor.start();
+//
+//        metricsMonitor = new TAgentMetricsMonitor(producer);
+//        metricsMonitor.start();
 
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             @Override

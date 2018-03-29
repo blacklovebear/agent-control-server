@@ -1,0 +1,68 @@
+# test tagent
+curl -H "Content-Type: application/json" -X POST -d '
+{
+    "sink":{
+        "sinkServers":"192.168.2.25:9092"
+    },
+    "sources":[
+        {"sourceZkServers": "192.168.2.24:2181",
+        "tableFilter": "test.test,test.test1",
+        "sourceDestination": "example1",
+        "tableToTopicMap": "test.test:test123;test.test1:test234",
+        "tableFieldsFilter": "test.test:uid,name;test.test1:id,name;test.user_info:name,age"
+        },
+        {"sourceZkServers": "192.168.2.25:2181",
+        "tableFilter": "test.test,test.test1",
+        "sourceDestination": "example2",
+        "tableToTopicMap": "test.test:test123;test.test1:test234",
+        "tableFieldsFilter": "test.test:uid,name;test.test1:id,name;test.user_info:name,age"
+        }
+    ]
+}' \
+http://localhost:8080/config/tagent;
+
+# test TAgent source
+curl -H "Content-Type: application/json" -X POST -d '
+{
+    "sourceZkServers": "192.168.2.24:2181",
+    "tableFilter": "test.test,test.test1",
+    "sourceDestination": "example3",
+    "tableToTopicMap": "test.test:test123;test.test1:test234",
+    "tableFieldsFilter": "test.test:uid,name;test.test1:id,name;test.user_info:name,age"
+}' \
+http://localhost:8080/config/tagent/source;
+
+# test canal server
+curl -H "Content-Type: application/json" -X POST -d '
+{
+    "zkServers": "192.168.2.25:2181",
+    "instances":[
+        {
+            "instance": "example1",
+            "slaveId": "12345",
+            "masterAddress": "127.0.0.1:3306",
+            "dbUsername": "root",
+            "dbPassword": "123456"
+        },
+        {
+            "instance": "example2",
+            "slaveId": "1234",
+            "masterAddress": "127.0.0.1:3306",
+            "dbUsername": "root",
+            "dbPassword": "123456"
+        }
+    ]
+}' \
+http://localhost:8080/config/canal/server
+
+
+# test canal instance
+curl -H "Content-Type: application/json" -X POST -d '
+{
+    "instance": "example3",
+    "slaveId": "12345",
+    "masterAddress": "127.0.0.1:3306",
+    "dbUsername": "root",
+    "dbPassword": "123456"
+}' \
+http://localhost:8080/config/canal/instance
