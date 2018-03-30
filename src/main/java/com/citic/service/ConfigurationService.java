@@ -18,8 +18,13 @@ public class ConfigurationService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public ResponseResult configUnion(UnionConfig unionConfig) {
-        // TODO 对所有属性缺失情况,以及格式进行校验
         LOGGER.debug("UnionConfig: {}", unionConfig.toString());
+
+        try {
+            unionConfig.checkProperties();
+        } catch (Exception e) {
+            return new ResponseResult(ResponseResult.ERROR, e.getMessage());
+        }
 
         AppGlobal.setUnionConfig(unionConfig);
 
@@ -35,7 +40,6 @@ public class ConfigurationService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public ResponseResult addUnionConfigUnit(UnionConfig.Unit unitConfig) {
-        // TODO 对所有属性缺失情况,以及格式进行校验
         LOGGER.debug("UnitConfig: {}", unitConfig.toString());
 
         UnionConfig unionConfig =  AppGlobal.getUnionConfig();
@@ -43,12 +47,18 @@ public class ConfigurationService {
             return new ResponseResult(ResponseResult.ERROR, "Not post UnionConfig info");
         }
 
-        unionConfig.addUnit(unitConfig);
+        try {
+            unitConfig.checkProperties();
+        } catch (Exception e) {
+            return new ResponseResult(ResponseResult.ERROR, e.getMessage());
+        }
+
+        unionConfig.addOrReplaceUnit(unitConfig);
 
         GenerateConf generateConf = new GenerateConf();
         generateConf.generateCanal(unionConfig.getCanalServer());
         generateConf.generateTAgent(unionConfig.getTAgent());
-
         return new ResponseResult();
+
     }
 }

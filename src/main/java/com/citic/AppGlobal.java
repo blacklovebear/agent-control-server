@@ -18,20 +18,4 @@ public class AppGlobal {
     public static void setUnionConfig(UnionConfig unionConfig) {
         AppGlobal.unionConfig = unionConfig;
     }
-
-    public static TAgent getTAgent() {
-        return tAgent;
-    }
-
-    public static void setTAgent(TAgent tAgent) {
-        AppGlobal.tAgent = tAgent;
-    }
-
-    public static CanalServer getCanalServer() {
-        return canalServer;
-    }
-
-    public static void setCanalServer(CanalServer canalServer) {
-        AppGlobal.canalServer = canalServer;
-    }
 }

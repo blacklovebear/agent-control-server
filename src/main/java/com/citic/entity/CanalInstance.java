@@ -1,8 +1,6 @@
 package com.citic.entity;
 
-import com.sun.glass.ui.SystemClipboard;
-
-import java.util.Random;
+import java.util.*;
 
 /*
 * Canal Instance 配置获取实体类
@@ -15,8 +13,6 @@ public class CanalInstance {
     private String masterAddress;
     private String dbUsername;
     private String dbPassword;
-
-    public CanalInstance() {}
 
     public CanalInstance(UnionConfig.Unit unit) {
         instance = unit.getInstance();

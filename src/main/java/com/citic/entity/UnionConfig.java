@@ -1,5 +1,8 @@
 package com.citic.entity;
 
+import com.citic.helper.Utility;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 
 import java.util.Set;
@@ -15,6 +18,20 @@ public class UnionConfig {
     private CanalServer canalServer;
     private TAgent tAgent;
 
+    public void checkProperties() throws Exception {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(zkServers), "zkServers is null or empty");
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(kafkaServers), "kafkaServers is null or empty");
+
+        Utility.isUrlsAddressListValid(zkServers, "zkServers");
+        Utility.isUrlsAddressListValid(kafkaServers, "kafkaServers");
+
+        Preconditions.checkArgument(units.size() > 0, "units is empty");
+
+        for(Unit unit : units) {
+            unit.checkProperties();
+        }
+    }
+
     public void configReleaseToCanalTAgent() {
         if (canalServer == null || tAgent == null) {
             canalServer = new CanalServer();
@@ -25,8 +42,8 @@ public class UnionConfig {
         tAgent.setSinkServers(this.kafkaServers);
 
         units.forEach(unit -> {
-            canalServer.addInstance(new CanalInstance(unit));
-            tAgent.addSource(new TAgent.Source(unit));
+            canalServer.addOrReplaceInstance(new CanalInstance(unit));
+            tAgent.addOrReplaceSource(new TAgent.Source(unit));
         });
     }
 
@@ -40,7 +57,8 @@ public class UnionConfig {
         return tAgent;
     }
 
-    public void addUnit(Unit unit) {
+    public void addOrReplaceUnit(Unit unit) {
+        units.remove(unit);
         units.add(unit);
     }
 
@@ -72,8 +90,6 @@ public class UnionConfig {
         * 一个配置单元,就对应一个 Canal instance 并且带上 TAgent 的一些配置信息
         * */
     public static class Unit {
-        // 当前 instance的值,默认使用 masterAddress
-        private String instance;
         private String masterAddress;
         private String dbUsername;
         private String dbPassword;
@@ -82,11 +98,26 @@ public class UnionConfig {
         private String tableToTopicMap;
         private String tableFieldsFilter;
 
+
+        public void checkProperties() throws Exception {
+            Preconditions.checkArgument(!Strings.isNullOrEmpty(masterAddress), "dbUsername is null or empty");
+            Preconditions.checkArgument(!Strings.isNullOrEmpty(dbUsername), "dbUsername is null or empty");
+            Preconditions.checkArgument(!Strings.isNullOrEmpty(dbPassword), "dbPassword is null or empty");
+            Preconditions.checkArgument(!Strings.isNullOrEmpty(tableFilter), "tableFilter is null or empty");
+            Preconditions.checkArgument(!Strings.isNullOrEmpty(tableToTopicMap), "tableToTopicMap is null or empty");
+            Preconditions.checkArgument(!Strings.isNullOrEmpty(tableFieldsFilter), "tableFieldsFilter is null or empty");
+
+            Utility.isUrlAddressValid(masterAddress, "masterAddress");
+        }
+
         /*
         * 关键: 当前默认将 masterAddress 作为 canal instance 名
         * */
         public String getInstance() {
-            return masterAddress;
+            if (Strings.isNullOrEmpty(masterAddress))
+                return null;
+            else
+                return masterAddress.replace(":", "-").replace(".", "_");
         }
 
         public String getMasterAddress() {
@@ -139,12 +170,12 @@ public class UnionConfig {
 
         @Override
         public int hashCode(){
-            return instance.hashCode();
+            return masterAddress.hashCode();
         }
 
         @Override
         public boolean equals(Object obj){
-            return obj instanceof Unit && instance.equals(((Unit)obj).instance);
+            return obj instanceof Unit && masterAddress.equals(((Unit)obj).masterAddress);
         }
     }
 }

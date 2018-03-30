@@ -6,7 +6,6 @@ curl -H "Content-Type: application/json" -X POST -d '
     "kafkaServers":"192.168.2.25:9092",
     "units":[
         {
-            "instance": "example1",
             "masterAddress": "127.0.0.1:3306",
             "dbUsername": "root",
             "dbPassword": "123456",
@@ -16,8 +15,7 @@ curl -H "Content-Type: application/json" -X POST -d '
             "tableFieldsFilter": "test.test:uid,name;test.test1:id,name;test.user_info:name,age"
         },
         {
-            "instance": "example2",
-            "masterAddress": "127.0.0.1:3306",
+            "masterAddress": "127.0.0.2:3306",
             "dbUsername": "root",
             "dbPassword": "12345678",
 
@@ -33,7 +31,6 @@ http://localhost:8080/config/union
 # test union unit
 curl -H "Content-Type: application/json" -X POST -d '
 {
-    "instance": "example3",
     "masterAddress": "127.0.0.1:3306",
     "dbUsername": "root",
     "dbPassword": "123456",

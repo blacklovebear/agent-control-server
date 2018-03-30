@@ -14,15 +14,14 @@ import java.util.Set;
 public class CanalServer {
     // canal server
     private String zkServers;
-    // 由于
-    private String destinations;
 
     private Set<CanalInstance> instances = Sets.newHashSet();
 
     /*
     * 在已有的Canal Server中增加instance
     * */
-    public void addInstance(CanalInstance instance) {
+    public void addOrReplaceInstance(CanalInstance instance) {
+        instances.remove(instance);
         instances.add(instance);
     }
 
@@ -42,6 +41,9 @@ public class CanalServer {
         this.zkServers = zkServers;
     }
 
+    /*
+    * velocity 模板 destinations
+    * */
     public String getDestinations() {
         List<String> instancesNames = Lists.newArrayList();
         instances.forEach(instance -> instancesNames.add(instance.getInstance()));
@@ -52,7 +54,6 @@ public class CanalServer {
     public String toString() {
         return "CanalServer{" +
                 "zkServers='" + zkServers + '\'' +
-                ", destinations='" + destinations + '\'' +
                 '}';
     }
 }

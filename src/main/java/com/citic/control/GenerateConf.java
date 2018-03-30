@@ -4,7 +4,6 @@ import com.citic.AppConf;
 import com.citic.entity.CanalInstance;
 import com.citic.entity.CanalServer;
 import com.citic.entity.TAgent;
-import com.citic.helper.ClassHelper;
 import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -18,19 +17,19 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 
 import static com.citic.AppConstants.*;
+import static com.citic.helper.Utility.guavaBeanProperties;
 
 
 public class GenerateConf {
     private static final Logger LOGGER = LoggerFactory.getLogger(GenerateConf.class);
 
-    private ClassHelper helper;
     private VelocityEngine ve;
     private String templateDir = System.getProperty("template.dir", "classpath:template");
 
     public GenerateConf() {
-        this.helper = new ClassHelper();
 
         ve = new VelocityEngine();
 
@@ -75,11 +74,9 @@ public class GenerateConf {
     * */
     private VelocityContext getVelContext(Object config) {
         VelocityContext ctx = new VelocityContext();
-        String[] fieldNameList =  helper.getFiledName(config);
-        // put all attributes
-        for(String fieldName : fieldNameList) {
-            ctx.put(fieldName, helper.getFieldValueByName(fieldName, config));
-        }
+        Map<String, Object> beanPro = guavaBeanProperties(config);
+
+        beanPro.forEach(ctx::put);
         return ctx;
     }
 

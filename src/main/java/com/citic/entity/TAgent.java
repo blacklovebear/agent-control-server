@@ -4,9 +4,8 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+
 
 /*
 * TAgent 配置获取实体类
@@ -18,12 +17,16 @@ public class TAgent {
     private String sinkServers;
     private Set<Source> sources = Sets.newHashSet();
 
-    private String sourceNames;
+    // 有作用,velocity 模板生成的时候通过反射获取字段名
 
-    public void addSource(Source source) {
+    public void addOrReplaceSource(Source source) {
+        sources.remove(source);
         sources.add(source);
     }
 
+    /*
+    * velocity 模板 sourceNames
+    * */
     public String getSourceNames() {
         List<String> sourceNames = Lists.newArrayList();
         sources.forEach(source -> sourceNames.add(source.getSourceName()));
@@ -59,16 +62,10 @@ public class TAgent {
         * */
     public static class Source {
         private String sourceDestination;
-        // 有作用,velocity 模板生成的时候通过反射获取字段名
-        private String sourceName;
-
 
         private String tableFilter;
         private String tableToTopicMap;
         private String tableFieldsFilter;
-        private Object obj;
-
-        public Source() {}
 
         public Source(UnionConfig.Unit unit) {
             sourceDestination = unit.getInstance();
@@ -79,15 +76,10 @@ public class TAgent {
 
         /*
         * 当前就将 destination 作为 sourceName
+        * velocity 模板 sourceName
         * */
         public String getSourceName() {
-            // 因为 sourceDestination 在上层赋值的时候会将 ip:port 作为值
-            // 但是 sourceName 不能出现 "." 符号,因此在此替换
-            if (sourceDestination == null)
-                return null;
-            else
-                return sourceDestination.replace(":", "-").replace(".", "_");
-
+            return sourceDestination;
         }
 
         public String getSourceDestination() {
