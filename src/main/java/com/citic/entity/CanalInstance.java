@@ -1,6 +1,8 @@
 package com.citic.entity;
 
-import static com.citic.AppConstants.DEFAULT_DESTINATION;
+import com.sun.glass.ui.SystemClipboard;
+
+import java.util.Random;
 
 /*
 * Canal Instance 配置获取实体类
@@ -8,11 +10,20 @@ import static com.citic.AppConstants.DEFAULT_DESTINATION;
 */
 public class CanalInstance {
     // canal instance
-    private String instance = DEFAULT_DESTINATION;
-    private String slaveId;
+    private String instance;
+    private String slaveId = String.format("%05d", new Random().nextInt(100000));
     private String masterAddress;
     private String dbUsername;
     private String dbPassword;
+
+    public CanalInstance() {}
+
+    public CanalInstance(UnionConfig.Unit unit) {
+        instance = unit.getInstance();
+        masterAddress = unit.getMasterAddress();
+        dbUsername = unit.getDbUsername();
+        dbPassword = unit.getDbPassword();
+    }
 
     public String getInstance() {
         return instance;
@@ -24,10 +35,6 @@ public class CanalInstance {
 
     public String getSlaveId() {
         return slaveId;
-    }
-
-    public void setSlaveId(String slaveId) {
-        this.slaveId = slaveId;
     }
 
     public String getMasterAddress() {

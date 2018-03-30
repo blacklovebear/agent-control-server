@@ -105,9 +105,22 @@ public class GenerateConf {
     }
 
     /*
+    * 生成 Canal 相关的配置文件
+    * */
+    public void generateCanal(CanalServer config) {
+        if (config == null)
+            return;
+        this.generateCanalServer(config);
+        // 生成 instance 配置文件
+        config.getInstances().forEach(this::generateCanalInstance);
+    }
+
+    /*
     * 生成 Canal Server 的配置文件
     */
-    public void generateCanalServer(CanalServer config) {
+    private void generateCanalServer(CanalServer config) {
+        if (config == null)
+            return;
         VelocityContext vx = getVelContext(config);
         // canal server configuration
         LOGGER.info("{} path: {}", CANAL_SERVER_TEMPLATE, getTemplatePath(CANAL_SERVER_TEMPLATE));
@@ -115,10 +128,13 @@ public class GenerateConf {
         this.writeConf(canalServer, AppConf.getConfig(CANAL_SERVER_CONF), vx);
     }
 
+
     /*
     * 生成 Canal Instance 的配置文件
     */
-    public void generateCanalInstance(CanalInstance config) {
+    private void generateCanalInstance(CanalInstance config) {
+        if (config == null)
+            return;
         VelocityContext vx = getVelContext(config);
         // canal instance configuration
         Template canalInstance = ve.getTemplate(getTemplatePath(CANAL_INSTANCE_TEMPLATE), "utf-8");
@@ -130,6 +146,8 @@ public class GenerateConf {
     * 生成 TAgent 的配置文件
     */
     public void generateTAgent(TAgent config) {
+        if (config == null)
+            return;
         VelocityContext vx = getVelContext(config);
         // TAgent configuration
         Template canalServer = ve.getTemplate(getTemplatePath(TAGENT_TEMPLATE), "utf-8");

@@ -2,15 +2,11 @@ package com.citic.entity;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import static com.citic.AppConstants.DEFAULT_DESTINATION;
 
 /*
 * Canal Server 配置获取实体类
@@ -21,7 +17,7 @@ public class CanalServer {
     // 由于
     private String destinations;
 
-    private Set<CanalInstance> instances;
+    private Set<CanalInstance> instances = Sets.newHashSet();
 
     /*
     * 在已有的Canal Server中增加instance
