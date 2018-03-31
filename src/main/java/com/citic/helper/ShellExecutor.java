@@ -1,5 +1,6 @@
 package com.citic.helper;
 
+import org.apache.commons.lang.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,7 +10,6 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
-import static com.citic.AppConstants.IS_WINDOWS;
 
 public class ShellExecutor {
     private static final Logger LOGGER = LoggerFactory.getLogger(ShellExecutor.class);
@@ -46,12 +46,11 @@ public class ShellExecutor {
         private String getProcessState() {
             String state;
             if (data.isEmpty()) {
-                state = String.format("%s was dead", processName);
+                state = String.format("%s dead", processName);
             } else if (data.size() == 1) {
-                state = String.format("%s is running, pid: %s", processName, data.toString());
+                state = String.format("%s running pid:%s", processName, data.toString());
             } else {
-                state = String.format("%s is more than one, unusual, pids: %s",
-                        processName, data.toString());
+                state = String.format("%s unNormal pid:%s", processName, data.toString());
             }
             return state;
         }
@@ -72,10 +71,10 @@ public class ShellExecutor {
         ProcessBuilder builder = new ProcessBuilder();
         LOGGER.info("home dir: {}, cmd: {}", this.homeDirectory, cmd);
 
-        if (IS_WINDOWS) {
-            builder.command("cmd.exe", "/c", cmd);
-        } else {
+        if (SystemUtils.IS_OS_LINUX) {
             builder.command("sh", "-c", cmd);
+        } else {
+            builder.command("cmd.exe", "/c", cmd);
         }
         builder.directory(new File(homeDirectory));
         Process process = builder.start();
@@ -94,10 +93,10 @@ public class ShellExecutor {
     * */
     public String monitorProcess(String cmd, String processName) throws Exception {
         ProcessBuilder builder = new ProcessBuilder();
-        if (IS_WINDOWS) {
-            builder.command("cmd.exe", "/c", cmd);
-        } else {
+        if (SystemUtils.IS_OS_LINUX) {
             builder.command("sh", "-c", cmd);
+        } else {
+            builder.command("cmd.exe", "/c", cmd);
         }
         Process process = builder.start();
         ResponseData responseData = new ResponseData(processName);

@@ -1,8 +1,8 @@
 package com.citic;
 
-public class AppConstants {
-    public static final boolean IS_WINDOWS = System.getProperty("os.name").toLowerCase().startsWith("windows");
+import org.apache.commons.lang.SystemUtils;
 
+public class AppConstants {
     public static final String CLASSPATH_URL_PREFIX = "classpath:";
 
     public static final boolean STATE_ALIVE = true;

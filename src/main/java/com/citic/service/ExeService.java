@@ -15,9 +15,8 @@ public class ExeService {
     @Produces(MediaType.APPLICATION_JSON)
     public ResponseResult startCanal() {
         int exitCode = EXECUTE_CMD.startCanal();
-        String message = "success";
         if (exitCode != 0) {
-            message = "error";
+            return new ResponseResult(ResponseResult.ERROR, "canal start error");
         }
         return new ResponseResult();
     }
@@ -27,9 +26,8 @@ public class ExeService {
     @Produces(MediaType.APPLICATION_JSON)
     public ResponseResult stopCanal() {
         int exitCode = EXECUTE_CMD.stopCanal();
-        String message = "success";
         if (exitCode != 0) {
-            message = "error";
+            return new ResponseResult(ResponseResult.ERROR, "canal stop error");
         }
         return new ResponseResult();
     }
@@ -39,9 +37,8 @@ public class ExeService {
     @Produces(MediaType.APPLICATION_JSON)
     public ResponseResult startTAgent() {
         int exitCode = EXECUTE_CMD.startTAgent();
-        String message = "success";
         if (exitCode != 0) {
-            message = "error";
+            return new ResponseResult(ResponseResult.ERROR, "TAgent start error");
         }
         return new ResponseResult();
     }
@@ -51,9 +48,8 @@ public class ExeService {
     @Produces(MediaType.APPLICATION_JSON)
     public ResponseResult stopTAgent() {
         int exitCode = EXECUTE_CMD.stopTAgent();
-        String message = "success";
         if (exitCode != 0) {
-            message = "error";
+            return new ResponseResult(ResponseResult.ERROR, "TAgent stop error");
         }
         return new ResponseResult();
     }

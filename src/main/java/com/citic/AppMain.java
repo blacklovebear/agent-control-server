@@ -1,7 +1,6 @@
 package com.citic;
 
 import com.citic.control.ProcessMonitor;
-import com.citic.control.TAgentMetricsMonitor;
 import com.citic.helper.SimpleKafkaProducer;
 import com.citic.service.ConfigurationService;
 import com.citic.service.ExeService;
@@ -22,7 +21,6 @@ public class AppMain {
     private static Channel server;
     private static SimpleKafkaProducer<String, String>  producer;
     private static ProcessMonitor processMonitor;
-    private static TAgentMetricsMonitor metricsMonitor;
 
     public static void start() {
         String baseUri = AppConf.getConfig(AppConstants.AGENT_BASE_URI);
@@ -38,12 +36,9 @@ public class AppMain {
 
         producer = new SimpleKafkaProducer<>(false);
         // 启动对进程的监控
-//        processMonitor = new ProcessMonitor(producer);
-//        processMonitor.start();
-//
-//        metricsMonitor = new TAgentMetricsMonitor(producer);
-//        metricsMonitor.start();
-
+        processMonitor = new ProcessMonitor(producer);
+        processMonitor.start();
+        
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             @Override
             public void run() {
@@ -60,8 +55,6 @@ public class AppMain {
 
     public static void stop() {
         processMonitor.stop();
-        metricsMonitor.stop();
-
         producer.close();
         server.close();
     }

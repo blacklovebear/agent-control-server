@@ -20,10 +20,8 @@ public class ExecuteCmd {
         return single;
     }
 
-    public boolean getCanalState() {
-        synchronized (canalState) {
+    public Boolean getCanalState() {
             return canalState;
-        }
     }
 
     public void setCanalState(boolean state) {
@@ -32,10 +30,8 @@ public class ExecuteCmd {
         }
     }
 
-    public boolean getTAgentState() {
-        synchronized (tAgentState) {
+    public Boolean getTAgentState() {
             return tAgentState;
-        }
     }
 
     public void setTAgentState(boolean state) {
@@ -66,9 +62,6 @@ public class ExecuteCmd {
 
             exitCode = exeCmd(AppConf.getConfig(CANAL_HOME_DIR),
                     AppConf.getConfig(CANAL_START_CMD));
-            if (exitCode == 0) {
-                canalState = STATE_ALIVE;
-            }
         }
         return exitCode;
     }
@@ -77,10 +70,12 @@ public class ExecuteCmd {
     * 停止 canal server
     * */
     public int stopCanal() {
-        int exitCode = 0;
+        int exitCode;
         synchronized (canalState) {
+            // canal 调用自己的脚本，可重复 stop
             exitCode = exeCmd(AppConf.getConfig(CANAL_HOME_DIR),
                     AppConf.getConfig(CANAL_STOP_CMD));
+
             if (exitCode == 0) {
                 canalState = STATE_DEAD;
             }
@@ -99,9 +94,6 @@ public class ExecuteCmd {
 
             exitCode = exeCmd(AppConf.getConfig(TAGENT_HOME_DIR),
                     AppConf.getConfig(TAGENT_START_CMD));
-            if (exitCode == 0) {
-                tAgentState = STATE_ALIVE;
-            }
         }
         return exitCode;
     }
@@ -117,6 +109,7 @@ public class ExecuteCmd {
 
             exitCode = exeCmd(AppConf.getConfig(TAGENT_HOME_DIR),
                     AppConf.getConfig(TAGENT_STOP_CMD));
+
             if (exitCode == 0) {
                 tAgentState = STATE_DEAD;
             }

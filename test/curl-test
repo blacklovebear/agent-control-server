@@ -13,15 +13,6 @@ curl -H "Content-Type: application/json" -X POST -d '
             "tableFilter": "test.test,test.test1",
             "tableToTopicMap": "test.test:test123;test.test1:test234",
             "tableFieldsFilter": "test.test:uid,name;test.test1:id,name;test.user_info:name,age"
-        },
-        {
-            "masterAddress": "127.0.0.2:3306",
-            "dbUsername": "root",
-            "dbPassword": "12345678",
-
-            "tableFilter": "test.test,test.test2",
-            "tableToTopicMap": "test.test:test123;test.test1:test234",
-            "tableFieldsFilter": "test.test:uid,name;test.test1:id,name;test.user_info:name,age"
         }
     ]
 }
@@ -41,3 +32,6 @@ curl -H "Content-Type: application/json" -X POST -d '
 }
 ' \
 http://localhost:8080/config/union/unit
+
+# test start tagent
+curl http://localhost:8080/executor/start/tagent
