@@ -4,6 +4,7 @@ import com.citic.AppConf;
 import com.citic.entity.CanalInstance;
 import com.citic.entity.CanalServer;
 import com.citic.entity.TAgent;
+import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -17,10 +18,12 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static com.citic.AppConstants.*;
-import static com.citic.helper.Utility.guavaBeanProperties;
+import com.citic.helper.Utility;
 
 
 public class GenerateConf {
@@ -74,7 +77,7 @@ public class GenerateConf {
     * */
     private VelocityContext getVelContext(Object config) {
         VelocityContext ctx = new VelocityContext();
-        Map<String, Object> beanPro = guavaBeanProperties(config);
+        Map<String, Object> beanPro = Utility.guavaBeanProperties(config);
 
         beanPro.forEach(ctx::put);
         return ctx;
@@ -110,6 +113,44 @@ public class GenerateConf {
         this.generateCanalServer(config);
         // 生成 instance 配置文件
         config.getInstances().forEach(this::generateCanalInstance);
+        deleteUselessInstanceDirs(config.getInstances());
+    }
+
+    /*
+    * 删除多余的 Instance 配置文件夹
+    * */
+    private void deleteUselessInstanceDirs(Set<CanalInstance> instanceSet) {
+        File file = new File(AppConf.getConfig(CANAL_CONF_DIR));
+
+        List<String> instanceDirs = Lists.newArrayList();
+        instanceSet.forEach(instance -> instanceDirs.add(instance.getInstance()));
+
+        String[] deleteDirs = file.list((current, name) -> {
+            File thisFile = new File(current, name);
+            return thisFile.isDirectory()
+                    && !instanceDirs.contains(name)
+                    && !name.equals("spring");
+        });
+
+        if (deleteDirs == null)
+            return;
+        try {
+            for (String dir: deleteDirs) {
+                String path = AppConf.getConfig(CANAL_CONF_DIR) + File.separator + dir;
+                Utility.deleteFileOrFolder(Paths.get(path));
+            }
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
+
+    private String getCanalServerConf() {
+        return AppConf.getConfig(CANAL_CONF_DIR) + File.separator + "canal.properties";
+    }
+
+    private String getCanalInstanceConf(String instanceName) {
+        return AppConf.getConfig(CANAL_CONF_DIR) + File.separator
+                + instanceName + File.separator + "instance.properties";
     }
 
     /*
@@ -122,7 +163,7 @@ public class GenerateConf {
         // canal server configuration
         LOGGER.info("{} path: {}", CANAL_SERVER_TEMPLATE, getTemplatePath(CANAL_SERVER_TEMPLATE));
         Template canalServer = ve.getTemplate(getTemplatePath(CANAL_SERVER_TEMPLATE), "utf-8");
-        this.writeConf(canalServer, AppConf.getConfig(CANAL_SERVER_CONF), vx);
+        this.writeConf(canalServer, getCanalServerConf(), vx);
     }
 
 
@@ -135,8 +176,7 @@ public class GenerateConf {
         VelocityContext vx = getVelContext(config);
         // canal instance configuration
         Template canalInstance = ve.getTemplate(getTemplatePath(CANAL_INSTANCE_TEMPLATE), "utf-8");
-        String instancePath = String.format(AppConf.getConfig(CANAL_INSTANCE_CONF), config.getInstance());
-        this.writeConf(canalInstance, instancePath, vx);
+        this.writeConf(canalInstance, getCanalInstanceConf(config.getInstance()), vx);
     }
 
     /*

@@ -9,11 +9,19 @@ import org.slf4j.LoggerFactory;
 
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
+import java.io.IOException;
 import java.net.*;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
 import static com.google.common.base.Throwables.propagate;
+import static java.nio.file.FileVisitResult.CONTINUE;
+import static java.nio.file.FileVisitResult.TERMINATE;
 
 public class Utility {
     private static final Logger LOGGER = LoggerFactory.getLogger(Utility.class);
@@ -124,4 +132,34 @@ public class Utility {
             super(msg, throwable);
         }
     }
+
+
+    /*
+    * deleteFileOrFolder
+    * */
+    public static void deleteFileOrFolder(final Path path) throws IOException {
+        Files.walkFileTree(path, new SimpleFileVisitor<Path>(){
+            @Override public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs)
+                    throws IOException {
+                Files.delete(file);
+                return CONTINUE;
+            }
+
+            @Override public FileVisitResult visitFileFailed(final Path file, final IOException e) {
+                return handleException(e);
+            }
+
+            private FileVisitResult handleException(final IOException e) {
+                e.printStackTrace(); // replace with more robust error handling
+                return TERMINATE;
+            }
+
+            @Override public FileVisitResult postVisitDirectory(final Path dir, final IOException e)
+                    throws IOException {
+                if(e!=null)return handleException(e);
+                Files.delete(dir);
+                return CONTINUE;
+            }
+        });
+    };
 }

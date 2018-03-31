@@ -21,11 +21,9 @@ public class AppConstants {
     public static final String TAGENT_STOP_CMD = "tagent.stop.cmd";
     
     // conf
+    public static final String CANAL_CONF_DIR = "canal.conf.dir";
     public static final String CANAL_SERVER_TEMPLATE = "canal.server.template";
-    public static final String CANAL_SERVER_CONF = "canal.server.conf";
-
     public static final String CANAL_INSTANCE_TEMPLATE = "canal.instance.template";
-    public static final String CANAL_INSTANCE_CONF = "canal.instance.conf";
 
     public static final String TAGENT_TEMPLATE = "tagent.template";
     public static final String TAGENT_CONF = "tagent.conf";
@@ -51,7 +49,4 @@ public class AppConstants {
     // metrics
     public static final String TAGENT_METRICS_URL = "tagent.metrics.url";
     public static final String TAGENT_METRICS_TOPIC = "tagent.metrics.topic";
-    public static final String TAGENT_METRICS_CHECK_INTERVAL = "tagent.metrics.check.interval";
-
-
 }
