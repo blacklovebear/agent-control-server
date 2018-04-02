@@ -30,7 +30,7 @@ public class TAgent {
     public String getSourceNames() {
         List<String> sourceNames = Lists.newArrayList();
         sources.forEach(source -> sourceNames.add(source.getSourceName()));
-        return Joiner.on(",").skipNulls().join(sourceNames);
+        return Joiner.on(" ").skipNulls().join(sourceNames);
     }
 
     public Set<Source> getSources() {

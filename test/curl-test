@@ -1,4 +1,3 @@
-
 # test union
 curl -H "Content-Type: application/json" -X POST -d '
 {
@@ -33,5 +32,11 @@ curl -H "Content-Type: application/json" -X POST -d '
 ' \
 http://localhost:8080/config/union/unit
 
-# test start tagent
+# test tagent
 curl http://localhost:8080/executor/start/tagent
+curl http://localhost:8080/executor/stop/tagent
+
+# test canal
+curl http://localhost:8080/executor/start/canal
+curl http://localhost:8080/executor/stop/canal
+
