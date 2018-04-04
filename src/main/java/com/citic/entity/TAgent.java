@@ -62,16 +62,13 @@ public class TAgent {
         * */
     public static class Source {
         private String sourceDestination;
-
-        private String tableFilter;
         private String tableToTopicMap;
         private String tableFieldsFilter;
 
         public Source(UnionConfig.Unit unit) {
             sourceDestination = unit.getInstance();
-            tableFilter = unit.getTableFilter();
-            tableToTopicMap = unit.getTableToTopicMap();
-            tableFieldsFilter = unit.getTableFieldsFilter();
+            tableToTopicMap = unit.getSourceTableToTopicMap();
+            tableFieldsFilter = unit.getSourceTableFieldsFilter();
         }
 
         /*
@@ -88,14 +85,6 @@ public class TAgent {
 
         public void setSourceDestination(String sourceDestination) {
             this.sourceDestination = sourceDestination;
-        }
-
-        public String getTableFilter() {
-            return tableFilter;
-        }
-
-        public void setTableFilter(String tableFilter) {
-            this.tableFilter = tableFilter;
         }
 
         public String getTableToTopicMap() {

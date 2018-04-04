@@ -1,10 +1,15 @@
 package com.citic.entity;
 
 import com.citic.helper.Utility;
+import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import org.apache.commons.lang.StringUtils;
 
+import java.util.List;
 import java.util.Set;
 
 /*
@@ -94,18 +99,22 @@ public class UnionConfig {
         private String dbUsername;
         private String dbPassword;
 
-        private String tableFilter;
-        private String tableToTopicMap;
-        private String tableFieldsFilter;
+        private String tableTopicSchemaMap;
+        private String tableFieldSchemaMap;
+
+
+        // 给 TAgent 生成配置文件使用的中间变量
+        private List<String> sourceTableToTopicMapList = Lists.newArrayList();
+        private List<String> sourceTableFieldsFilterList = Lists.newArrayList();
+        private List<String> sinkTableToSchemaMapList = Lists.newArrayList();
 
 
         public void checkProperties() throws Exception {
             Preconditions.checkArgument(!Strings.isNullOrEmpty(masterAddress), "dbUsername is null or empty");
             Preconditions.checkArgument(!Strings.isNullOrEmpty(dbUsername), "dbUsername is null or empty");
             Preconditions.checkArgument(!Strings.isNullOrEmpty(dbPassword), "dbPassword is null or empty");
-            Preconditions.checkArgument(!Strings.isNullOrEmpty(tableFilter), "tableFilter is null or empty");
-            Preconditions.checkArgument(!Strings.isNullOrEmpty(tableToTopicMap), "tableToTopicMap is null or empty");
-            Preconditions.checkArgument(!Strings.isNullOrEmpty(tableFieldsFilter), "tableFieldsFilter is null or empty");
+            Preconditions.checkArgument(!Strings.isNullOrEmpty(tableTopicSchemaMap), "tableTopicSchemaMap is null or empty");
+            Preconditions.checkArgument(!Strings.isNullOrEmpty(tableFieldSchemaMap), "tableFieldSchemaMap is null or empty");
 
             Utility.isUrlAddressValid(masterAddress, "masterAddress");
         }
@@ -144,29 +153,63 @@ public class UnionConfig {
             this.dbPassword = dbPassword;
         }
 
-        public String getTableFilter() {
-            return tableFilter;
+
+        public void setTableTopicSchemaMap(String tableTopicSchemaMap) {
+            this.tableTopicSchemaMap = tableTopicSchemaMap;
+            // test.test:test123:scheme_name;test.test1:test234:schema_name
+            // db.table:topic:schema;db.table:topic:schema
+            Splitter.on(";")
+                    .omitEmptyStrings()
+                    .trimResults()
+                    .split(tableTopicSchemaMap)
+                    .forEach(item -> {
+                        String[] temp = item.split(":");
+                        Preconditions.checkArgument(temp.length == 3,
+                                "tableTopicSchemaMap format error " +
+                                        "eg: db.table1:topic1:schema1;db.table2:topic2:schema2");
+
+                        sourceTableToTopicMapList.add(temp[0] + ":" + temp[1]);
+                        sinkTableToSchemaMapList.add(temp[0] + ":" + temp[2]);
+                    });
+
         }
 
-        public void setTableFilter(String tableFilter) {
-            this.tableFilter = tableFilter;
+        public void setTableFieldSchemaMap(String tableFieldSchemaMap) {
+            this.tableFieldSchemaMap = tableFieldSchemaMap;
+            // uid,name|uid1,name1;id,name|id1,name1;name|name2
+            Splitter.on(";")
+                    .omitEmptyStrings()
+                    .trimResults()
+                    .split(tableFieldSchemaMap)
+                    .forEach(item -> {
+                        String[] temp = item.split("|");
+                        Preconditions.checkArgument(temp.length == 2,
+                                "tableFieldSchemaMap format error " +
+                                        "eg: uid,name|uid1,name1;id,name|id1,name1");
+
+                        Preconditions.checkArgument(StringUtils.countMatches(temp[0], ",")
+                                == StringUtils.countMatches(temp[1], ","),
+                                "tableFieldSchemaMap format error " +
+                                "eg: uid,name|uid1,name1;id,name|id1,name1");
+
+                        sourceTableFieldsFilterList.add(temp[0]);
+                    });
         }
 
-        public String getTableToTopicMap() {
-            return tableToTopicMap;
+        // TAgent source
+        public String getSourceTableToTopicMap() { return Joiner.on(";").join(sourceTableToTopicMapList); }
+        public String getSourceTableFieldsFilter() {
+            return Joiner.on(";").join(sourceTableFieldsFilterList);
         }
 
-        public void setTableToTopicMap(String tableToTopicMap) {
-            this.tableToTopicMap = tableToTopicMap;
+        // TAgent sink
+        public String getSinkTableToSchemaMap() {
+            return Joiner.on(";").join(sinkTableToSchemaMapList);
+        }
+        public String getSinkTableFieldSchemaMap() {
+            return tableFieldSchemaMap;
         }
 
-        public String getTableFieldsFilter() {
-            return tableFieldsFilter;
-        }
-
-        public void setTableFieldsFilter(String tableFieldsFilter) {
-            this.tableFieldsFilter = tableFieldsFilter;
-        }
 
         @Override
         public int hashCode(){
