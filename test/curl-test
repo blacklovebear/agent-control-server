@@ -9,9 +9,8 @@ curl -H "Content-Type: application/json" -X POST -d '
             "dbUsername": "root",
             "dbPassword": "123456",
 
-            "tableFilter": "test.test,test.test1",
-            "tableToTopicMap": "test.test:test123;test.test1:test234",
-            "tableFieldsFilter": "test.test:uid,name;test.test1:id,name;test.user_info:name,age"
+            "tableTopicSchemaMap": "test.test:test123:schema1;test.test1:test234:schema2",
+            "tableFieldSchemaMap": "uid,name|uid1,name1;id,name|id2,name2"
         }
     ]
 }
@@ -25,9 +24,8 @@ curl -H "Content-Type: application/json" -X POST -d '
     "dbUsername": "root",
     "dbPassword": "123456",
 
-    "tableFilter": "test.test,test.test1",
-    "tableToTopicMap": "test.test:test123;test.test1:test234",
-    "tableFieldsFilter": "test.test:uid,name;test.test1:id,name;test.user_info:name,age"
+    "tableTopicSchemaMap": "test.test:test123:schema1;test.test1:test234:schema2",
+    "tableFieldSchemaMap": "uid,name|uid1,name1;id,name|id2,name2"
 }
 ' \
 http://localhost:8080/config/union/unit

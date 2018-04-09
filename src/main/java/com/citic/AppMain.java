@@ -1,6 +1,7 @@
 package com.citic;
 
 import com.citic.control.ProcessMonitor;
+import com.citic.entity.MyExceptionMapper;
 import com.citic.helper.SimpleKafkaProducer;
 import com.citic.service.ConfigurationService;
 import com.citic.service.ExeService;
@@ -28,8 +29,10 @@ public class AppMain {
 
         ResourceConfig resourceConfig = new ResourceConfig(
                 ConfigurationService.class,
-                ExeService.class
+                ExeService.class,
+                MyExceptionMapper.class
         );
+
         server = NettyHttpContainerProvider.createHttp2Server(BASE_URI, resourceConfig, null);
 
         LOGGER.info("Jersey App on Netty Server starting: {}", BASE_URI.toString());

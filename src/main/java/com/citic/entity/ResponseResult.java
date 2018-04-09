@@ -30,4 +30,12 @@ public class ResponseResult {
     public String getMessage() {
         return message;
     }
+
+    @Override
+    public String toString() {
+        return "ResponseResult{" +
+                "code=" + code +
+                ", message='" + message + '\'' +
+                '}';
+    }
 }

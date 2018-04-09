@@ -17,15 +17,10 @@ public class ConfigurationService {
     @Path("union")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public ResponseResult configUnion(UnionConfig unionConfig) {
+    public ResponseResult configUnion(UnionConfig unionConfig) throws Exception {
         LOGGER.debug("UnionConfig: {}", unionConfig.toString());
 
-        try {
-            unionConfig.checkProperties();
-        } catch (Exception e) {
-            return new ResponseResult(ResponseResult.ERROR, e.getMessage());
-        }
-
+        unionConfig.checkProperties();
         AppGlobal.setUnionConfig(unionConfig);
 
         GenerateConf generateConf = new GenerateConf();
@@ -39,19 +34,15 @@ public class ConfigurationService {
     @Path("union/unit")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public ResponseResult addUnionConfigUnit(UnionConfig.Unit unitConfig) {
+    public ResponseResult addUnionConfigUnit(UnionConfig.Unit unitConfig) throws Exception {
         LOGGER.debug("UnitConfig: {}", unitConfig.toString());
 
         UnionConfig unionConfig =  AppGlobal.getUnionConfig();
         if (unionConfig == null) {
-            return new ResponseResult(ResponseResult.ERROR, "Not post UnionConfig info");
+            throw new Exception("Not post UnionConfig info");
         }
 
-        try {
-            unitConfig.checkProperties();
-        } catch (Exception e) {
-            return new ResponseResult(ResponseResult.ERROR, e.getMessage());
-        }
+        unitConfig.checkProperties();
 
         unionConfig.addOrReplaceUnit(unitConfig);
 

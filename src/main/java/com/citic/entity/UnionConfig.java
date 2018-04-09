@@ -116,6 +116,37 @@ public class UnionConfig {
             Preconditions.checkArgument(!Strings.isNullOrEmpty(tableTopicSchemaMap), "tableTopicSchemaMap is null or empty");
             Preconditions.checkArgument(!Strings.isNullOrEmpty(tableFieldSchemaMap), "tableFieldSchemaMap is null or empty");
 
+            Preconditions.checkArgument(StringUtils.countMatches(tableTopicSchemaMap, ";")
+                                        == StringUtils.countMatches(tableFieldSchemaMap, ";"),
+                    "tableTopicSchemaMap 和 tableFieldSchemaMap参数个数配置不一致");
+
+            Splitter.on(";")
+                    .omitEmptyStrings()
+                    .trimResults()
+                    .split(tableTopicSchemaMap)
+                    .forEach(item -> {
+                        String[] temp = item.split(":");
+                        Preconditions.checkArgument(temp.length == 3,
+                                "tableTopicSchemaMap 格式错误 " +
+                                        "eg: db.table1:topic1:schema1");
+                    });
+
+            Splitter.on(";")
+                    .omitEmptyStrings()
+                    .trimResults()
+                    .split(tableFieldSchemaMap)
+                    .forEach(item -> {
+                        String[] temp = item.split("\\|");
+                        Preconditions.checkArgument(temp.length == 2,
+                                "tableFieldSchemaMap 格式错误 " +
+                                        "eg: uid,name|uid1,name1");
+
+                        Preconditions.checkArgument(StringUtils.countMatches(temp[0], ",")
+                                        == StringUtils.countMatches(temp[1], ","),
+                                "tableFieldSchemaMap 格式错误, | 两边字段个数必须一致 " +
+                                        "eg: uid,name|uid1,name1;id,name|id1,name1");
+                    });
+
             Utility.isUrlAddressValid(masterAddress, "masterAddress");
         }
 
@@ -164,9 +195,6 @@ public class UnionConfig {
                     .split(tableTopicSchemaMap)
                     .forEach(item -> {
                         String[] temp = item.split(":");
-                        Preconditions.checkArgument(temp.length == 3,
-                                "tableTopicSchemaMap format error " +
-                                        "eg: db.table1:topic1:schema1;db.table2:topic2:schema2");
 
                         sourceTableToTopicMapList.add(temp[0] + ":" + temp[1]);
                         sinkTableToSchemaMapList.add(temp[0] + ":" + temp[2]);
@@ -182,16 +210,7 @@ public class UnionConfig {
                     .trimResults()
                     .split(tableFieldSchemaMap)
                     .forEach(item -> {
-                        String[] temp = item.split("|");
-                        Preconditions.checkArgument(temp.length == 2,
-                                "tableFieldSchemaMap format error " +
-                                        "eg: uid,name|uid1,name1;id,name|id1,name1");
-
-                        Preconditions.checkArgument(StringUtils.countMatches(temp[0], ",")
-                                == StringUtils.countMatches(temp[1], ","),
-                                "tableFieldSchemaMap format error " +
-                                "eg: uid,name|uid1,name1;id,name|id1,name1");
-
+                        String[] temp = item.split("\\|");
                         sourceTableFieldsFilterList.add(temp[0]);
                     });
         }
