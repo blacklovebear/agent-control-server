@@ -18,6 +18,7 @@ import java.util.Set;
 public class UnionConfig {
     private String zkServers;
     private String kafkaServers;
+    private String registryUrl;
     private Set<Unit> units = Sets.newHashSet();
 
     private CanalServer canalServer;
@@ -26,9 +27,16 @@ public class UnionConfig {
     public void checkProperties() throws Exception {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(zkServers), "zkServers is null or empty");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(kafkaServers), "kafkaServers is null or empty");
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(registryUrl), "kafkaServers is null or empty");
 
         Utility.isUrlsAddressListValid(zkServers, "zkServers");
         Utility.isUrlsAddressListValid(kafkaServers, "kafkaServers");
+
+        // 正确格式 http://localhost:8081
+        String[] temp = registryUrl.split("//");
+        Preconditions.checkArgument(temp.length == 2, "registryUrl 格式错误, eg: http://localhost:8081");
+        Preconditions.checkArgument(temp[0].equals("http:"), "registryUrl 格式错误, eg: http://localhost:8081");
+        Utility.isUrlAddressValid(temp[1], "registryUrl");
 
         Preconditions.checkArgument(units.size() > 0, "units is empty");
 
@@ -45,6 +53,7 @@ public class UnionConfig {
         canalServer.setZkServers(this.zkServers);
         tAgent.setSourceZkServers(this.zkServers);
         tAgent.setSinkServers(this.kafkaServers);
+        tAgent.setRegistryUrl(this.registryUrl);
 
         units.forEach(unit -> {
             canalServer.addOrReplaceInstance(new CanalInstance(unit));
@@ -83,6 +92,10 @@ public class UnionConfig {
         this.kafkaServers = kafkaServers;
     }
 
+    public String getRegistryUrl() { return registryUrl; }
+
+    public void setRegistryUrl(String registryUrl) { this.registryUrl = registryUrl; }
+
     public Set<Unit> getUnits() {
         return units;
     }
@@ -92,8 +105,8 @@ public class UnionConfig {
     }
 
     /*
-        * 一个配置单元,就对应一个 Canal instance 并且带上 TAgent 的一些配置信息
-        * */
+    * 一个配置单元,就对应一个 Canal instance 并且带上 TAgent 的一些配置信息
+    * */
     public static class Unit {
         private String masterAddress;
         private String dbUsername;
@@ -101,13 +114,6 @@ public class UnionConfig {
 
         private String tableTopicSchemaMap;
         private String tableFieldSchemaMap;
-
-
-        // 给 TAgent 生成配置文件使用的中间变量
-        private List<String> sourceTableToTopicMapList = Lists.newArrayList();
-        private List<String> sourceTableFieldsFilterList = Lists.newArrayList();
-        private List<String> sinkTableToSchemaMapList = Lists.newArrayList();
-
 
         public void checkProperties() throws Exception {
             Preconditions.checkArgument(!Strings.isNullOrEmpty(masterAddress), "dbUsername is null or empty");
@@ -120,6 +126,8 @@ public class UnionConfig {
                                         == StringUtils.countMatches(tableFieldSchemaMap, ";"),
                     "tableTopicSchemaMap 和 tableFieldSchemaMap参数个数配置不一致");
 
+            // test.test:test123:scheme_name;test.test1:test234:schema_name
+            // db.table:topic:schema;db.table:topic:schema
             Splitter.on(";")
                     .omitEmptyStrings()
                     .trimResults()
@@ -131,21 +139,21 @@ public class UnionConfig {
                                         "eg: db.table1:topic1:schema1");
                     });
 
+            // uid|uid1,name|name1;uid|uid1,name|name1
             Splitter.on(";")
                     .omitEmptyStrings()
                     .trimResults()
                     .split(tableFieldSchemaMap)
-                    .forEach(item -> {
-                        String[] temp = item.split("\\|");
-                        Preconditions.checkArgument(temp.length == 2,
-                                "tableFieldSchemaMap 格式错误 " +
-                                        "eg: uid,name|uid1,name1");
-
-                        Preconditions.checkArgument(StringUtils.countMatches(temp[0], ",")
-                                        == StringUtils.countMatches(temp[1], ","),
-                                "tableFieldSchemaMap 格式错误, | 两边字段个数必须一致 " +
-                                        "eg: uid,name|uid1,name1;id,name|id1,name1");
-                    });
+                    .forEach(item -> Splitter.on(",")
+                            .omitEmptyStrings()
+                            .trimResults()
+                            .split(item)
+                            .forEach(field -> {
+                                String[] temp = field.split("\\|");
+                                Preconditions.checkArgument(temp.length == 2,
+                                        "tableFieldSchemaMap 格式错误 " +
+                                                "eg: uid|uid1,name|name1");
+                            }));
 
             Utility.isUrlAddressValid(masterAddress, "masterAddress");
         }
@@ -184,51 +192,21 @@ public class UnionConfig {
             this.dbPassword = dbPassword;
         }
 
+        public String getTableTopicSchemaMap() {
+            return tableTopicSchemaMap;
+        }
 
         public void setTableTopicSchemaMap(String tableTopicSchemaMap) {
             this.tableTopicSchemaMap = tableTopicSchemaMap;
-            // test.test:test123:scheme_name;test.test1:test234:schema_name
-            // db.table:topic:schema;db.table:topic:schema
-            Splitter.on(";")
-                    .omitEmptyStrings()
-                    .trimResults()
-                    .split(tableTopicSchemaMap)
-                    .forEach(item -> {
-                        String[] temp = item.split(":");
+        }
 
-                        sourceTableToTopicMapList.add(temp[0] + ":" + temp[1]);
-                        sinkTableToSchemaMapList.add(temp[0] + ":" + temp[2]);
-                    });
-
+        public String getTableFieldSchemaMap() {
+            return tableFieldSchemaMap;
         }
 
         public void setTableFieldSchemaMap(String tableFieldSchemaMap) {
             this.tableFieldSchemaMap = tableFieldSchemaMap;
-            // uid,name|uid1,name1;id,name|id1,name1;name|name2
-            Splitter.on(";")
-                    .omitEmptyStrings()
-                    .trimResults()
-                    .split(tableFieldSchemaMap)
-                    .forEach(item -> {
-                        String[] temp = item.split("\\|");
-                        sourceTableFieldsFilterList.add(temp[0]);
-                    });
         }
-
-        // TAgent source
-        public String getSourceTableToTopicMap() { return Joiner.on(";").join(sourceTableToTopicMapList); }
-        public String getSourceTableFieldsFilter() {
-            return Joiner.on(";").join(sourceTableFieldsFilterList);
-        }
-
-        // TAgent sink
-        public String getSinkTableToSchemaMap() {
-            return Joiner.on(";").join(sinkTableToSchemaMapList);
-        }
-        public String getSinkTableFieldSchemaMap() {
-            return tableFieldSchemaMap;
-        }
-
 
         @Override
         public int hashCode(){

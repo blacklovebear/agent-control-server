@@ -3,6 +3,7 @@ curl -H "Content-Type: application/json" -X POST -d '
 {
     "zkServers": "192.168.2.25:2181",
     "kafkaServers":"192.168.2.25:9092",
+    "registryUrl":"http://localhost:8081",
     "units":[
         {
             "masterAddress": "127.0.0.1:3306",
@@ -10,7 +11,7 @@ curl -H "Content-Type: application/json" -X POST -d '
             "dbPassword": "123456",
 
             "tableTopicSchemaMap": "test.test:test123:schema1;test.test1:test234:schema2",
-            "tableFieldSchemaMap": "uid,name|uid1,name1;id,name|id2,name2"
+            "tableFieldSchemaMap": "uid|uid1,name|name1;id|id2,name|name2"
         }
     ]
 }
@@ -25,7 +26,7 @@ curl -H "Content-Type: application/json" -X POST -d '
     "dbPassword": "123456",
 
     "tableTopicSchemaMap": "test.test:test123:schema1;test.test1:test234:schema2",
-    "tableFieldSchemaMap": "uid,name|uid1,name1;id,name|id2,name2"
+    "tableFieldSchemaMap": "uid|uid1,name|name1;id|id2,name|name2"
 }
 ' \
 http://localhost:8080/config/union/unit

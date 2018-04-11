@@ -15,6 +15,7 @@ public class TAgent {
     // 因此提取到上一层
     private String sourceZkServers;
     private String sinkServers;
+    private String registryUrl;
     private Set<Source> sources = Sets.newHashSet();
 
     // 有作用,velocity 模板生成的时候通过反射获取字段名
@@ -57,9 +58,13 @@ public class TAgent {
         this.sourceZkServers = sourceZkServers;
     }
 
+    public String getRegistryUrl() { return registryUrl; }
+
+    public void setRegistryUrl(String registryUrl) { this.registryUrl = registryUrl; }
+
     /*
-        * sourceDestination 确保唯一 Source
-        * */
+    * sourceDestination 确保唯一 Source
+    * */
     public static class Source {
         private String sourceDestination;
         private String tableToTopicMap;
@@ -67,8 +72,8 @@ public class TAgent {
 
         public Source(UnionConfig.Unit unit) {
             sourceDestination = unit.getInstance();
-            tableToTopicMap = unit.getSourceTableToTopicMap();
-            tableFieldsFilter = unit.getSourceTableFieldsFilter();
+            tableToTopicMap = unit.getTableTopicSchemaMap();
+            tableFieldsFilter = unit.getTableFieldSchemaMap();
         }
 
         /*
