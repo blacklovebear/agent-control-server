@@ -16,6 +16,8 @@ public class TAgent {
     private String sourceZkServers;
     private String sinkServers;
     private String registryUrl;
+    private boolean kafkaHighThroughput;
+
     private Set<Source> sources = Sets.newHashSet();
 
     // 有作用,velocity 模板生成的时候通过反射获取字段名
@@ -32,6 +34,14 @@ public class TAgent {
         List<String> sourceNames = Lists.newArrayList();
         sources.forEach(source -> sourceNames.add(source.getSourceName()));
         return Joiner.on(" ").skipNulls().join(sourceNames);
+    }
+
+    public boolean isKafkaHighThroughput() {
+        return kafkaHighThroughput;
+    }
+
+    public void setKafkaHighThroughput(boolean kafkaHighThroughput) {
+        this.kafkaHighThroughput = kafkaHighThroughput;
     }
 
     public Set<Source> getSources() {

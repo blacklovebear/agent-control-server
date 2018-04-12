@@ -19,6 +19,7 @@ public class UnionConfig {
     private String zkServers;
     private String kafkaServers;
     private String registryUrl;
+    private boolean kafkaHighThroughput = false;
     private Set<Unit> units = Sets.newHashSet();
 
     private CanalServer canalServer;
@@ -54,6 +55,7 @@ public class UnionConfig {
         tAgent.setSourceZkServers(this.zkServers);
         tAgent.setSinkServers(this.kafkaServers);
         tAgent.setRegistryUrl(this.registryUrl);
+        tAgent.setKafkaHighThroughput(this.kafkaHighThroughput);
 
         units.forEach(unit -> {
             canalServer.addOrReplaceInstance(new CanalInstance(unit));
@@ -74,6 +76,14 @@ public class UnionConfig {
     public void addOrReplaceUnit(Unit unit) {
         units.remove(unit);
         units.add(unit);
+    }
+
+    public boolean isKafkaHighThroughput() {
+        return kafkaHighThroughput;
+    }
+
+    public void setKafkaHighThroughput(boolean kafkaHighThroughput) {
+        this.kafkaHighThroughput = kafkaHighThroughput;
     }
 
     public String getZkServers() {
