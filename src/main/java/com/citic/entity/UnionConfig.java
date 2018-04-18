@@ -19,7 +19,8 @@ public class UnionConfig {
     private String zkServers;
     private String kafkaServers;
     private String registryUrl;
-    private boolean kafkaHighThroughput = false;
+    private boolean kafkaHighThroughput = true;
+    private boolean useAvro = true;
     private Set<Unit> units = Sets.newHashSet();
 
     private CanalServer canalServer;
@@ -28,21 +29,23 @@ public class UnionConfig {
     public void checkProperties() throws Exception {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(zkServers), "zkServers is null or empty");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(kafkaServers), "kafkaServers is null or empty");
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(registryUrl), "kafkaServers is null or empty");
 
         Utility.isUrlsAddressListValid(zkServers, "zkServers");
         Utility.isUrlsAddressListValid(kafkaServers, "kafkaServers");
 
-        // 正确格式 http://localhost:8081
-        String[] temp = registryUrl.split("//");
-        Preconditions.checkArgument(temp.length == 2, "registryUrl 格式错误, eg: http://localhost:8081");
-        Preconditions.checkArgument(temp[0].equals("http:"), "registryUrl 格式错误, eg: http://localhost:8081");
-        Utility.isUrlAddressValid(temp[1], "registryUrl");
+        if (useAvro) {
+            Preconditions.checkArgument(!Strings.isNullOrEmpty(registryUrl), "kafkaServers is null or empty");
+            // 正确格式 http://localhost:8081
+            String[] temp = registryUrl.split("//");
+            Preconditions.checkArgument(temp.length == 2, "registryUrl 格式错误, eg: http://localhost:8081");
+            Preconditions.checkArgument(temp[0].equals("http:"), "registryUrl 格式错误, eg: http://localhost:8081");
+            Utility.isUrlAddressValid(temp[1], "registryUrl");
+        }
 
         Preconditions.checkArgument(units.size() > 0, "units is empty");
 
         for(Unit unit : units) {
-            unit.checkProperties();
+            unit.checkProperties(useAvro);
         }
     }
 
@@ -56,6 +59,7 @@ public class UnionConfig {
         tAgent.setSinkServers(this.kafkaServers);
         tAgent.setRegistryUrl(this.registryUrl);
         tAgent.setKafkaHighThroughput(this.kafkaHighThroughput);
+        tAgent.setUseAvro(this.useAvro);
 
         units.forEach(unit -> {
             canalServer.addOrReplaceInstance(new CanalInstance(unit));
@@ -78,8 +82,12 @@ public class UnionConfig {
         units.add(unit);
     }
 
-    public boolean isKafkaHighThroughput() {
-        return kafkaHighThroughput;
+    public void setUseAvro(boolean useAvro) {
+        this.useAvro = useAvro;
+    }
+
+    public boolean isUseAvro() {
+        return useAvro;
     }
 
     public void setKafkaHighThroughput(boolean kafkaHighThroughput) {
@@ -125,45 +133,77 @@ public class UnionConfig {
         private String tableTopicSchemaMap;
         private String tableFieldSchemaMap;
 
-        public void checkProperties() throws Exception {
+        public void checkProperties(boolean useAvro) throws Exception {
             Preconditions.checkArgument(!Strings.isNullOrEmpty(masterAddress), "dbUsername is null or empty");
             Preconditions.checkArgument(!Strings.isNullOrEmpty(dbUsername), "dbUsername is null or empty");
             Preconditions.checkArgument(!Strings.isNullOrEmpty(dbPassword), "dbPassword is null or empty");
             Preconditions.checkArgument(!Strings.isNullOrEmpty(tableTopicSchemaMap), "tableTopicSchemaMap is null or empty");
-            Preconditions.checkArgument(!Strings.isNullOrEmpty(tableFieldSchemaMap), "tableFieldSchemaMap is null or empty");
 
-            Preconditions.checkArgument(StringUtils.countMatches(tableTopicSchemaMap, ";")
-                                        == StringUtils.countMatches(tableFieldSchemaMap, ";"),
-                    "tableTopicSchemaMap 和 tableFieldSchemaMap参数个数配置不一致");
 
-            // test.test:test123:scheme_name;test.test1:test234:schema_name
-            // db.table:topic:schema;db.table:topic:schema
-            Splitter.on(";")
-                    .omitEmptyStrings()
-                    .trimResults()
-                    .split(tableTopicSchemaMap)
-                    .forEach(item -> {
-                        String[] temp = item.split(":");
-                        Preconditions.checkArgument(temp.length == 3,
-                                "tableTopicSchemaMap 格式错误 " +
-                                        "eg: db.table1:topic1:schema1");
-                    });
+            if (useAvro) {
+                Preconditions.checkArgument(!Strings.isNullOrEmpty(tableFieldSchemaMap), "tableFieldSchemaMap is null or empty");
 
-            // uid|uid1,name|name1;uid|uid1,name|name1
-            Splitter.on(";")
-                    .omitEmptyStrings()
-                    .trimResults()
-                    .split(tableFieldSchemaMap)
-                    .forEach(item -> Splitter.on(",")
-                            .omitEmptyStrings()
-                            .trimResults()
-                            .split(item)
-                            .forEach(field -> {
-                                String[] temp = field.split("\\|");
-                                Preconditions.checkArgument(temp.length == 2,
-                                        "tableFieldSchemaMap 格式错误 " +
-                                                "eg: uid|uid1,name|name1");
-                            }));
+                Preconditions.checkArgument(StringUtils.countMatches(tableTopicSchemaMap, ";")
+                                == StringUtils.countMatches(tableFieldSchemaMap, ";"),
+                        "tableTopicSchemaMap 和 tableFieldSchemaMap参数个数配置不一致");
+
+                // test.test:test123:schema1;test.test1:test234:schema2
+                Splitter.on(';')
+                        .omitEmptyStrings()
+                        .trimResults()
+                        .split(tableTopicSchemaMap)
+                        .forEach(item ->{
+                            String[] result =  item.split(":");
+                            Preconditions.checkArgument(result.length == 3,
+                                    "tableToTopicMap format incorrect eg: db.tbl1:topic1:schema1");
+
+                            Preconditions.checkArgument(!Strings.isNullOrEmpty(result[0].trim()),
+                                    "db.table cannot empty");
+                            Preconditions.checkArgument(!Strings.isNullOrEmpty(result[1].trim()),
+                                    "topic cannot empty");
+                            Preconditions.checkArgument(!Strings.isNullOrEmpty(result[2].trim()),
+                                    "schema cannot empty");
+                        });
+
+                Splitter.on(';')
+                        .omitEmptyStrings()
+                        .trimResults()
+                        .split(tableFieldSchemaMap)
+                        .forEach(item -> {
+                            Splitter.on(",")
+                                    .omitEmptyStrings()
+                                    .trimResults()
+                                    .split(item)
+                                    .forEach(field -> {
+                                        String[] fieldTableSchema = field.split("\\|");
+                                        Preconditions.checkArgument(fieldTableSchema.length == 2,
+                                                "tableFieldsFilter 格式错误 eg: id|id1,name|name1");
+
+                                        Preconditions.checkArgument(!Strings.isNullOrEmpty(fieldTableSchema[0].trim()),
+                                                "table field cannot empty");
+                                        Preconditions.checkArgument(!Strings.isNullOrEmpty(fieldTableSchema[1].trim()),
+                                                "schema field cannot empty");
+                                    });
+                        });
+
+            } else {
+                // test.test:test123;test.test1:test234
+                Splitter.on(';')
+                        .omitEmptyStrings()
+                        .trimResults()
+                        .split(tableTopicSchemaMap)
+                        .forEach(item ->{
+                            String[] result =  item.split(":");
+                            Preconditions.checkArgument(result.length == 2,
+                                    "tableToTopicMap format incorrect eg:db.tbl1:topic1;db.tbl2:topic2");
+
+                            Preconditions.checkArgument(!Strings.isNullOrEmpty(result[0].trim()),
+                                    "db.table cannot empty");
+                            Preconditions.checkArgument(!Strings.isNullOrEmpty(result[1].trim()),
+                                    "topic cannot empty");
+                        });
+
+            }
 
             Utility.isUrlAddressValid(masterAddress, "masterAddress");
         }

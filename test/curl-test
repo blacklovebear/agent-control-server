@@ -4,7 +4,8 @@ curl -H "Content-Type: application/json" -X POST -d '
     "zkServers": "192.168.2.25:2181",
     "kafkaServers":"192.168.2.25:9092",
     "registryUrl":"http://localhost:8081",
-    "kafkaHighThroughput":true,
+    "kafkaHighThroughput":false,
+    "useAvro":false,
     "units":[
         {
             "masterAddress": "127.0.0.1:3306",

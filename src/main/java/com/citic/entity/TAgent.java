@@ -17,6 +17,7 @@ public class TAgent {
     private String sinkServers;
     private String registryUrl;
     private boolean kafkaHighThroughput;
+    private boolean useAvro;
 
     private Set<Source> sources = Sets.newHashSet();
 
@@ -35,6 +36,10 @@ public class TAgent {
         sources.forEach(source -> sourceNames.add(source.getSourceName()));
         return Joiner.on(" ").skipNulls().join(sourceNames);
     }
+
+    public boolean isUseAvro() { return useAvro; }
+
+    public void setUseAvro(boolean useAvro) { this.useAvro = useAvro; }
 
     public boolean isKafkaHighThroughput() {
         return kafkaHighThroughput;
