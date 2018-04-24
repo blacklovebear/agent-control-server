@@ -85,12 +85,15 @@ public class SimpleKafkaProducer<K, V> {
 
     private class DummyCallback implements Callback {
         @Override
-        public void onCompletion(RecordMetadata recordMetadata, Exception e) {
-            if (e != null) {
-                LOGGER.error("Error while producing message to topic : {}", recordMetadata.topic(), e);
-            } else
+        public void onCompletion(RecordMetadata recordMetadata, Exception exception) {
+            if (exception != null) {
+                LOGGER.error("Error while producing message to topic : {}", recordMetadata.topic(), exception);
+            }
+
+            if (recordMetadata != null) {
                 LOGGER.debug("sent message to topic:{} partition:{}  offset:{}",
                         recordMetadata.topic(), recordMetadata.partition(), recordMetadata.offset());
+            }
         }
     }
 }
