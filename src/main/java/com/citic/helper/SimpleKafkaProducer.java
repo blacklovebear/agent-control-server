@@ -87,7 +87,7 @@ public class SimpleKafkaProducer<K, V> {
         @Override
         public void onCompletion(RecordMetadata recordMetadata, Exception exception) {
             if (exception != null) {
-                LOGGER.error("Error while producing message to topic : {}", recordMetadata.topic(), exception);
+                LOGGER.error("Error while producing message {}", exception.getMessage(), exception);
             }
 
             if (recordMetadata != null) {
