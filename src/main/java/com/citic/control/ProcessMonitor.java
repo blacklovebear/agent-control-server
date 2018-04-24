@@ -1,26 +1,24 @@
 package com.citic.control;
 
-import java.io.IOException;
-import java.util.UUID;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import com.citic.AppConf;
+import com.citic.AppConstants;
+import com.citic.helper.SchemaCache;
 import com.citic.helper.ShellExecutor;
 import com.citic.helper.SimpleKafkaProducer;
 import com.citic.helper.Utility;
-import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import org.apache.avro.Schema;
+import org.apache.avro.generic.GenericData;
+import org.apache.avro.generic.GenericRecord;
 import org.apache.commons.lang.SystemUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,15 +26,22 @@ import static com.citic.AppConstants.*;
 
 public class ProcessMonitor {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessMonitor.class);
-    private static final String CHECK_TIME = "CheckTime";
-    private static final String AGENT_IP = "AgentIP";
+    private static final String SUPPORT_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
+    private static final String CANAL_STATE = "canal_state";
+    private static final String TAGENT_STATE = "tAgent_state";
+    private static final String CURRENT_TIME = "ctime";
+    private static final String AGENT_IP = "agent";
+
     private static final String MONITOR_TOPIC = AppConf.getConfig(KAFKA_MONITOR_TOPIC);
-    private static final String METRICS_TOPIC = AppConf.getConfig(TAGENT_METRICS_TOPIC);
+
+    private static final List<String> ATTR_LIST = Lists.newArrayList(CANAL_STATE, TAGENT_STATE,
+            CURRENT_TIME, AGENT_IP);
 
     private ScheduledExecutorService executorService;
-    private SimpleKafkaProducer<String, String> producer;
+    private SimpleKafkaProducer<Object, Object> producer;
 
-    public ProcessMonitor(SimpleKafkaProducer<String, String> producer) {
+    public ProcessMonitor(SimpleKafkaProducer<Object, Object> producer) {
         this.producer = producer;
     }
 
@@ -62,50 +67,18 @@ public class ProcessMonitor {
         }
     }
 
-    /*
-    * 从 TAgent 获取监控数据
-    * */
-    public String getMetricsInfo() {
-        String result;
-        DefaultHttpClient httpClient = new DefaultHttpClient();
-        HttpGet getRequest = new HttpGet(AppConf.getConfig(TAGENT_METRICS_URL));
 
-        String content;
-        HttpResponse response;
-        try {
-            response = httpClient.execute(getRequest);
-            if (response.getStatusLine().getStatusCode() != 200) {
-                LOGGER.error("Failed : HTTP error code : {}", response.getStatusLine().getStatusCode());
-                return null;
-            }
-            ResponseHandler<String> handler = new BasicResponseHandler();
-            content = handler.handleResponse(response);
-        } catch (IOException e) {
-            LOGGER.error("Failed access to TAgent metrics Listener. info:{}", e.getMessage());
-            return null;
-        }
+    private GenericRecord buildAvroRecord(String canalState, String tAgentState) {
+        String schemaString = Utility.getTableFieldSchema(ATTR_LIST, MONITOR_TOPIC);
 
-        try {
-            JSONParser parser = new JSONParser();
-            Object obj = parser.parse( content );
-            JSONObject jsonObject = (JSONObject) obj;
-            jsonObject.put(CHECK_TIME, String.valueOf(System.currentTimeMillis()));
-            jsonObject.put(AGENT_IP, Utility.getLocalIP(AppConf.getConfig(AGENT_IP_INTERFACE)));
-            result = jsonObject.toJSONString();
+        Schema schema = SchemaCache.getSchema(schemaString);
+        GenericRecord avroRecord = new GenericData.Record(schema);
+        avroRecord.put(CANAL_STATE, canalState);
+        avroRecord.put(TAGENT_STATE, tAgentState);
 
-            LOGGER.debug(result);
-        } catch (ParseException e) {
-            LOGGER.error(e.getMessage(), e);
-            return null;
-        }
-        return result;
-    }
-
-    /*
-    * 发送消息到kafka
-    * */
-    private void sendStageToKafka(String topic, String stateMessage) {
-        producer.send(topic, UUID.randomUUID().toString(), stateMessage);
+        avroRecord.put(CURRENT_TIME, new SimpleDateFormat(SUPPORT_TIME_FORMAT).format(new Date()));
+        avroRecord.put(AGENT_IP, Utility.getLocalIP(AppConf.getConfig(AppConstants.AGENT_IP_INTERFACE)));
+        return avroRecord;
     }
 
     /*
@@ -141,11 +114,6 @@ public class ProcessMonitor {
                     String state = executor.monitorProcess(this.tAgentCmd, TAGENT_PROCESS_NAME);
                     if (state.contains("running")) {
                         ExecuteCmd.getInstance().setTAgentState(STATE_ALIVE);
-                        // 如果TAgent 存活，则获取监控信息并存入 kafka 中
-                        String info = getMetricsInfo();
-                        if (!Strings.isNullOrEmpty(info)) {
-                            sendStageToKafka(METRICS_TOPIC, info);
-                        }
                     } else if (state.contains("dead")) {
                         ExecuteCmd.getInstance().setTAgentState(STATE_DEAD);
                     }
@@ -161,15 +129,14 @@ public class ProcessMonitor {
 
         @Override
         public void run() {
-            JSONObject jsonObject = new JSONObject();
             String canalState = monitorCanal();
             String tAgentState = monitorTAgent();
-            if (!Strings.isNullOrEmpty(canalState))
-                jsonObject.put("canal", canalState);
-            if (!Strings.isNullOrEmpty(tAgentState))
-                jsonObject.put("tagent", tAgentState);
 
-            sendStageToKafka(MONITOR_TOPIC, jsonObject.toJSONString());
+            if (canalState != null && tAgentState != null) {
+                GenericRecord avroRecord = buildAvroRecord(canalState, tAgentState);
+                producer.send(MONITOR_TOPIC, avroRecord);
+            }
+
         }
     }
 }

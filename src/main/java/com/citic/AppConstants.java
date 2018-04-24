@@ -1,6 +1,7 @@
 package com.citic;
 
-import org.apache.commons.lang.SystemUtils;
+// avro 格式序列化类
+import io.confluent.kafka.serializers.KafkaAvroSerializer;
 
 public class AppConstants {
     public static final String CLASSPATH_URL_PREFIX = "classpath:";
@@ -40,13 +41,15 @@ public class AppConstants {
     public static final String KAFKA_STRING_SERIALIZER =
             "org.apache.kafka.common.serialization.StringSerializer";
 
+    public static final String KAFKA_AVRO_SERIALIZER =
+            "io.confluent.kafka.serializers.KafkaAvroSerializer";
+
+    public static final String SCHEMA_REGISTRY_URL_NAME = "schema.registry.url";
+
     public static final String KAFKA_MONITOR_TOPIC = "kafka.monitor.topic";
     public static final String KAFKA_BOOTSTRAP_SERVERS = "kafka.bootstrap.servers";
     public static final String KAFKA_CLIENT_ID = "kafka.client.id";
     public static final String KAFKA_ACKS = "kafka.acks";
     public static final String KAFKA_RETRIES = "kafka.retries";
-
-    // metrics
-    public static final String TAGENT_METRICS_URL = "tagent.metrics.url";
-    public static final String TAGENT_METRICS_TOPIC = "tagent.metrics.topic";
+    public static final String KAFKA_REGISTRY_URL = "kafka.registryUrl";
 }

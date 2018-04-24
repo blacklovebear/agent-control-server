@@ -9,6 +9,13 @@
     <version>1.0</version>
     <name>simple-service</name>
 
+    <properties>
+        <jersey.version>2.26</jersey.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <log4j.configuration>conf/log4j.properties</log4j.configuration>
+        <kafka.version>0.11.0.0</kafka.version>
+    </properties>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -57,13 +64,7 @@
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-clients</artifactId>
-            <version>0.11.0.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.1.1</version>
+            <version>${kafka.version}</version>
         </dependency>
 
         <dependency>
@@ -78,6 +79,19 @@
             <version>4.9</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.avro</groupId>
+            <artifactId>avro</artifactId>
+            <version>1.7.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-avro-serializer</artifactId>
+            <version>3.3.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -191,10 +205,4 @@
 
         </plugins>
     </build>
-
-    <properties>
-        <jersey.version>2.26</jersey.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <log4j.configuration>conf/log4j.properties</log4j.configuration>
-    </properties>
 </project>

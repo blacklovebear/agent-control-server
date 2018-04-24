@@ -14,10 +14,10 @@ import static com.citic.AppConstants.*;
 /*
 * 发送消息到 kafka
 * */
-public class SimpleKafkaProducer<K extends Serializable, V extends Serializable> {
+public class SimpleKafkaProducer<K, V> {
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleKafkaProducer.class);
 
-    private KafkaProducer<byte[], byte[]> producer;
+    private KafkaProducer<Object, Object> producer;
     private boolean syncSend;
     private volatile boolean shutDown = false;
 
@@ -29,8 +29,9 @@ public class SimpleKafkaProducer<K extends Serializable, V extends Serializable>
         producerConfig.put("acks", AppConf.getConfig(KAFKA_ACKS));
         producerConfig.put("retries", AppConf.getConfig(KAFKA_RETRIES));
 
-        producerConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KAFKA_STRING_SERIALIZER);
-        producerConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, KAFKA_STRING_SERIALIZER);
+        producerConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KAFKA_AVRO_SERIALIZER);
+        producerConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, KAFKA_AVRO_SERIALIZER);
+        producerConfig.put(SCHEMA_REGISTRY_URL_NAME, AppConf.getConfig(KAFKA_REGISTRY_URL));
 
         this.syncSend = syncSend;
         this.producer = new KafkaProducer<>(producerConfig);
@@ -61,9 +62,9 @@ public class SimpleKafkaProducer<K extends Serializable, V extends Serializable>
         try {
             ProducerRecord record;
             if(partition < 0)
-                record = new ProducerRecord<>(topic, key, value);
+                record = new ProducerRecord<Object, Object>(topic, key, value);
             else
-                record = new ProducerRecord<>(topic, partition, key, value);
+                record = new ProducerRecord<Object, Object>(topic, partition, key, value);
 
             Future<RecordMetadata> future = producer.send(record, callback);
             if (!syncSend) return;

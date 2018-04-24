@@ -20,7 +20,7 @@ import java.net.URI;
 public class AppMain {
     private static final Logger LOGGER = LoggerFactory.getLogger(AppMain.class);
     private static Channel server;
-    private static SimpleKafkaProducer<String, String>  producer;
+    private static SimpleKafkaProducer<Object, Object>  producer;
     private static ProcessMonitor processMonitor;
 
     public static void start() {

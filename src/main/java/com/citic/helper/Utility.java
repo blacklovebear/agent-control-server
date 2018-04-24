@@ -1,7 +1,9 @@
 package com.citic.helper;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -131,6 +133,25 @@ public class Utility {
         ServerUrlsFormatException(String msg, Throwable throwable) {
             super(msg, throwable);
         }
+    }
+
+    /*
+    * get schema String
+    * */
+    public static String getTableFieldSchema(List<String> schemaFieldList, String schemaName) {
+        List<String> resultList = Lists.newArrayList();
+        String schema = "{"
+                + "\"type\":\"record\","
+                + "\"name\":\""+ schemaName +"\","
+                + "\"fields\":[";
+
+        for (String fieldStr: schemaFieldList) {
+            String field = "{ \"name\":\"" + fieldStr + "\", \"type\":\"string\" }";
+            resultList.add(field);
+        }
+        schema += Joiner.on(",").join(resultList);
+        schema += "]}";
+        return schema;
     }
 
 
