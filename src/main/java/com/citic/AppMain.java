@@ -6,12 +6,15 @@ import com.citic.helper.SimpleKafkaProducer;
 import com.citic.service.ConfigurationService;
 import com.citic.service.ExeService;
 import io.netty.channel.Channel;
+import org.apache.commons.lang.BooleanUtils;
 import org.glassfish.jersey.netty.httpserver.NettyHttpContainerProvider;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
+
+import static com.citic.AppConstants.KAFKA_USE_AVRO;
 
 
 /**
@@ -25,6 +28,8 @@ public class AppMain {
 
     public static void start() {
         String baseUri = AppConf.getConfig(AppConstants.AGENT_BASE_URI);
+        boolean useAvro = BooleanUtils.toBoolean(AppConf.getConfig(KAFKA_USE_AVRO));
+
         URI BASE_URI = URI.create(baseUri);
 
         ResourceConfig resourceConfig = new ResourceConfig(
@@ -37,9 +42,9 @@ public class AppMain {
 
         LOGGER.info("Jersey App on Netty Server starting: {}", BASE_URI.toString());
 
-        producer = new SimpleKafkaProducer<>(false);
+        producer = new SimpleKafkaProducer<>(false, useAvro);
         // 启动对进程的监控
-        processMonitor = new ProcessMonitor(producer);
+        processMonitor = new ProcessMonitor(producer, useAvro);
         processMonitor.start();
         
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {

@@ -21,7 +21,7 @@ public class SimpleKafkaProducer<K, V> {
     private boolean syncSend;
     private volatile boolean shutDown = false;
 
-    public SimpleKafkaProducer( boolean syncSend) {
+    public SimpleKafkaProducer( boolean syncSend, boolean useAvro) {
         Properties producerConfig = new Properties();
 
         producerConfig.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, AppConf.getConfig(KAFKA_BOOTSTRAP_SERVERS));
@@ -29,9 +29,14 @@ public class SimpleKafkaProducer<K, V> {
         producerConfig.put(ProducerConfig.ACKS_CONFIG, AppConf.getConfig(KAFKA_ACKS));
         producerConfig.put(ProducerConfig.RETRIES_CONFIG, AppConf.getConfig(KAFKA_RETRIES));
 
-        producerConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KAFKA_AVRO_SERIALIZER);
-        producerConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, KAFKA_AVRO_SERIALIZER);
-        producerConfig.put(SCHEMA_REGISTRY_URL_NAME, AppConf.getConfig(KAFKA_REGISTRY_URL));
+        if (useAvro) {
+            producerConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, KAFKA_AVRO_SERIALIZER);
+            producerConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KAFKA_AVRO_SERIALIZER);
+            producerConfig.put(SCHEMA_REGISTRY_URL_NAME, AppConf.getConfig(KAFKA_REGISTRY_URL));
+        } else {
+            producerConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, DEFAULT_KEY_SERIALIZER);
+            producerConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, DEFAULT_VALUE_SERIAIZER);
+        }
 
         this.syncSend = syncSend;
         this.producer = new KafkaProducer<>(producerConfig);

@@ -1,5 +1,6 @@
 package com.citic.control;
 
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.commons.lang.SystemUtils;
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,10 +41,12 @@ public class ProcessMonitor {
             CURRENT_TIME, AGENT_IP);
 
     private ScheduledExecutorService executorService;
-    private SimpleKafkaProducer<Object, Object> producer;
+    private final SimpleKafkaProducer<Object, Object> producer;
+    private final boolean useAvro;
 
-    public ProcessMonitor(SimpleKafkaProducer<Object, Object> producer) {
+    public ProcessMonitor(SimpleKafkaProducer<Object, Object> producer, boolean useAvro) {
         this.producer = producer;
+        this.useAvro = useAvro;
     }
 
     public void start() {
@@ -52,7 +56,7 @@ public class ProcessMonitor {
                 new ThreadFactoryBuilder().setNameFormat("process-monitor-%d")
                         .build());
         // 分两个线程单独监控
-        executorService.scheduleWithFixedDelay(new ProcessWatchRunnable(), 0, interval, TimeUnit.SECONDS);
+        executorService.scheduleWithFixedDelay(new ProcessWatchRunnable(useAvro), 0, interval, TimeUnit.SECONDS);
     }
 
     public void stop() {
@@ -81,6 +85,15 @@ public class ProcessMonitor {
         return avroRecord;
     }
 
+    private byte[] buildJsonRecord(String canalState, String tAgentState) {
+        JSONObject jsonRecord = new JSONObject();
+        jsonRecord.put(CANAL_STATE, canalState);
+        jsonRecord.put(TAGENT_STATE, tAgentState);
+        jsonRecord.put(CURRENT_TIME, new SimpleDateFormat(SUPPORT_TIME_FORMAT).format(new Date()));
+        jsonRecord.put(AGENT_IP, Utility.getLocalIP(AppConf.getConfig(AppConstants.AGENT_IP_INTERFACE)));
+        return jsonRecord.toJSONString().getBytes(Charset.forName("UTF-8"));
+    }
+
     /*
     * 进程监控执行线程
     * */
@@ -88,6 +101,11 @@ public class ProcessMonitor {
         private final ShellExecutor executor = new ShellExecutor();
         private final String CanalCmd = AppConf.getConfig(CANAL_MONITOR_CMD);
         private final String tAgentCmd = AppConf.getConfig(TAGENT_MONITOR_CMD);
+        private final boolean useAvro;
+
+        private ProcessWatchRunnable(boolean useAvro) {
+            this.useAvro = useAvro;
+        }
 
         private String monitorCanal() {
             if (SystemUtils.IS_OS_LINUX) {
@@ -133,8 +151,13 @@ public class ProcessMonitor {
             String tAgentState = monitorTAgent();
 
             if (canalState != null && tAgentState != null) {
-                GenericRecord avroRecord = buildAvroRecord(canalState, tAgentState);
-                producer.send(MONITOR_TOPIC, avroRecord);
+                if (useAvro) {
+                    GenericRecord avroRecord = buildAvroRecord(canalState, tAgentState);
+                    producer.send(MONITOR_TOPIC, avroRecord);
+                } else {
+                    byte[] jsonRecord = buildJsonRecord(canalState, tAgentState);
+                    producer.send(MONITOR_TOPIC, jsonRecord);
+                }
             }
 
         }

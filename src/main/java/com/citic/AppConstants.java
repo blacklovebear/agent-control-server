@@ -41,12 +41,18 @@ public class AppConstants {
     public static final String KAFKA_AVRO_SERIALIZER =
             "io.confluent.kafka.serializers.KafkaAvroSerializer";
 
-    public static final String SCHEMA_REGISTRY_URL_NAME = "schema.registry.url";
+    public static final String DEFAULT_KEY_SERIALIZER =
+            "org.apache.kafka.common.serialization.StringSerializer";
+    public static final String DEFAULT_VALUE_SERIAIZER =
+            "org.apache.kafka.common.serialization.ByteArraySerializer";
 
+    public static final String SCHEMA_REGISTRY_URL_NAME = "schema.registry.url";
     public static final String KAFKA_MONITOR_TOPIC = "kafka.monitor.topic";
+
     public static final String KAFKA_BOOTSTRAP_SERVERS = "kafka.bootstrap.servers";
     public static final String KAFKA_CLIENT_ID = "kafka.client.id";
     public static final String KAFKA_ACKS = "kafka.acks";
     public static final String KAFKA_RETRIES = "kafka.retries";
     public static final String KAFKA_REGISTRY_URL = "kafka.registryUrl";
+    public static final String KAFKA_USE_AVRO = "kafka.useAvro";
 }
