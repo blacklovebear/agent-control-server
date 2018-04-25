@@ -35,7 +35,8 @@ public class ProcessMonitor {
     private static final String CURRENT_TIME = "ctime";
     private static final String AGENT_IP = "agent";
 
-    private static final String MONITOR_TOPIC = AppConf.getConfig(KAFKA_MONITOR_TOPIC);
+    private static final String AVRO_PROCESS_MONITOR_TOPIC = "avro_process_monitor";
+    private static final String JSON_PROCESS_MONITOR_TOPIC = "json_process_monitor";
 
     private static final List<String> ATTR_LIST = Lists.newArrayList(CANAL_STATE, TAGENT_STATE,
             CURRENT_TIME, AGENT_IP);
@@ -73,7 +74,7 @@ public class ProcessMonitor {
 
 
     private GenericRecord buildAvroRecord(String canalState, String tAgentState) {
-        String schemaString = Utility.getTableFieldSchema(ATTR_LIST, MONITOR_TOPIC);
+        String schemaString = Utility.getTableFieldSchema(ATTR_LIST, AVRO_PROCESS_MONITOR_TOPIC);
 
         Schema schema = SchemaCache.getSchema(schemaString);
         GenericRecord avroRecord = new GenericData.Record(schema);
@@ -153,13 +154,12 @@ public class ProcessMonitor {
             if (canalState != null && tAgentState != null) {
                 if (useAvro) {
                     GenericRecord avroRecord = buildAvroRecord(canalState, tAgentState);
-                    producer.send(MONITOR_TOPIC, avroRecord);
+                    producer.send(AVRO_PROCESS_MONITOR_TOPIC, avroRecord);
                 } else {
                     byte[] jsonRecord = buildJsonRecord(canalState, tAgentState);
-                    producer.send(MONITOR_TOPIC, jsonRecord);
+                    producer.send(JSON_PROCESS_MONITOR_TOPIC, jsonRecord);
                 }
             }
-
         }
     }
 }

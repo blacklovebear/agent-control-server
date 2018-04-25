@@ -47,7 +47,6 @@ public class AppConstants {
             "org.apache.kafka.common.serialization.ByteArraySerializer";
 
     public static final String SCHEMA_REGISTRY_URL_NAME = "schema.registry.url";
-    public static final String KAFKA_MONITOR_TOPIC = "kafka.monitor.topic";
 
     public static final String KAFKA_BOOTSTRAP_SERVERS = "kafka.bootstrap.servers";
     public static final String KAFKA_CLIENT_ID = "kafka.client.id";
