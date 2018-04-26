@@ -8,7 +8,7 @@ import javax.ws.rs.core.MediaType;
 
 @Path("executor")
 public class ExeService {
-    private static final ExecuteCmd EXECUTE_CMD = ExecuteCmd.getInstance();
+    private static final ExecuteCmd EXECUTE_CMD = ExecuteCmd.INSTANCE;
 
     @GET
     @Path("start/canal")

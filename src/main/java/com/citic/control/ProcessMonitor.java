@@ -113,9 +113,9 @@ public class ProcessMonitor {
                 try {
                     String state = executor.monitorProcess(this.CanalCmd, CANAL_PROCESS_NAME);
                     if (state.contains("running")) {
-                        ExecuteCmd.getInstance().setCanalState(STATE_ALIVE);
+                        ExecuteCmd.INSTANCE.setCanalState(STATE_ALIVE);
                     } else if (state.contains("dead")) {
-                        ExecuteCmd.getInstance().setCanalState(STATE_DEAD);
+                        ExecuteCmd.INSTANCE.setCanalState(STATE_DEAD);
                     }
                     return state;
                 } catch (Exception e) {
@@ -132,9 +132,9 @@ public class ProcessMonitor {
                 try {
                     String state = executor.monitorProcess(this.tAgentCmd, TAGENT_PROCESS_NAME);
                     if (state.contains("running")) {
-                        ExecuteCmd.getInstance().setTAgentState(STATE_ALIVE);
+                        ExecuteCmd.INSTANCE.setTAgentState(STATE_ALIVE);
                     } else if (state.contains("dead")) {
-                        ExecuteCmd.getInstance().setTAgentState(STATE_DEAD);
+                        ExecuteCmd.INSTANCE.setTAgentState(STATE_DEAD);
                     }
                     return state;
                 } catch (Exception e) {

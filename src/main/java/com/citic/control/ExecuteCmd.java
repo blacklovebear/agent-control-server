@@ -5,38 +5,26 @@ import com.citic.helper.ShellExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import static com.citic.AppConstants.*;
 
-public class ExecuteCmd {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExecuteCmd.class);
-    private static final ExecuteCmd single = new ExecuteCmd();
+public enum ExecuteCmd {
+    INSTANCE;
 
-    private Boolean canalState = STATE_DEAD;
-    private Boolean tAgentState = STATE_DEAD;
+    static final Logger LOGGER = LoggerFactory.getLogger(ExecuteCmd.class);
+    final AtomicBoolean canalState = new AtomicBoolean(STATE_DEAD);
+    final AtomicBoolean tAgentState = new AtomicBoolean(STATE_DEAD);
 
-    private ExecuteCmd() {}
-
-    public static ExecuteCmd getInstance() {
-        return single;
-    }
-
-    public Boolean getCanalState() {
-            return canalState;
-    }
-
-    public void setCanalState(boolean state) {
+    void setCanalState(boolean state) {
         synchronized (canalState) {
-            this.canalState = state;
+            this.canalState.set(state);
         }
     }
 
-    public Boolean getTAgentState() {
-            return tAgentState;
-    }
-
-    public void setTAgentState(boolean state) {
+    void setTAgentState(boolean state) {
         synchronized (tAgentState) {
-            this.tAgentState = state;
+            this.tAgentState.set(state);
         }
     }
 
@@ -57,7 +45,7 @@ public class ExecuteCmd {
     public int startCanal() {
         int exitCode = 0;
         synchronized (canalState) {
-            if (canalState == STATE_ALIVE)
+            if (canalState.get() == STATE_ALIVE)
                 return exitCode;
 
             exitCode = exeCmd(AppConf.getConfig(CANAL_HOME_DIR),
@@ -77,7 +65,7 @@ public class ExecuteCmd {
                     AppConf.getConfig(CANAL_STOP_CMD));
 
             if (exitCode == 0) {
-                canalState = STATE_DEAD;
+                canalState.set(STATE_DEAD);
             }
         }
         return exitCode;
@@ -89,7 +77,7 @@ public class ExecuteCmd {
     public int startTAgent() {
         int exitCode = 0;
         synchronized (tAgentState) {
-            if (tAgentState == STATE_ALIVE)
+            if (tAgentState.get() == STATE_ALIVE)
                 return exitCode;
 
             exitCode = exeCmd(AppConf.getConfig(TAGENT_HOME_DIR),
@@ -104,14 +92,14 @@ public class ExecuteCmd {
     public int stopTAgent() {
         int exitCode = 0;
         synchronized (tAgentState) {
-            if (tAgentState == STATE_DEAD)
+            if (tAgentState.get() == STATE_DEAD)
                 return exitCode;
 
             exitCode = exeCmd(AppConf.getConfig(TAGENT_HOME_DIR),
                     AppConf.getConfig(TAGENT_STOP_CMD));
 
             if (exitCode == 0) {
-                tAgentState = STATE_DEAD;
+                tAgentState.set(STATE_DEAD);
             }
         }
         return exitCode;
