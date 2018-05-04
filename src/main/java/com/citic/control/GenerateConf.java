@@ -56,21 +56,6 @@ public class GenerateConf {
         return templateDir + sep + AppConf.getConfig(templateName);
     }
 
-    /*
-    * 根据传入的路径生成父文件夹路径
-    * */
-    private void createParentDirs(String filePath) {
-        Path file = Paths.get(filePath);
-        Path parent = file.getParent();
-        if (!Files.exists(parent)) {
-            try {
-                Files.createDirectories(parent);
-            } catch (IOException e) {
-                //fail to create directory
-                LOGGER.error(e.getMessage(), e);
-            }
-        }
-    }
 
     /*
     * 根据请求的参数批量放入 VelocityContext
@@ -89,7 +74,7 @@ public class GenerateConf {
     private void writeConf(Template template, String confFilePath, VelocityContext ctx) {
         StringWriter sw = new StringWriter();
         template.merge(ctx, sw);
-        createParentDirs(confFilePath);
+        Utility.createParentDirs(confFilePath);
         PrintWriter out = null;
         try {
             out = new PrintWriter(confFilePath);
@@ -120,7 +105,7 @@ public class GenerateConf {
     * 删除多余的 Instance 配置文件夹
     * */
     private void deleteUselessInstanceDirs(Set<CanalInstance> instanceSet) {
-        File file = new File(AppConf.getConfig(CANAL_CONF_DIR));
+        File file = new File(getCanalConfDir());
 
         List<String> instanceDirs = Lists.newArrayList();
         instanceSet.forEach(instance -> instanceDirs.add(instance.getInstance()));
@@ -136,7 +121,7 @@ public class GenerateConf {
             return;
         try {
             for (String dir: deleteDirs) {
-                String path = AppConf.getConfig(CANAL_CONF_DIR) + File.separator + dir;
+                String path = getCanalConfDir() + File.separator + dir;
                 Utility.deleteFileOrFolder(Paths.get(path));
             }
         } catch (IOException e) {
@@ -144,12 +129,17 @@ public class GenerateConf {
         }
     }
 
+
+    private String getCanalConfDir() {
+        return AppConf.getConfig(CANAL_HOME_DIR) + File.separator +  AppConf.getConfig(CANAL_CONF_DIR);
+    }
+
     private String getCanalServerConf() {
-        return AppConf.getConfig(CANAL_CONF_DIR) + File.separator + "canal.properties";
+        return getCanalConfDir() + File.separator + "canal.properties";
     }
 
     private String getCanalInstanceConf(String instanceName) {
-        return AppConf.getConfig(CANAL_CONF_DIR) + File.separator
+        return getCanalConfDir() + File.separator
                 + instanceName + File.separator + "instance.properties";
     }
 
@@ -188,6 +178,7 @@ public class GenerateConf {
         VelocityContext vx = getVelContext(config);
         // TAgent configuration
         Template canalServer = ve.getTemplate(getTemplatePath(TAGENT_TEMPLATE), "utf-8");
-        this.writeConf(canalServer, AppConf.getConfig(TAGENT_CONF), vx);
+        String confPath = AppConf.getConfig(TAGENT_HOME_DIR) + File.separator + AppConf.getConfig(TAGENT_CONF);
+        this.writeConf(canalServer, confPath, vx);
     }
 }

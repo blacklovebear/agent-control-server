@@ -5,7 +5,7 @@ curl -H "Content-Type: application/json" -X POST -d '
     "kafkaServers":"192.168.2.25:9092",
     "registryUrl":"http://localhost:8081",
     "kafkaHighThroughput":false,
-    "useAvro":false,
+    "useAvro":true,
     "units":[
         {
             "masterAddress": "127.0.0.1:3306",

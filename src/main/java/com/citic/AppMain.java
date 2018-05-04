@@ -1,5 +1,6 @@
 package com.citic;
 
+import com.citic.control.ErrorLogMonitor;
 import com.citic.control.ProcessMonitor;
 import com.citic.entity.MyExceptionMapper;
 import com.citic.helper.SimpleKafkaProducer;
@@ -25,6 +26,7 @@ public class AppMain {
     private static Channel server;
     private static SimpleKafkaProducer<Object, Object>  producer;
     private static ProcessMonitor processMonitor;
+    private static ErrorLogMonitor errorLogMonitor;
 
     public static void start() {
         String baseUri = AppConf.getConfig(AppConstants.AGENT_BASE_URI);
@@ -45,7 +47,12 @@ public class AppMain {
         producer = new SimpleKafkaProducer<>(false, useAvro);
         // 启动对进程的监控
         processMonitor = new ProcessMonitor(producer, useAvro);
+
         processMonitor.start();
+
+        errorLogMonitor = new ErrorLogMonitor();
+        errorLogMonitor.start();
+
         
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             @Override
@@ -63,6 +70,7 @@ public class AppMain {
 
     public static void stop() {
         processMonitor.stop();
+        errorLogMonitor.stop();
         producer.close();
         server.close();
     }

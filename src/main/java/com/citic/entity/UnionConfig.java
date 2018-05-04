@@ -155,7 +155,7 @@ public class UnionConfig {
                         .forEach(item ->{
                             String[] result =  item.split(":");
                             Preconditions.checkArgument(result.length == 3,
-                                    "tableToTopicMap format incorrect eg: db.tbl1:topic1:schema1");
+                                    "tableTopicSchemaMap format incorrect eg: db.tbl1:topic1:schema1");
 
                             Preconditions.checkArgument(!Strings.isNullOrEmpty(result[0].trim()),
                                     "db.table cannot empty");
@@ -177,7 +177,7 @@ public class UnionConfig {
                                     .forEach(field -> {
                                         String[] fieldTableSchema = field.split("\\|");
                                         Preconditions.checkArgument(fieldTableSchema.length == 2,
-                                                "tableFieldsFilter 格式错误 eg: id|id1,name|name1");
+                                                "tableFieldSchemaMap 格式错误 eg: id|id1,name|name1");
 
                                         Preconditions.checkArgument(!Strings.isNullOrEmpty(fieldTableSchema[0].trim()),
                                                 "table field cannot empty");
@@ -195,7 +195,7 @@ public class UnionConfig {
                         .forEach(item ->{
                             String[] result =  item.split(":");
                             Preconditions.checkArgument(result.length == 2,
-                                    "tableToTopicMap format incorrect eg:db.tbl1:topic1;db.tbl2:topic2");
+                                    "tableTopicSchemaMap format incorrect eg:db.tbl1:topic1;db.tbl2:topic2");
 
                             Preconditions.checkArgument(!Strings.isNullOrEmpty(result[0].trim()),
                                     "db.table cannot empty");

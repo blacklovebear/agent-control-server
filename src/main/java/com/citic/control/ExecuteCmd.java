@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.citic.AppConstants.*;
+import static com.citic.helper.Utility.exeCmd;
 
 public enum ExecuteCmd {
     INSTANCE;
@@ -26,17 +27,6 @@ public enum ExecuteCmd {
         synchronized (tAgentState) {
             this.tAgentState.set(state);
         }
-    }
-
-    private int exeCmd(String homeDir, String cmd) {
-        int  exitCode = 0;
-        ShellExecutor executor = new ShellExecutor(homeDir);
-        try {
-            exitCode = executor.executeCmd(cmd);
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-        return exitCode;
     }
 
     /*

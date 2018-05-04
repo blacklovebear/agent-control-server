@@ -71,10 +71,10 @@ public class ShellExecutor {
         ProcessBuilder builder = new ProcessBuilder();
         LOGGER.info("home dir: {}, cmd: {}", this.homeDirectory, cmd);
 
-        if (SystemUtils.IS_OS_LINUX) {
-            builder.command("sh", "-c", cmd);
-        } else {
+        if (SystemUtils.IS_OS_WINDOWS) {
             builder.command("cmd.exe", "/c", cmd);
+        } else {
+            builder.command("sh", "-c", cmd);
         }
         builder.directory(new File(homeDirectory));
         Process process = builder.start();

@@ -13,10 +13,7 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.io.IOException;
 import java.net.*;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
@@ -28,6 +25,35 @@ import static java.nio.file.FileVisitResult.TERMINATE;
 public class Utility {
     private static final Logger LOGGER = LoggerFactory.getLogger(Utility.class);
     private static final String DEFAULT_IP = "127.0.0.1";
+
+
+    public static int exeCmd(String homeDir, String cmd) {
+        int  exitCode = 0;
+        ShellExecutor executor = new ShellExecutor(homeDir);
+        try {
+            exitCode = executor.executeCmd(cmd);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        return exitCode;
+    }
+
+
+    /*
+     * 根据传入的路径生成父文件夹路径
+     * */
+    public static void createParentDirs(String filePath) {
+        Path file = Paths.get(filePath);
+        Path parent = file.getParent();
+        if (!Files.exists(parent)) {
+            try {
+                Files.createDirectories(parent);
+            } catch (IOException e) {
+                //fail to create directory
+                LOGGER.error(e.getMessage(), e);
+            }
+        }
+    }
 
     /*
     * 获取本机ip

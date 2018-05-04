@@ -41,23 +41,24 @@ public class ProcessMonitor {
     private static final List<String> ATTR_LIST = Lists.newArrayList(CANAL_STATE, TAGENT_STATE,
             CURRENT_TIME, AGENT_IP);
 
-    private ScheduledExecutorService executorService;
+    private final ScheduledExecutorService executorService;
     private final SimpleKafkaProducer<Object, Object> producer;
     private final boolean useAvro;
 
     public ProcessMonitor(SimpleKafkaProducer<Object, Object> producer, boolean useAvro) {
         this.producer = producer;
         this.useAvro = useAvro;
+
+        executorService = Executors.newSingleThreadScheduledExecutor(
+                new ThreadFactoryBuilder().setNameFormat("process-monitor-%d")
+                        .build());
     }
 
     public void start() {
         // 进程检查时间间隔
         int interval = Integer.parseInt(AppConf.getConfig(PROCESS_MONITOR_INTERVAL));
-        executorService = Executors.newSingleThreadScheduledExecutor(
-                new ThreadFactoryBuilder().setNameFormat("process-monitor-%d")
-                        .build());
         // 分两个线程单独监控
-        executorService.scheduleWithFixedDelay(new ProcessWatchRunnable(useAvro), 0, interval, TimeUnit.SECONDS);
+        executorService.scheduleAtFixedRate(new ProcessWatchRunnable(useAvro), 0, interval, TimeUnit.SECONDS);
     }
 
     public void stop() {
@@ -122,7 +123,7 @@ public class ProcessMonitor {
                     LOGGER.error(e.getMessage(), e);
                 }
             } else {
-                LOGGER.debug("windows platform monitor process");
+                LOGGER.debug("not linux platform monitor process");
             }
             return null;
         }
@@ -141,7 +142,7 @@ public class ProcessMonitor {
                     LOGGER.error(e.getMessage(), e);
                 }
             } else {
-                LOGGER.debug("windows platform monitor process");
+                LOGGER.debug("not linux platform monitor process");
             }
             return null;
         }
