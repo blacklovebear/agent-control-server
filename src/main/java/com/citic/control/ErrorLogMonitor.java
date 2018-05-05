@@ -20,6 +20,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.citic.AppConstants.*;
 
@@ -27,6 +29,7 @@ public class ErrorLogMonitor {
     private static final Logger LOGGER = LoggerFactory.getLogger(ErrorLogMonitor.class);
     private static final String LOG_PATH = "log_path";
     private static final String ERROR_LOG = "error_log";
+    private static final Pattern ERROR_PATTERN = Pattern.compile("ERROR|Error|error");
 
     private static final String AVRO_ERROR_LOG_TOPIC = "avro_error_log";
     private static final String JSON_ERROR_LOG_TOPIC = "json_error_log";
@@ -47,7 +50,8 @@ public class ErrorLogMonitor {
     }
 
     private void sendErrorLog(String logLine, String logPath) {
-        if (logLine.contains("ERROR")) {
+        Matcher m = ERROR_PATTERN.matcher(logLine);
+        if (m.find()) {
             if (this.useAvro)
                 sendAvroErrorLog(logLine, logPath);
             else
