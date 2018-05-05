@@ -1,10 +1,29 @@
 package com.citic.control;
 
+import static com.citic.AppConstants.CANAL_CONF_DIR;
+import static com.citic.AppConstants.CANAL_HOME_DIR;
+import static com.citic.AppConstants.CANAL_INSTANCE_TEMPLATE;
+import static com.citic.AppConstants.CANAL_SERVER_TEMPLATE;
+import static com.citic.AppConstants.CLASSPATH_URL_PREFIX;
+import static com.citic.AppConstants.TAGENT_CONF;
+import static com.citic.AppConstants.TAGENT_HOME_DIR;
+import static com.citic.AppConstants.TAGENT_TEMPLATE;
+
 import com.citic.AppConf;
 import com.citic.entity.CanalInstance;
 import com.citic.entity.CanalServer;
 import com.citic.entity.TAgent;
+import com.citic.helper.Utility;
 import com.google.common.collect.Lists;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -13,18 +32,6 @@ import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static com.citic.AppConstants.*;
-
-import com.citic.helper.Utility;
 
 
 public class GenerateConf {

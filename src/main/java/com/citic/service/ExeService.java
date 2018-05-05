@@ -1,9 +1,10 @@
 package com.citic.service;
 
-import com.citic.entity.ResponseResult;
 import com.citic.control.ExecuteCmd;
-
-import javax.ws.rs.*;
+import com.citic.entity.ResponseResult;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 @Path("executor")

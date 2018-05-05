@@ -2,8 +2,6 @@ package com.citic;
 
 // avro 格式序列化类
 
-import io.confluent.kafka.serializers.KafkaAvroSerializer;
-
 public class AppConstants {
 
     public static final String CLASSPATH_URL_PREFIX = "classpath:";

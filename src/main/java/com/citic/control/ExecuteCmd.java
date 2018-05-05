@@ -1,13 +1,19 @@
 package com.citic.control;
 
+import static com.citic.AppConstants.CANAL_HOME_DIR;
+import static com.citic.AppConstants.CANAL_START_CMD;
+import static com.citic.AppConstants.CANAL_STOP_CMD;
+import static com.citic.AppConstants.STATE_ALIVE;
+import static com.citic.AppConstants.STATE_DEAD;
+import static com.citic.AppConstants.TAGENT_HOME_DIR;
+import static com.citic.AppConstants.TAGENT_START_CMD;
+import static com.citic.AppConstants.TAGENT_STOP_CMD;
+import static com.citic.helper.Utility.exeCmd;
+
 import com.citic.AppConf;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import static com.citic.AppConstants.*;
-import static com.citic.helper.Utility.exeCmd;
 
 public enum ExecuteCmd {
     INSTANCE;

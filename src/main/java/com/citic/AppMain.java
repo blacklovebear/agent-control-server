@@ -1,5 +1,7 @@
 package com.citic;
 
+import static com.citic.AppConstants.KAFKA_USE_AVRO;
+
 import com.citic.control.ErrorLogMonitor;
 import com.citic.control.ProcessMonitor;
 import com.citic.entity.MyExceptionMapper;
@@ -7,15 +9,12 @@ import com.citic.helper.SimpleKafkaProducer;
 import com.citic.service.ConfigurationService;
 import com.citic.service.ExeService;
 import io.netty.channel.Channel;
+import java.net.URI;
 import org.apache.commons.lang.BooleanUtils;
 import org.glassfish.jersey.netty.httpserver.NettyHttpContainerProvider;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.net.URI;
-
-import static com.citic.AppConstants.KAFKA_USE_AVRO;
 
 
 /**

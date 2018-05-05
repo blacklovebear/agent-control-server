@@ -3,8 +3,6 @@ package com.citic.helper;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.common.collect.Maps;
-
 import org.apache.avro.Schema;
 
 

@@ -1,15 +1,25 @@
 package com.citic.helper;
 
-import com.citic.AppConf;
-import org.apache.kafka.clients.producer.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static com.citic.AppConstants.DEFAULT_KEY_SERIALIZER;
+import static com.citic.AppConstants.DEFAULT_VALUE_SERIAIZER;
+import static com.citic.AppConstants.KAFKA_ACKS;
+import static com.citic.AppConstants.KAFKA_AVRO_SERIALIZER;
+import static com.citic.AppConstants.KAFKA_BOOTSTRAP_SERVERS;
+import static com.citic.AppConstants.KAFKA_CLIENT_ID;
+import static com.citic.AppConstants.KAFKA_REGISTRY_URL;
+import static com.citic.AppConstants.KAFKA_RETRIES;
+import static com.citic.AppConstants.SCHEMA_REGISTRY_URL_NAME;
 
-import java.io.*;
+import com.citic.AppConf;
 import java.util.Properties;
 import java.util.concurrent.Future;
-
-import static com.citic.AppConstants.*;
+import org.apache.kafka.clients.producer.Callback;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /*
  * 发送消息到 kafka

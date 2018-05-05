@@ -1,65 +1,21 @@
 package com.citic.helper;
 
-import org.apache.commons.lang.SystemUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
+import org.apache.commons.lang.SystemUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class ShellExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ShellExecutor.class);
-
-    private static class StreamGobbler implements Runnable {
-
-        private InputStream inputStream;
-        private Consumer<String> consumer;
-
-        StreamGobbler(InputStream inputStream, Consumer<String> consumer) {
-            this.inputStream = inputStream;
-            this.consumer = consumer;
-        }
-
-        @Override
-        public void run() {
-            new BufferedReader(new InputStreamReader(inputStream)).lines().forEach(consumer);
-        }
-    }
-
-    /*
-     * 获取命令执行结果后的数据
-     * */
-    private static class ResponseData {
-
-        private List<String> data = new ArrayList<>();
-        private String processName;
-
-        private ResponseData(String processName) {
-            this.processName = processName;
-        }
-
-        private void putData(String line) {
-            data.add(line);
-        }
-
-        private String getProcessState() {
-            String state;
-            if (data.isEmpty()) {
-                state = String.format("%s dead", processName);
-            } else if (data.size() == 1) {
-                state = String.format("%s running pid:%s", processName, data.toString());
-            } else {
-                state = String.format("%s unNormal pid:%s", processName, data.toString());
-            }
-            return state;
-        }
-    }
-
     private String homeDirectory = System.getProperty("user.home");
 
     public ShellExecutor() {
@@ -114,6 +70,51 @@ public class ShellExecutor {
 
         process.waitFor();
         return responseData.getProcessState();
+    }
+
+    private static class StreamGobbler implements Runnable {
+
+        private InputStream inputStream;
+        private Consumer<String> consumer;
+
+        StreamGobbler(InputStream inputStream, Consumer<String> consumer) {
+            this.inputStream = inputStream;
+            this.consumer = consumer;
+        }
+
+        @Override
+        public void run() {
+            new BufferedReader(new InputStreamReader(inputStream)).lines().forEach(consumer);
+        }
+    }
+
+    /*
+     * 获取命令执行结果后的数据
+     * */
+    private static class ResponseData {
+
+        private List<String> data = new ArrayList<>();
+        private String processName;
+
+        private ResponseData(String processName) {
+            this.processName = processName;
+        }
+
+        private void putData(String line) {
+            data.add(line);
+        }
+
+        private String getProcessState() {
+            String state;
+            if (data.isEmpty()) {
+                state = String.format("%s dead", processName);
+            } else if (data.size() == 1) {
+                state = String.format("%s running pid:%s", processName, data.toString());
+            } else {
+                state = String.format("%s unNormal pid:%s", processName, data.toString());
+            }
+            return state;
+        }
     }
 
 }

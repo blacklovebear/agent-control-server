@@ -1,13 +1,15 @@
 package com.citic.control;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import static com.citic.AppConstants.AGENT_IP;
+import static com.citic.AppConstants.CANAL_MONITOR_CMD;
+import static com.citic.AppConstants.CANAL_PROCESS_NAME;
+import static com.citic.AppConstants.CURRENT_TIME;
+import static com.citic.AppConstants.PROCESS_MONITOR_INTERVAL;
+import static com.citic.AppConstants.STATE_ALIVE;
+import static com.citic.AppConstants.STATE_DEAD;
+import static com.citic.AppConstants.SUPPORT_TIME_FORMAT;
+import static com.citic.AppConstants.TAGENT_MONITOR_CMD;
+import static com.citic.AppConstants.TAGENT_PROCESS_NAME;
 
 import com.citic.AppConf;
 import com.citic.AppConstants;
@@ -17,6 +19,13 @@ import com.citic.helper.SimpleKafkaProducer;
 import com.citic.helper.Utility;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
@@ -24,8 +33,6 @@ import org.apache.commons.lang.SystemUtils;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static com.citic.AppConstants.*;
 
 public class ProcessMonitor {
 
@@ -39,10 +46,9 @@ public class ProcessMonitor {
 
     private static final List<String> ATTR_LIST = Lists.newArrayList(CANAL_STATE, TAGENT_STATE,
         CURRENT_TIME, AGENT_IP);
-
-    private ScheduledExecutorService executorService;
     private final SimpleKafkaProducer<Object, Object> producer;
     private final boolean useAvro;
+    private ScheduledExecutorService executorService;
 
     public ProcessMonitor(SimpleKafkaProducer<Object, Object> producer, boolean useAvro) {
         this.producer = producer;

@@ -1,16 +1,12 @@
 package com.citic.entity;
 
 import com.citic.helper.Utility;
-import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import org.apache.commons.lang.StringUtils;
-
-import java.util.List;
 import java.util.Set;
+import org.apache.commons.lang.StringUtils;
 
 /*
  * 联合配置Canal, TAgent
@@ -88,12 +84,12 @@ public class UnionConfig {
         units.add(unit);
     }
 
-    public void setUseAvro(boolean useAvro) {
-        this.useAvro = useAvro;
-    }
-
     public boolean isUseAvro() {
         return useAvro;
+    }
+
+    public void setUseAvro(boolean useAvro) {
+        this.useAvro = useAvro;
     }
 
     public void setKafkaHighThroughput(boolean kafkaHighThroughput) {

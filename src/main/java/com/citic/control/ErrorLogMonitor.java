@@ -1,5 +1,13 @@
 package com.citic.control;
 
+import static com.citic.AppConstants.AGENT_IP;
+import static com.citic.AppConstants.CANAL_HOME_DIR;
+import static com.citic.AppConstants.CANAL_LOGS_DIR;
+import static com.citic.AppConstants.CURRENT_TIME;
+import static com.citic.AppConstants.SUPPORT_TIME_FORMAT;
+import static com.citic.AppConstants.TAGENT_HOME_DIR;
+import static com.citic.AppConstants.TAGENT_LOG_FILE_PATH;
+
 import com.citic.AppConf;
 import com.citic.AppConstants;
 import com.citic.helper.LogFileTailer;
@@ -7,23 +15,22 @@ import com.citic.helper.SchemaCache;
 import com.citic.helper.SimpleKafkaProducer;
 import com.citic.helper.Utility;
 import com.google.common.collect.Lists;
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static com.citic.AppConstants.*;
 
 public class ErrorLogMonitor {
 
@@ -37,11 +44,9 @@ public class ErrorLogMonitor {
 
     private static final List<String> ATTR_LIST = Lists.newArrayList(LOG_PATH, ERROR_LOG,
         CURRENT_TIME, AGENT_IP);
-
-
-    private ExecutorService executorService;
     private final SimpleKafkaProducer<Object, Object> producer;
     private final boolean useAvro;
+    private ExecutorService executorService;
 
 
     public ErrorLogMonitor(SimpleKafkaProducer<Object, Object> producer, boolean useAvro) {

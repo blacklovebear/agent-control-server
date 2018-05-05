@@ -1,6 +1,6 @@
 package com.citic.entity;
 
-import java.util.*;
+import java.util.Random;
 
 /*
  * Canal Instance 配置获取实体类

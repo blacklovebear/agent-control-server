@@ -1,10 +1,6 @@
 package com.citic.helper;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
@@ -13,19 +9,19 @@ import java.nio.file.Paths;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.BiConsumer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class LogFileTailer implements Runnable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LogFileTailer.class);
-
+    private final Path filePath;
+    private final BiConsumer<String, String> logHandler;
     private int tailRunEveryNSeconds = 2000;
     private long lastKnownPosition = 0;
     private boolean shouldIRun = true;
     private File tailFile = null;
-    private final Path filePath;
-
-    private final BiConsumer<String, String> logHandler;
 
     public LogFileTailer(String filePath, int myInterval, BiConsumer<String, String> logHandler) {
         this.filePath = Paths.get(filePath);
@@ -40,6 +36,24 @@ public class LogFileTailer implements Runnable {
         tailFile = filePath;
         this.tailRunEveryNSeconds = myInterval;
         this.logHandler = logHandler;
+    }
+
+    public static void main(String argv[]) {
+
+        ExecutorService tailExecutor = Executors.newFixedThreadPool(4);
+
+        // Replace username with your real value
+        // For windows provide different path like: c:\\temp\\tail.log
+        String filePath = "/Users/macbook/git_repo/agent-control-server/logs/test.log";
+        LogFileTailer tail_tailF = new LogFileTailer(filePath, 2000, (message, logPath) -> {
+            if (message.contains("ERROR")) {
+                System.out.println(message);
+            }
+        });
+
+        // Start running log file tailer on tail.log file
+        tailExecutor.execute(tail_tailF);
+
     }
 
     private void printLine(String message) {
@@ -94,23 +108,5 @@ public class LogFileTailer implements Runnable {
             LOGGER.error(e.getMessage(), e);
             stopRunning();
         }
-    }
-
-    public static void main(String argv[]) {
-
-        ExecutorService tailExecutor = Executors.newFixedThreadPool(4);
-
-        // Replace username with your real value
-        // For windows provide different path like: c:\\temp\\tail.log
-        String filePath = "/Users/macbook/git_repo/agent-control-server/logs/test.log";
-        LogFileTailer tail_tailF = new LogFileTailer(filePath, 2000, (message, logPath) -> {
-            if (message.contains("ERROR")) {
-                System.out.println(message);
-            }
-        });
-
-        // Start running log file tailer on tail.log file
-        tailExecutor.execute(tail_tailF);
-
     }
 }

@@ -1,26 +1,36 @@
 package com.citic.helper;
 
+import static com.google.common.base.MoreObjects.firstNonNull;
+import static com.google.common.base.Throwables.propagate;
+import static java.nio.file.FileVisitResult.CONTINUE;
+import static java.nio.file.FileVisitResult.TERMINATE;
+
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.io.IOException;
-import java.net.*;
-import java.nio.file.*;
+import java.net.Inet6Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
-
-import static com.google.common.base.MoreObjects.firstNonNull;
-import static com.google.common.base.Throwables.propagate;
-import static java.nio.file.FileVisitResult.CONTINUE;
-import static java.nio.file.FileVisitResult.TERMINATE;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Utility {
 
@@ -151,19 +161,6 @@ public class Utility {
         }
     }
 
-    private static class ServerUrlsFormatException extends Exception {
-
-        private static final long serialVersionUID = 1L;
-
-        ServerUrlsFormatException(String msg) {
-            super(msg);
-        }
-
-        ServerUrlsFormatException(String msg, Throwable throwable) {
-            super(msg, throwable);
-        }
-    }
-
     /*
      * get schema String
      * */
@@ -182,7 +179,6 @@ public class Utility {
         schema += "]}";
         return schema;
     }
-
 
     /*
      * deleteFileOrFolder
@@ -216,6 +212,19 @@ public class Utility {
                 return CONTINUE;
             }
         });
+    }
+
+    private static class ServerUrlsFormatException extends Exception {
+
+        private static final long serialVersionUID = 1L;
+
+        ServerUrlsFormatException(String msg) {
+            super(msg);
+        }
+
+        ServerUrlsFormatException(String msg, Throwable throwable) {
+            super(msg, throwable);
+        }
     }
 
     ;

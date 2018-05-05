@@ -1,15 +1,19 @@
 package com.citic.service;
 
-import com.citic.*;
-import com.citic.entity.*;
+import com.citic.AppGlobal;
+import com.citic.AppMain;
 import com.citic.control.GenerateConf;
+import com.citic.entity.ResponseResult;
+import com.citic.entity.UnionConfig;
 import com.google.common.collect.Lists;
+import java.util.List;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import java.util.List;
 
 @Path("config")
 public class ConfigurationService {

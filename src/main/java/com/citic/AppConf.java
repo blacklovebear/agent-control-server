@@ -1,14 +1,13 @@
 package com.citic;
 
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static com.citic.AppConstants.CLASSPATH_URL_PREFIX;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
-
-import static com.citic.AppConstants.*;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AppConf {
 
