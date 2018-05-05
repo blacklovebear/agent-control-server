@@ -28,6 +28,11 @@ public class AppMain {
     private static ProcessMonitor processMonitor;
     private static ErrorLogMonitor errorLogMonitor;
 
+
+    public static ErrorLogMonitor getErrorLogMonitor() {
+        return errorLogMonitor;
+    }
+
     public static void start() {
         String baseUri = AppConf.getConfig(AppConstants.AGENT_BASE_URI);
         boolean useAvro = BooleanUtils.toBoolean(AppConf.getConfig(KAFKA_USE_AVRO));
@@ -52,7 +57,6 @@ public class AppMain {
 
         errorLogMonitor = new ErrorLogMonitor();
         errorLogMonitor.start();
-
         
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             @Override

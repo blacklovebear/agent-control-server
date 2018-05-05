@@ -1,5 +1,10 @@
 package com.citic.helper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -7,23 +12,30 @@ import java.nio.file.Paths;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 
 public class LogFileTailer implements Runnable {
+    private static final Logger LOGGER = LoggerFactory.getLogger(LogFileTailer.class);
+
     private int tailRunEveryNSeconds = 2000;
     private long lastKnownPosition = 0;
     private boolean shouldIRun = true;
     private File tailFile = null;
     private final Path filePath;
 
-
     private final Consumer<String> logHandler;
-
 
     public LogFileTailer(String filePath, int myInterval, Consumer<String> logHandler) {
         this.filePath = Paths.get(filePath);
         tailFile = new File(filePath);
+        this.tailRunEveryNSeconds = myInterval;
+        this.logHandler = logHandler;
+    }
+
+
+    public LogFileTailer(File filePath, int myInterval, Consumer<String> logHandler) {
+        this.filePath = filePath.toPath();
+        tailFile = filePath;
         this.tailRunEveryNSeconds = myInterval;
         this.logHandler = logHandler;
     }
@@ -37,21 +49,22 @@ public class LogFileTailer implements Runnable {
     }
 
     public void run() {
+        LOGGER.debug("tail -f {}", this.filePath.toString());
         // 确保log文件存在
         Utility.createParentDirs(this.filePath.toString());
         if (!Files.exists(this.filePath)) {
             String cmd = "touch " + this.filePath.getFileName();
             Utility.exeCmd(this.filePath.getParent().toString(), cmd);
         }
-
+        // 已有的文件内容不做解析
+        lastKnownPosition = tailFile.length();
         try {
-            while (shouldIRun) {
+            while (shouldIRun && !Thread.currentThread().isInterrupted()) {
                 Thread.sleep(tailRunEveryNSeconds);
                 long fileLength = tailFile.length();
                 if (fileLength > lastKnownPosition) {
-
                     // Reading and writing file
-                    RandomAccessFile readWriteFileAccess = new RandomAccessFile(tailFile, "rw");
+                    RandomAccessFile readWriteFileAccess = new RandomAccessFile(tailFile, "r");
                     readWriteFileAccess.seek(lastKnownPosition);
                     String tailLine = null;
                     while ((tailLine = readWriteFileAccess.readLine()) != null) {
@@ -63,7 +76,7 @@ public class LogFileTailer implements Runnable {
                     // rotate file
                     lastKnownPosition = 0;
                     // Reading and writing file
-                    RandomAccessFile readWriteFileAccess = new RandomAccessFile(tailFile, "rw");
+                    RandomAccessFile readWriteFileAccess = new RandomAccessFile(tailFile, "r");
                     readWriteFileAccess.seek(lastKnownPosition);
                     String tailLine = null;
                     while ((tailLine = readWriteFileAccess.readLine()) != null) {
@@ -73,7 +86,10 @@ public class LogFileTailer implements Runnable {
                     readWriteFileAccess.close();
                 }
             }
-        } catch (Exception e) {
+        } catch (InterruptedException e) {
+            stopRunning();
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage(), e);
             stopRunning();
         }
     }

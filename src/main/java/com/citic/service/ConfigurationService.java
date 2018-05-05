@@ -3,11 +3,13 @@ package com.citic.service;
 import com.citic.*;
 import com.citic.entity.*;
 import com.citic.control.GenerateConf;
+import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 @Path("config")
 public class ConfigurationService {
@@ -26,6 +28,12 @@ public class ConfigurationService {
         GenerateConf generateConf = new GenerateConf();
         generateConf.generateCanal(unionConfig.getCanalServer());
         generateConf.generateTAgent(unionConfig.getTAgent());
+
+        List<String> instanceList = Lists.newArrayList();
+        unionConfig.getUnits().forEach(unit -> {
+            instanceList.add(unit.getInstance());
+        });
+        AppMain.getErrorLogMonitor().start(instanceList);
 
         return new ResponseResult();
     }
@@ -49,6 +57,14 @@ public class ConfigurationService {
         GenerateConf generateConf = new GenerateConf();
         generateConf.generateCanal(unionConfig.getCanalServer());
         generateConf.generateTAgent(unionConfig.getTAgent());
+
+
+        List<String> instanceList = Lists.newArrayList();
+        unionConfig.getUnits().forEach(unit -> {
+            instanceList.add(unit.getInstance());
+        });
+        AppMain.getErrorLogMonitor().start(instanceList);
+
         return new ResponseResult();
 
     }

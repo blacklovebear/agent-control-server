@@ -1,5 +1,6 @@
 package com.citic.control;
 
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -41,20 +42,19 @@ public class ProcessMonitor {
     private static final List<String> ATTR_LIST = Lists.newArrayList(CANAL_STATE, TAGENT_STATE,
             CURRENT_TIME, AGENT_IP);
 
-    private final ScheduledExecutorService executorService;
+    private ScheduledExecutorService executorService;
     private final SimpleKafkaProducer<Object, Object> producer;
     private final boolean useAvro;
 
     public ProcessMonitor(SimpleKafkaProducer<Object, Object> producer, boolean useAvro) {
         this.producer = producer;
         this.useAvro = useAvro;
-
-        executorService = Executors.newSingleThreadScheduledExecutor(
-                new ThreadFactoryBuilder().setNameFormat("process-monitor-%d")
-                        .build());
     }
 
     public void start() {
+        executorService = Executors.newSingleThreadScheduledExecutor(
+                new ThreadFactoryBuilder().setNameFormat("process-monitor-%d")
+                        .build());
         // 进程检查时间间隔
         int interval = Integer.parseInt(AppConf.getConfig(PROCESS_MONITOR_INTERVAL));
         // 分两个线程单独监控
@@ -149,17 +149,22 @@ public class ProcessMonitor {
 
         @Override
         public void run() {
+
             String canalState = monitorCanal();
             String tAgentState = monitorTAgent();
 
-            if (canalState != null && tAgentState != null) {
-                if (useAvro) {
-                    GenericRecord avroRecord = buildAvroRecord(canalState, tAgentState);
-                    producer.send(AVRO_PROCESS_MONITOR_TOPIC, avroRecord);
-                } else {
-                    byte[] jsonRecord = buildJsonRecord(canalState, tAgentState);
-                    producer.send(JSON_PROCESS_MONITOR_TOPIC, jsonRecord);
+            try {
+                if (canalState != null && tAgentState != null) {
+                    if (useAvro) {
+                        GenericRecord avroRecord = buildAvroRecord(canalState, tAgentState);
+                        producer.send(AVRO_PROCESS_MONITOR_TOPIC, avroRecord);
+                    } else {
+                        byte[] jsonRecord = buildJsonRecord(canalState, tAgentState);
+                        producer.send(JSON_PROCESS_MONITOR_TOPIC, jsonRecord);
+                    }
                 }
+            } catch (Exception e) {
+                LOGGER.error(e.getMessage(), e);
             }
         }
     }

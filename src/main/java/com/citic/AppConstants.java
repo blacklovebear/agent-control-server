@@ -19,6 +19,7 @@ public class AppConstants {
 
     // conf
     public static final String CANAL_CONF_DIR = "canal.conf.dir";
+    public static final String CANAL_LOGS_DIR = "canal.logs.dir";
     public static final String CANAL_SERVER_TEMPLATE = "canal.server.template";
     public static final String CANAL_INSTANCE_TEMPLATE = "canal.instance.template";
 
