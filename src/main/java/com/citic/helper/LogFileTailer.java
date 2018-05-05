@@ -11,7 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 
 public class LogFileTailer implements Runnable {
@@ -23,9 +23,9 @@ public class LogFileTailer implements Runnable {
     private File tailFile = null;
     private final Path filePath;
 
-    private final Consumer<String> logHandler;
+    private final BiConsumer<String, String> logHandler;
 
-    public LogFileTailer(String filePath, int myInterval, Consumer<String> logHandler) {
+    public LogFileTailer(String filePath, int myInterval, BiConsumer<String, String> logHandler) {
         this.filePath = Paths.get(filePath);
         tailFile = new File(filePath);
         this.tailRunEveryNSeconds = myInterval;
@@ -33,7 +33,7 @@ public class LogFileTailer implements Runnable {
     }
 
 
-    public LogFileTailer(File filePath, int myInterval, Consumer<String> logHandler) {
+    public LogFileTailer(File filePath, int myInterval, BiConsumer<String, String> logHandler) {
         this.filePath = filePath.toPath();
         tailFile = filePath;
         this.tailRunEveryNSeconds = myInterval;
@@ -41,7 +41,7 @@ public class LogFileTailer implements Runnable {
     }
 
     private void printLine(String message) {
-        logHandler.accept(message);
+        logHandler.accept(message, this.filePath.toString());
     }
 
     public void stopRunning() {
@@ -101,7 +101,7 @@ public class LogFileTailer implements Runnable {
         // Replace username with your real value
         // For windows provide different path like: c:\\temp\\tail.log
         String filePath = "/Users/macbook/git_repo/agent-control-server/logs/test.log";
-        LogFileTailer tail_tailF = new LogFileTailer(filePath, 2000, message -> {
+        LogFileTailer tail_tailF = new LogFileTailer(filePath, 2000, (message, logPath) -> {
             if (message.contains("ERROR"))
                 System.out.println(message);
         });

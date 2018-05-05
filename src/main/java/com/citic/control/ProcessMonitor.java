@@ -29,12 +29,9 @@ import static com.citic.AppConstants.*;
 
 public class ProcessMonitor {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessMonitor.class);
-    private static final String SUPPORT_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     private static final String CANAL_STATE = "canal_state";
     private static final String TAGENT_STATE = "tAgent_state";
-    private static final String CURRENT_TIME = "ctime";
-    private static final String AGENT_IP = "agent";
 
     private static final String AVRO_PROCESS_MONITOR_TOPIC = "avro_process_monitor";
     private static final String JSON_PROCESS_MONITOR_TOPIC = "json_process_monitor";

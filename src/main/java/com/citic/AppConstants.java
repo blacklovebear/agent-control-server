@@ -59,4 +59,11 @@ public class AppConstants {
     public static final String KAFKA_RETRIES = "kafka.retries";
     public static final String KAFKA_REGISTRY_URL = "kafka.registryUrl";
     public static final String KAFKA_USE_AVRO = "kafka.useAvro";
+
+
+    // constant
+    public static final String CURRENT_TIME = "ctime";
+    public static final String AGENT_IP = "agent";
+    public static final String SUPPORT_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
 }

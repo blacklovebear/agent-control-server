@@ -55,15 +55,10 @@ public class AppMain {
 
         processMonitor.start();
 
-        errorLogMonitor = new ErrorLogMonitor();
+        errorLogMonitor = new ErrorLogMonitor(producer, useAvro);
         errorLogMonitor.start();
         
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-            @Override
-            public void run() {
-                stop();
-            }
-        }));
+        Runtime.getRuntime().addShutdownHook(new Thread(AppMain::stop));
 
         try {
             Thread.currentThread().join();
