@@ -7,11 +7,19 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+/**
+ * The type Exe service.
+ */
 @Path("executor")
 public class ExeService {
 
     private static final ExecuteCmd EXECUTE_CMD = ExecuteCmd.INSTANCE;
 
+    /**
+     * Start canal response result.
+     *
+     * @return the response result
+     */
     @GET
     @Path("start/canal")
     @Produces(MediaType.APPLICATION_JSON)
@@ -23,6 +31,11 @@ public class ExeService {
         return new ResponseResult();
     }
 
+    /**
+     * Stop canal response result.
+     *
+     * @return the response result
+     */
     @GET
     @Path("stop/canal")
     @Produces(MediaType.APPLICATION_JSON)
@@ -34,6 +47,11 @@ public class ExeService {
         return new ResponseResult();
     }
 
+    /**
+     * Start t agent response result.
+     *
+     * @return the response result
+     */
     @GET
     @Path("start/tagent")
     @Produces(MediaType.APPLICATION_JSON)
@@ -45,6 +63,11 @@ public class ExeService {
         return new ResponseResult();
     }
 
+    /**
+     * Stop t agent response result.
+     *
+     * @return the response result
+     */
     @GET
     @Path("stop/tagent")
     @Produces(MediaType.APPLICATION_JSON)

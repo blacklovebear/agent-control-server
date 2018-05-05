@@ -8,9 +8,9 @@ import com.google.common.collect.Sets;
 import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 
-/*
- * 联合配置Canal, TAgent
- * */
+/**
+ * 联合配置Canal, TAgent.
+ */
 public class UnionConfig {
 
     private String zkServers;
@@ -21,8 +21,13 @@ public class UnionConfig {
     private Set<Unit> units = Sets.newHashSet();
 
     private CanalServer canalServer;
-    private TAgent tAgent;
+    private TAgent tagent;
 
+    /**
+     * Check properties.
+     *
+     * @throws Exception the exception
+     */
     public void checkProperties() throws Exception {
         Preconditions
             .checkArgument(!Strings.isNullOrEmpty(zkServers), "zkServers is null or empty");
@@ -51,83 +56,159 @@ public class UnionConfig {
         }
     }
 
+    /**
+     * Config release to canal t agent.
+     */
     public void configReleaseToCanalTAgent() {
-        if (canalServer == null || tAgent == null) {
+        if (canalServer == null || tagent == null) {
             canalServer = new CanalServer();
-            tAgent = new TAgent();
+            tagent = new TAgent();
         }
         canalServer.setZkServers(this.zkServers);
-        tAgent.setSourceZkServers(this.zkServers);
-        tAgent.setSinkServers(this.kafkaServers);
-        tAgent.setRegistryUrl(this.registryUrl);
-        tAgent.setKafkaHighThroughput(this.kafkaHighThroughput);
-        tAgent.setUseAvro(this.useAvro);
+        tagent.setSourceZkServers(this.zkServers);
+        tagent.setSinkServers(this.kafkaServers);
+        tagent.setRegistryUrl(this.registryUrl);
+        tagent.setKafkaHighThroughput(this.kafkaHighThroughput);
+        tagent.setUseAvro(this.useAvro);
 
         units.forEach(unit -> {
             canalServer.addOrReplaceInstance(new CanalInstance(unit));
-            tAgent.addOrReplaceSource(new TAgent.Source(unit));
+            tagent.addOrReplaceSource(new TAgent.Source(unit));
         });
     }
 
+    /**
+     * Gets canal server.
+     *
+     * @return the canal server
+     */
     public CanalServer getCanalServer() {
         configReleaseToCanalTAgent();
         return canalServer;
     }
 
+    /**
+     * Gets t agent.
+     *
+     * @return the t agent
+     */
     public TAgent getTAgent() {
         configReleaseToCanalTAgent();
-        return tAgent;
+        return tagent;
     }
 
+    /**
+     * Add or replace unit.
+     *
+     * @param unit the unit
+     */
     public void addOrReplaceUnit(Unit unit) {
         units.remove(unit);
         units.add(unit);
     }
 
+    /**
+     * Is use avro boolean.
+     *
+     * @return the boolean
+     */
     public boolean isUseAvro() {
         return useAvro;
     }
 
+    /**
+     * Sets use avro.
+     *
+     * @param useAvro the use avro
+     */
     public void setUseAvro(boolean useAvro) {
         this.useAvro = useAvro;
     }
 
+    /**
+     * Sets kafka high throughput.
+     *
+     * @param kafkaHighThroughput the kafka high throughput
+     */
     public void setKafkaHighThroughput(boolean kafkaHighThroughput) {
         this.kafkaHighThroughput = kafkaHighThroughput;
     }
 
+    /**
+     * Gets zk servers.
+     *
+     * @return the zk servers
+     */
     public String getZkServers() {
         return zkServers;
     }
 
+    /**
+     * Sets zk servers.
+     *
+     * @param zkServers the zk servers
+     */
     public void setZkServers(String zkServers) {
         this.zkServers = zkServers;
     }
 
+    /**
+     * Gets kafka servers.
+     *
+     * @return the kafka servers
+     */
     public String getKafkaServers() {
         return kafkaServers;
     }
 
+    /**
+     * Sets kafka servers.
+     *
+     * @param kafkaServers the kafka servers
+     */
     public void setKafkaServers(String kafkaServers) {
         this.kafkaServers = kafkaServers;
     }
 
+    /**
+     * Gets registry url.
+     *
+     * @return the registry url
+     */
     public String getRegistryUrl() {
         return registryUrl;
     }
 
+    /**
+     * Sets registry url.
+     *
+     * @param registryUrl the registry url
+     */
     public void setRegistryUrl(String registryUrl) {
         this.registryUrl = registryUrl;
     }
 
+    /**
+     * Gets units.
+     *
+     * @return the units
+     */
     public Set<Unit> getUnits() {
         return units;
     }
 
+    /**
+     * Sets units.
+     *
+     * @param units the units
+     */
     public void setUnits(Set<Unit> units) {
         this.units = units;
     }
 
+    /**
+     * The type Unit.
+     */
     /*
      * 一个配置单元,就对应一个 Canal instance 并且带上 TAgent 的一些配置信息
      * */
@@ -140,6 +221,12 @@ public class UnionConfig {
         private String tableTopicSchemaMap;
         private String tableFieldSchemaMap;
 
+        /**
+         * Check properties.
+         *
+         * @param useAvro the use avro
+         * @throws Exception the exception
+         */
         public void checkProperties(boolean useAvro) throws Exception {
             Preconditions.checkArgument(!Strings.isNullOrEmpty(masterAddress),
                 "dbUsername is null or empty");
@@ -208,7 +295,8 @@ public class UnionConfig {
                     .forEach(item -> {
                         String[] result = item.split(":");
                         Preconditions.checkArgument(result.length == 2,
-                            "tableTopicSchemaMap format incorrect eg:db.tbl1:topic1;db.tbl2:topic2");
+                            "tableTopicSchemaMap format "
+                                + "incorrect eg:db.tbl1:topic1;db.tbl2:topic2");
 
                         Preconditions.checkArgument(!Strings.isNullOrEmpty(result[0].trim()),
                             "db.table cannot empty");
@@ -221,9 +309,11 @@ public class UnionConfig {
             Utility.isUrlAddressValid(masterAddress, "masterAddress");
         }
 
-        /*
-         * 关键: 当前默认将 masterAddress 作为 canal instance 名
-         * */
+        /**
+         * 关键: 当前默认将 masterAddress 作为 canal instance 名.
+         *
+         * @return the instance
+         */
         public String getInstance() {
             if (Strings.isNullOrEmpty(masterAddress)) {
                 return null;
@@ -232,42 +322,92 @@ public class UnionConfig {
             }
         }
 
+        /**
+         * Gets master address.
+         *
+         * @return the master address
+         */
         public String getMasterAddress() {
             return masterAddress;
         }
 
+        /**
+         * Sets master address.
+         *
+         * @param masterAddress the master address
+         */
         public void setMasterAddress(String masterAddress) {
             this.masterAddress = masterAddress;
         }
 
+        /**
+         * Gets db username.
+         *
+         * @return the db username
+         */
         public String getDbUsername() {
             return dbUsername;
         }
 
+        /**
+         * Sets db username.
+         *
+         * @param dbUsername the db username
+         */
         public void setDbUsername(String dbUsername) {
             this.dbUsername = dbUsername;
         }
 
+        /**
+         * Gets db password.
+         *
+         * @return the db password
+         */
         public String getDbPassword() {
             return dbPassword;
         }
 
+        /**
+         * Sets db password.
+         *
+         * @param dbPassword the db password
+         */
         public void setDbPassword(String dbPassword) {
             this.dbPassword = dbPassword;
         }
 
+        /**
+         * Gets table topic schema map.
+         *
+         * @return the table topic schema map
+         */
         public String getTableTopicSchemaMap() {
             return tableTopicSchemaMap;
         }
 
+        /**
+         * Sets table topic schema map.
+         *
+         * @param tableTopicSchemaMap the table topic schema map
+         */
         public void setTableTopicSchemaMap(String tableTopicSchemaMap) {
             this.tableTopicSchemaMap = tableTopicSchemaMap;
         }
 
+        /**
+         * Gets table field schema map.
+         *
+         * @return the table field schema map
+         */
         public String getTableFieldSchemaMap() {
             return tableFieldSchemaMap;
         }
 
+        /**
+         * Sets table field schema map.
+         *
+         * @param tableFieldSchemaMap the table field schema map
+         */
         public void setTableFieldSchemaMap(String tableFieldSchemaMap) {
             this.tableFieldSchemaMap = tableFieldSchemaMap;
         }

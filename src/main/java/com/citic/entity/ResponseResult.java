@@ -2,9 +2,9 @@ package com.citic.entity;
 
 public class ResponseResult {
 
-    public final static int ERROR = -1;
-    private final static int SUCCESS = 0;
-    private final static String SUCCESS_MESSAGE = "success";
+    public static final int ERROR = -1;
+    private static final int SUCCESS = 0;
+    private static final String SUCCESS_MESSAGE = "success";
 
     private int code = SUCCESS;
     private String message = SUCCESS_MESSAGE;
@@ -35,9 +35,9 @@ public class ResponseResult {
 
     @Override
     public String toString() {
-        return "ResponseResult{" +
-            "code=" + code +
-            ", message='" + message + '\'' +
-            '}';
+        return "ResponseResult{"
+            + "code=" + code
+            + ", message='" + message + '\''
+            + '}';
     }
 }

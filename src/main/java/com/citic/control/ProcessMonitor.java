@@ -34,6 +34,9 @@ import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The type Process monitor.
+ */
 public class ProcessMonitor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessMonitor.class);
@@ -50,11 +53,20 @@ public class ProcessMonitor {
     private final boolean useAvro;
     private ScheduledExecutorService executorService;
 
+    /**
+     * Instantiates a new Process monitor.
+     *
+     * @param producer the producer
+     * @param useAvro the use avro
+     */
     public ProcessMonitor(SimpleKafkaProducer<Object, Object> producer, boolean useAvro) {
         this.producer = producer;
         this.useAvro = useAvro;
     }
 
+    /**
+     * Start.
+     */
     public void start() {
         executorService = Executors.newSingleThreadScheduledExecutor(
             new ThreadFactoryBuilder().setNameFormat("process-monitor-%d")
@@ -66,6 +78,9 @@ public class ProcessMonitor {
             .scheduleAtFixedRate(new ProcessWatchRunnable(useAvro), 0, interval, TimeUnit.SECONDS);
     }
 
+    /**
+     * Stop.
+     */
     public void stop() {
         executorService.shutdown();
         try {
@@ -79,27 +94,27 @@ public class ProcessMonitor {
     }
 
 
-    private GenericRecord buildAvroRecord(String canalState, String tAgentState) {
+    private GenericRecord buildAvroRecord(String canalState, String tagentState) {
         String schemaString = Utility.getTableFieldSchema(ATTR_LIST, AVRO_PROCESS_MONITOR_TOPIC);
 
         Schema schema = SchemaCache.getSchema(schemaString);
         GenericRecord avroRecord = new GenericData.Record(schema);
         avroRecord.put(CANAL_STATE, canalState);
-        avroRecord.put(TAGENT_STATE, tAgentState);
+        avroRecord.put(TAGENT_STATE, tagentState);
 
         avroRecord.put(CURRENT_TIME, new SimpleDateFormat(SUPPORT_TIME_FORMAT).format(new Date()));
         avroRecord
-            .put(AGENT_IP, Utility.getLocalIP(AppConf.getConfig(AppConstants.AGENT_IP_INTERFACE)));
+            .put(AGENT_IP, Utility.getLocalIp(AppConf.getConfig(AppConstants.AGENT_IP_INTERFACE)));
         return avroRecord;
     }
 
-    private byte[] buildJsonRecord(String canalState, String tAgentState) {
+    private byte[] buildJsonRecord(String canalState, String tagentState) {
         JSONObject jsonRecord = new JSONObject();
         jsonRecord.put(CANAL_STATE, canalState);
-        jsonRecord.put(TAGENT_STATE, tAgentState);
+        jsonRecord.put(TAGENT_STATE, tagentState);
         jsonRecord.put(CURRENT_TIME, new SimpleDateFormat(SUPPORT_TIME_FORMAT).format(new Date()));
         jsonRecord
-            .put(AGENT_IP, Utility.getLocalIP(AppConf.getConfig(AppConstants.AGENT_IP_INTERFACE)));
+            .put(AGENT_IP, Utility.getLocalIp(AppConf.getConfig(AppConstants.AGENT_IP_INTERFACE)));
         return jsonRecord.toJSONString().getBytes(Charset.forName("UTF-8"));
     }
 
@@ -109,8 +124,8 @@ public class ProcessMonitor {
     private class ProcessWatchRunnable implements Runnable {
 
         private final ShellExecutor executor = new ShellExecutor();
-        private final String CanalCmd = AppConf.getConfig(CANAL_MONITOR_CMD);
-        private final String tAgentCmd = AppConf.getConfig(TAGENT_MONITOR_CMD);
+        private final String canalCmd = AppConf.getConfig(CANAL_MONITOR_CMD);
+        private final String tagentCmd = AppConf.getConfig(TAGENT_MONITOR_CMD);
         private final boolean useAvro;
 
         private ProcessWatchRunnable(boolean useAvro) {
@@ -120,7 +135,7 @@ public class ProcessMonitor {
         private String monitorCanal() {
             if (SystemUtils.IS_OS_LINUX) {
                 try {
-                    String state = executor.monitorProcess(this.CanalCmd, CANAL_PROCESS_NAME);
+                    String state = executor.monitorProcess(this.canalCmd, CANAL_PROCESS_NAME);
                     if (state.contains("running")) {
                         ExecuteCmd.INSTANCE.setCanalState(STATE_ALIVE);
                     } else if (state.contains("dead")) {
@@ -139,7 +154,7 @@ public class ProcessMonitor {
         private String monitorTAgent() {
             if (SystemUtils.IS_OS_LINUX) {
                 try {
-                    String state = executor.monitorProcess(this.tAgentCmd, TAGENT_PROCESS_NAME);
+                    String state = executor.monitorProcess(this.tagentCmd, TAGENT_PROCESS_NAME);
                     if (state.contains("running")) {
                         ExecuteCmd.INSTANCE.setTAgentState(STATE_ALIVE);
                     } else if (state.contains("dead")) {
@@ -159,15 +174,15 @@ public class ProcessMonitor {
         public void run() {
 
             String canalState = monitorCanal();
-            String tAgentState = monitorTAgent();
+            String tagentState = monitorTAgent();
 
             try {
-                if (canalState != null && tAgentState != null) {
+                if (canalState != null && tagentState != null) {
                     if (useAvro) {
-                        GenericRecord avroRecord = buildAvroRecord(canalState, tAgentState);
+                        GenericRecord avroRecord = buildAvroRecord(canalState, tagentState);
                         producer.send(AVRO_PROCESS_MONITOR_TOPIC, avroRecord);
                     } else {
-                        byte[] jsonRecord = buildJsonRecord(canalState, tAgentState);
+                        byte[] jsonRecord = buildJsonRecord(canalState, tagentState);
                         producer.send(JSON_PROCESS_MONITOR_TOPIC, jsonRecord);
                     }
                 }

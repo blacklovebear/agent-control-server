@@ -21,6 +21,12 @@ import org.apache.kafka.clients.producer.RecordMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The type Simple kafka producer.
+ *
+ * @param <K> the type parameter
+ * @param <V> the type parameter
+ */
 /*
  * 发送消息到 kafka
  * */
@@ -32,6 +38,12 @@ public class SimpleKafkaProducer<K, V> {
     private boolean syncSend;
     private volatile boolean shutDown = false;
 
+    /**
+     * Instantiates a new Simple kafka producer.
+     *
+     * @param syncSend the sync send
+     * @param useAvro the use avro
+     */
     public SimpleKafkaProducer(boolean syncSend, boolean useAvro) {
         Properties producerConfig = new Properties();
 
@@ -56,22 +68,59 @@ public class SimpleKafkaProducer<K, V> {
         LOGGER.info("Started Producer.  sync  : {}", syncSend);
     }
 
+    /**
+     * Send.
+     *
+     * @param topic the topic
+     * @param v the v
+     */
     public void send(String topic, V v) {
         send(topic, -1, null, v, new DummyCallback());
     }
 
+    /**
+     * Send.
+     *
+     * @param topic the topic
+     * @param k the k
+     * @param v the v
+     */
     public void send(String topic, K k, V v) {
         send(topic, -1, k, v, new DummyCallback());
     }
 
+    /**
+     * Send.
+     *
+     * @param topic the topic
+     * @param partition the partition
+     * @param v the v
+     */
     public void send(String topic, int partition, V v) {
         send(topic, partition, null, v, new DummyCallback());
     }
 
+    /**
+     * Send.
+     *
+     * @param topic the topic
+     * @param partition the partition
+     * @param k the k
+     * @param v the v
+     */
     public void send(String topic, int partition, K k, V v) {
         send(topic, partition, k, v, new DummyCallback());
     }
 
+    /**
+     * Send.
+     *
+     * @param topic the topic
+     * @param partition the partition
+     * @param key the key
+     * @param value the value
+     * @param callback the callback
+     */
     public void send(String topic, int partition, K key, V value, Callback callback) {
         if (shutDown) {
             throw new RuntimeException("Producer is closed.");
@@ -95,6 +144,9 @@ public class SimpleKafkaProducer<K, V> {
         }
     }
 
+    /**
+     * Close.
+     */
     public void close() {
         shutDown = true;
         try {

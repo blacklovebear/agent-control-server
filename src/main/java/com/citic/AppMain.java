@@ -29,15 +29,23 @@ public class AppMain {
     private static ErrorLogMonitor errorLogMonitor;
 
 
+    /**
+     * Gets error log monitor.
+     *
+     * @return the error log monitor
+     */
     public static ErrorLogMonitor getErrorLogMonitor() {
         return errorLogMonitor;
     }
 
+    /**
+     * Start.
+     */
     public static void start() {
         String baseUri = AppConf.getConfig(AppConstants.AGENT_BASE_URI);
         boolean useAvro = BooleanUtils.toBoolean(AppConf.getConfig(KAFKA_USE_AVRO));
 
-        URI BASE_URI = URI.create(baseUri);
+        URI uri = URI.create(baseUri);
 
         ResourceConfig resourceConfig = new ResourceConfig(
             ConfigurationService.class,
@@ -45,9 +53,9 @@ public class AppMain {
             MyExceptionMapper.class
         );
 
-        server = NettyHttpContainerProvider.createHttp2Server(BASE_URI, resourceConfig, null);
+        server = NettyHttpContainerProvider.createHttp2Server(uri, resourceConfig, null);
 
-        LOGGER.info("Jersey App on Netty Server starting: {}", BASE_URI.toString());
+        LOGGER.info("Jersey App on Netty Server starting: {}", uri.toString());
 
         producer = new SimpleKafkaProducer<>(false, useAvro);
         // 启动对进程的监控
@@ -67,6 +75,9 @@ public class AppMain {
         }
     }
 
+    /**
+     * Stop.
+     */
     public static void stop() {
         processMonitor.stop();
         errorLogMonitor.stop();
@@ -74,6 +85,11 @@ public class AppMain {
         server.close();
     }
 
+    /**
+     * The entry point of application.
+     *
+     * @param args the input arguments
+     */
     public static void main(String[] args) {
         start();
     }

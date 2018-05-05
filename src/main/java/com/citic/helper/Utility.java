@@ -32,12 +32,22 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The type Utility.
+ */
 public class Utility {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Utility.class);
     private static final String DEFAULT_IP = "127.0.0.1";
 
 
+    /**
+     * Exe cmd int.
+     *
+     * @param homeDir the home dir
+     * @param cmd the cmd
+     * @return the int
+     */
     public static int exeCmd(String homeDir, String cmd) {
         int exitCode = 0;
         ShellExecutor executor = new ShellExecutor(homeDir);
@@ -50,9 +60,11 @@ public class Utility {
     }
 
 
-    /*
-     * 根据传入的路径生成父文件夹路径
-     * */
+    /**
+     * 根据传入的路径生成父文件夹路径.
+     *
+     * @param filePath the file path
+     */
     public static void createParentDirs(String filePath) {
         Path file = Paths.get(filePath);
         Path parent = file.getParent();
@@ -66,10 +78,13 @@ public class Utility {
         }
     }
 
-    /*
-     * 获取本机ip
-     * */
-    public static String getLocalIP(String interfaceName) {
+    /**
+     * Gets local ip.
+     *
+     * @param interfaceName the interface name
+     * @return the local ip
+     */
+    public static String getLocalIp(String interfaceName) {
         String ip = DEFAULT_IP;
         Enumeration<?> e1 = null;
         try {
@@ -96,11 +111,14 @@ public class Utility {
         return ip;
     }
 
-    /*
-     * 通过反射,从getter方法中获取 对于的属性值
-     * */
+    /**
+     * 通过反射,从getter方法中获取 对于的属性值.
+     *
+     * @param bean the bean
+     * @return the map
+     */
     public static Map<String, Object> guavaBeanProperties(Object bean) {
-        Object NULL = new Object();
+        Object nullObject = new Object();
         try {
             return Maps.transformValues(
                 Arrays.stream(
@@ -113,18 +131,25 @@ public class Utility {
                                 Object result = pd.getReadMethod()
                                     .invoke(bean);
                                 builder.put(pd.getName(),
-                                    firstNonNull(result, NULL));
+                                    firstNonNull(result, nullObject));
                             } catch (Exception e) {
                                 throw propagate(e);
                             }
                         },
                         (left, right) -> left.putAll(right.build()))
-                    .build(), v -> v == NULL ? null : v);
+                    .build(), v -> v == nullObject ? null : v);
         } catch (IntrospectionException e) {
             throw propagate(e);
         }
     }
 
+    /**
+     * Is urls address list valid.
+     *
+     * @param serverUrls the server urls
+     * @param fieldName the field name
+     * @throws ServerUrlsFormatException the server urls format exception
+     */
     public static void isUrlsAddressListValid(String serverUrls, String fieldName)
         throws ServerUrlsFormatException {
         String errMessage = String.format("The %s are malformed. The %s : \"%s\" .",
@@ -145,6 +170,13 @@ public class Utility {
         }
     }
 
+    /**
+     * Is url address valid.
+     *
+     * @param serverUrl the server url
+     * @param fieldName the field name
+     * @throws Exception the exception
+     */
     public static void isUrlAddressValid(String serverUrl, String fieldName) throws Exception {
         String errMessage = String.format("The %s are malformed. The %s : \"%s\" .",
             fieldName, fieldName, serverUrl);
@@ -161,9 +193,13 @@ public class Utility {
         }
     }
 
-    /*
-     * get schema String
-     * */
+    /**
+     * Gets table field schema.
+     *
+     * @param schemaFieldList the schema field list
+     * @param schemaName the schema name
+     * @return the table field schema
+     */
     public static String getTableFieldSchema(List<String> schemaFieldList, String schemaName) {
         List<String> resultList = Lists.newArrayList();
         String schema = "{"
@@ -180,9 +216,12 @@ public class Utility {
         return schema;
     }
 
-    /*
-     * deleteFileOrFolder
-     * */
+    /**
+     * Delete file or folder.
+     *
+     * @param path the path
+     * @throws IOException the io exception
+     */
     public static void deleteFileOrFolder(final Path path) throws IOException {
         Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
             @Override
@@ -218,10 +257,21 @@ public class Utility {
 
         private static final long serialVersionUID = 1L;
 
+        /**
+         * Instantiates a new Server urls format exception.
+         *
+         * @param msg the msg
+         */
         ServerUrlsFormatException(String msg) {
             super(msg);
         }
 
+        /**
+         * Instantiates a new Server urls format exception.
+         *
+         * @param msg the msg
+         * @param throwable the throwable
+         */
         ServerUrlsFormatException(String msg, Throwable throwable) {
             super(msg, throwable);
         }

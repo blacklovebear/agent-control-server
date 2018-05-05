@@ -13,21 +13,36 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
+/**
+ * The type Shell executor.
+ */
 public class ShellExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ShellExecutor.class);
     private String homeDirectory = System.getProperty("user.home");
 
+    /**
+     * Instantiates a new Shell executor.
+     */
     public ShellExecutor() {
     }
 
+    /**
+     * Instantiates a new Shell executor.
+     *
+     * @param homeDirectory the home directory
+     */
     public ShellExecutor(String homeDirectory) {
         this.homeDirectory = homeDirectory;
     }
 
-    /*
-     * 在机器执行命令，并用 LOGGER 记录命令执行结果信息
-     * */
+    /**
+     * 在机器执行命令，并用 LOGGER 记录命令执行结果信息.
+     *
+     * @param cmd the cmd
+     * @return the int
+     * @throws Exception the exception
+     */
     public int executeCmd(String cmd) throws Exception {
         ProcessBuilder builder = new ProcessBuilder();
         LOGGER.info("home dir: {}, cmd: {}", this.homeDirectory, cmd);
@@ -49,9 +64,14 @@ public class ShellExecutor {
         return process.waitFor();
     }
 
-    /*
-     * 监控进程状态
-     * */
+    /**
+     * 监控进程状态.
+     *
+     * @param cmd the cmd
+     * @param processName the process name
+     * @return the string
+     * @throws Exception the exception
+     */
     public String monitorProcess(String cmd, String processName) throws Exception {
         ProcessBuilder builder = new ProcessBuilder();
         if (SystemUtils.IS_OS_LINUX) {
@@ -77,6 +97,12 @@ public class ShellExecutor {
         private InputStream inputStream;
         private Consumer<String> consumer;
 
+        /**
+         * Instantiates a new Stream gobbler.
+         *
+         * @param inputStream the input stream
+         * @param consumer the consumer
+         */
         StreamGobbler(InputStream inputStream, Consumer<String> consumer) {
             this.inputStream = inputStream;
             this.consumer = consumer;

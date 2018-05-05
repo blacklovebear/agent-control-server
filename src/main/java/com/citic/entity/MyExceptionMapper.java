@@ -1,6 +1,5 @@
 package com.citic.entity;
 
-
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -22,7 +21,7 @@ public class MyExceptionMapper implements ExceptionMapper<Throwable> {
         LOGGER.error(e.toString(), e);
         return Response.status(Response.Status.OK)
             .entity(new ResponseResult(ResponseResult.ERROR, e.toString()))
-            .type(MediaType.APPLICATION_JSON).
-                build();
+            .type(MediaType.APPLICATION_JSON)
+            .build();
     }
 }

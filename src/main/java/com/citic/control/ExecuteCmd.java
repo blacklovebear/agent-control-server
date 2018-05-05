@@ -15,28 +15,55 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The enum Execute cmd.
+ */
 public enum ExecuteCmd {
+    /**
+     * Instance execute cmd.
+     */
     INSTANCE;
 
+    /**
+     * The Logger.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(ExecuteCmd.class);
+    /**
+     * The Canal state.
+     */
     final AtomicBoolean canalState = new AtomicBoolean(STATE_DEAD);
-    final AtomicBoolean tAgentState = new AtomicBoolean(STATE_DEAD);
+    /**
+     * The T agent state.
+     */
+    final AtomicBoolean tagentState = new AtomicBoolean(STATE_DEAD);
 
+    /**
+     * Sets canal state.
+     *
+     * @param state the state
+     */
     void setCanalState(boolean state) {
         synchronized (canalState) {
             this.canalState.set(state);
         }
     }
 
+    /**
+     * Sets t agent state.
+     *
+     * @param state the state
+     */
     void setTAgentState(boolean state) {
-        synchronized (tAgentState) {
-            this.tAgentState.set(state);
+        synchronized (tagentState) {
+            this.tagentState.set(state);
         }
     }
 
-    /*
-     * 启动 canal server
-     * */
+    /**
+     * Start canal int.
+     *
+     * @return the int
+     */
     public int startCanal() {
         int exitCode = 0;
         synchronized (canalState) {
@@ -50,9 +77,11 @@ public enum ExecuteCmd {
         return exitCode;
     }
 
-    /*
-     * 停止 canal server
-     * */
+    /**
+     * Stop canal int.
+     *
+     * @return the int
+     */
     public int stopCanal() {
         int exitCode;
         synchronized (canalState) {
@@ -67,13 +96,15 @@ public enum ExecuteCmd {
         return exitCode;
     }
 
-    /*
-     * 启动 TAgent
-     * */
+    /**
+     * Start t agent int.
+     *
+     * @return the int
+     */
     public int startTAgent() {
         int exitCode = 0;
-        synchronized (tAgentState) {
-            if (tAgentState.get() == STATE_ALIVE) {
+        synchronized (tagentState) {
+            if (tagentState.get() == STATE_ALIVE) {
                 return exitCode;
             }
 
@@ -83,13 +114,15 @@ public enum ExecuteCmd {
         return exitCode;
     }
 
-    /*
-     * 停止 TAgent
-     * */
+    /**
+     * Stop t agent int.
+     *
+     * @return the int
+     */
     public int stopTAgent() {
         int exitCode = 0;
-        synchronized (tAgentState) {
-            if (tAgentState.get() == STATE_DEAD) {
+        synchronized (tagentState) {
+            if (tagentState.get() == STATE_DEAD) {
                 return exitCode;
             }
 
@@ -97,7 +130,7 @@ public enum ExecuteCmd {
                 AppConf.getConfig(TAGENT_STOP_CMD));
 
             if (exitCode == 0) {
-                tAgentState.set(STATE_DEAD);
+                tagentState.set(STATE_DEAD);
             }
         }
         return exitCode;

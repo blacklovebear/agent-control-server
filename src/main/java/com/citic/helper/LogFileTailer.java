@@ -13,6 +13,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
+/**
+ * The type Log file tailer.
+ */
 public class LogFileTailer implements Runnable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LogFileTailer.class);
@@ -23,6 +26,13 @@ public class LogFileTailer implements Runnable {
     private boolean shouldIRun = true;
     private File tailFile = null;
 
+    /**
+     * Instantiates a new Log file tailer.
+     *
+     * @param filePath the file path
+     * @param myInterval the my interval
+     * @param logHandler the log handler
+     */
     public LogFileTailer(String filePath, int myInterval, BiConsumer<String, String> logHandler) {
         this.filePath = Paths.get(filePath);
         tailFile = new File(filePath);
@@ -31,6 +41,13 @@ public class LogFileTailer implements Runnable {
     }
 
 
+    /**
+     * Instantiates a new Log file tailer.
+     *
+     * @param filePath the file path
+     * @param myInterval the my interval
+     * @param logHandler the log handler
+     */
     public LogFileTailer(File filePath, int myInterval, BiConsumer<String, String> logHandler) {
         this.filePath = filePath.toPath();
         tailFile = filePath;
@@ -38,21 +55,26 @@ public class LogFileTailer implements Runnable {
         this.logHandler = logHandler;
     }
 
-    public static void main(String argv[]) {
+    /**
+     * The entry point of application.
+     *
+     * @param argv the input arguments
+     */
+    public static void main(String[] argv) {
 
         ExecutorService tailExecutor = Executors.newFixedThreadPool(4);
 
         // Replace username with your real value
         // For windows provide different path like: c:\\temp\\tail.log
         String filePath = "/Users/macbook/git_repo/agent-control-server/logs/test.log";
-        LogFileTailer tail_tailF = new LogFileTailer(filePath, 2000, (message, logPath) -> {
+        LogFileTailer logFileTailer = new LogFileTailer(filePath, 2000, (message, logPath) -> {
             if (message.contains("ERROR")) {
                 System.out.println(message);
             }
         });
 
         // Start running log file tailer on tail.log file
-        tailExecutor.execute(tail_tailF);
+        tailExecutor.execute(logFileTailer);
 
     }
 
@@ -60,10 +82,16 @@ public class LogFileTailer implements Runnable {
         logHandler.accept(message, this.filePath.toString());
     }
 
+    /**
+     * Stop running.
+     */
     public void stopRunning() {
         shouldIRun = false;
     }
 
+    /**
+     * run.
+     */
     public void run() {
         LOGGER.debug("tail -f {}", this.filePath.toString());
         // 确保log文件存在

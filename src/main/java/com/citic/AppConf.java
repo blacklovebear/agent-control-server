@@ -15,7 +15,7 @@ public class AppConf {
     private static Properties configProp = new Properties();
 
     static {
-//        PropertyConfigurator.configure("config/log4j.properties");
+        // PropertyConfigurator.configure("config/log4j.properties");
         LOGGER.info("## load app configurations");
         String conf = System.getProperty("server.conf", "classpath:conf/application.properties");
 

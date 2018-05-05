@@ -34,6 +34,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
+/**
+ * The type Generate conf.
+ */
 public class GenerateConf {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GenerateConf.class);
@@ -41,6 +44,9 @@ public class GenerateConf {
     private VelocityEngine ve;
     private String templateDir = System.getProperty("template.dir", "classpath:template");
 
+    /**
+     * Instantiates a new Generate conf.
+     */
     public GenerateConf() {
 
         ve = new VelocityEngine();
@@ -93,9 +99,11 @@ public class GenerateConf {
         }
     }
 
-    /*
-     * 生成 Canal 相关的配置文件
-     * */
+    /**
+     * 生成 Canal 相关的配置文件.
+     *
+     * @param config the config
+     */
     public void generateCanal(CanalServer config) {
         if (config == null) {
             return;
@@ -178,8 +186,10 @@ public class GenerateConf {
         this.writeConf(canalInstance, getCanalInstanceConf(config.getInstance()), vx);
     }
 
-    /*
-     * 生成 TAgent 的配置文件
+    /**
+     * 生成 TAgent 的配置文件.
+     *
+     * @param config the config
      */
     public void generateTAgent(TAgent config) {
         if (config == null) {

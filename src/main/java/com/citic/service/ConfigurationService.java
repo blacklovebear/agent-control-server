@@ -15,11 +15,21 @@ import javax.ws.rs.core.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The type Configuration service.
+ */
 @Path("config")
 public class ConfigurationService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AppMain.class);
 
+    /**
+     * Config union response result.
+     *
+     * @param unionConfig the union config
+     * @return the response result
+     * @throws Exception the exception
+     */
     @POST
     @Path("union")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -43,6 +53,13 @@ public class ConfigurationService {
         return new ResponseResult();
     }
 
+    /**
+     * Add union config unit response result.
+     *
+     * @param unitConfig the unit config
+     * @return the response result
+     * @throws Exception the exception
+     */
     @POST
     @Path("union/unit")
     @Consumes(MediaType.APPLICATION_JSON)

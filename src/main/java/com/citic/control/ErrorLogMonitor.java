@@ -32,6 +32,9 @@ import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The type Error log monitor.
+ */
 public class ErrorLogMonitor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ErrorLogMonitor.class);
@@ -49,6 +52,12 @@ public class ErrorLogMonitor {
     private ExecutorService executorService;
 
 
+    /**
+     * Instantiates a new Error log monitor.
+     *
+     * @param producer the producer
+     * @param useAvro the use avro
+     */
     public ErrorLogMonitor(SimpleKafkaProducer<Object, Object> producer, boolean useAvro) {
         this.producer = producer;
         this.useAvro = useAvro;
@@ -75,7 +84,7 @@ public class ErrorLogMonitor {
 
         avroRecord.put(CURRENT_TIME, new SimpleDateFormat(SUPPORT_TIME_FORMAT).format(new Date()));
         avroRecord
-            .put(AGENT_IP, Utility.getLocalIP(AppConf.getConfig(AppConstants.AGENT_IP_INTERFACE)));
+            .put(AGENT_IP, Utility.getLocalIp(AppConf.getConfig(AppConstants.AGENT_IP_INTERFACE)));
 
         producer.send(AVRO_ERROR_LOG_TOPIC, avroRecord);
     }
@@ -87,30 +96,30 @@ public class ErrorLogMonitor {
 
         jsonRecord.put(CURRENT_TIME, new SimpleDateFormat(SUPPORT_TIME_FORMAT).format(new Date()));
         jsonRecord
-            .put(AGENT_IP, Utility.getLocalIP(AppConf.getConfig(AppConstants.AGENT_IP_INTERFACE)));
+            .put(AGENT_IP, Utility.getLocalIp(AppConf.getConfig(AppConstants.AGENT_IP_INTERFACE)));
 
         producer.send(JSON_ERROR_LOG_TOPIC, jsonRecord);
     }
 
     private void startLogFile(String logFilePath) {
-        LogFileTailer tail_tailF = new LogFileTailer(logFilePath, 2000, this::sendErrorLog);
-        executorService.submit(tail_tailF);
+        LogFileTailer logFileTailer = new LogFileTailer(logFilePath, 2000, this::sendErrorLog);
+        executorService.submit(logFileTailer);
     }
 
     private void startLogFile(File logFilePath) {
-        LogFileTailer tail_tailF = new LogFileTailer(logFilePath, 2000, this::sendErrorLog);
-        executorService.submit(tail_tailF);
+        LogFileTailer logFileTailer = new LogFileTailer(logFilePath, 2000, this::sendErrorLog);
+        executorService.submit(logFileTailer);
     }
 
     private void startTAgent() {
-        String tAgentLogPath = AppConf.getConfig(TAGENT_HOME_DIR) + File.separator +
-            AppConf.getConfig(TAGENT_LOG_FILE_PATH);
-        startLogFile(tAgentLogPath);
+        String tagentlogpath = AppConf.getConfig(TAGENT_HOME_DIR) + File.separator
+            + AppConf.getConfig(TAGENT_LOG_FILE_PATH);
+        startLogFile(tagentlogpath);
     }
 
     private void startCanal() {
-        String canalLogsDir = AppConf.getConfig(CANAL_HOME_DIR) + File.separator +
-            AppConf.getConfig(CANAL_LOGS_DIR);
+        String canalLogsDir = AppConf.getConfig(CANAL_HOME_DIR) + File.separator
+            + AppConf.getConfig(CANAL_LOGS_DIR);
 
         File logsDir = new File(canalLogsDir);
         if (logsDir.listFiles() == null) {
@@ -129,6 +138,9 @@ public class ErrorLogMonitor {
         }
     }
 
+    /**
+     * Start.
+     */
     public synchronized void start() {
         if (this.executorService != null) {
             this.stop();
@@ -139,20 +151,25 @@ public class ErrorLogMonitor {
         startTAgent();
     }
 
+    /**
+     * Start.
+     *
+     * @param instanceList the instance list
+     */
     public synchronized void start(List<String> instanceList) {
         if (this.executorService != null) {
             this.stop();
         }
 
         this.executorService = Executors.newCachedThreadPool();
-        startCanal(instanceList);
+        startCanalInstances(instanceList);
         startTAgent();
     }
 
 
-    private void startCanal(List<String> instanceList) {
-        String canalLogsDir = AppConf.getConfig(CANAL_HOME_DIR) + File.separator +
-            AppConf.getConfig(CANAL_LOGS_DIR);
+    private void startCanalInstances(List<String> instanceList) {
+        String canalLogsDir = AppConf.getConfig(CANAL_HOME_DIR) + File.separator
+            + AppConf.getConfig(CANAL_LOGS_DIR);
 
         instanceList.forEach(instanceName -> {
             String logFile = canalLogsDir + File.separator
@@ -162,6 +179,9 @@ public class ErrorLogMonitor {
         });
     }
 
+    /**
+     * Stop.
+     */
     public synchronized void stop() {
         executorService.shutdownNow();
         try {
