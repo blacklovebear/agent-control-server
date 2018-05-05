@@ -23,12 +23,13 @@ import static java.nio.file.FileVisitResult.CONTINUE;
 import static java.nio.file.FileVisitResult.TERMINATE;
 
 public class Utility {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(Utility.class);
     private static final String DEFAULT_IP = "127.0.0.1";
 
 
     public static int exeCmd(String homeDir, String cmd) {
-        int  exitCode = 0;
+        int exitCode = 0;
         ShellExecutor executor = new ShellExecutor(homeDir);
         try {
             exitCode = executor.executeCmd(cmd);
@@ -56,8 +57,8 @@ public class Utility {
     }
 
     /*
-    * 获取本机ip
-    * */
+     * 获取本机ip
+     * */
     public static String getLocalIP(String interfaceName) {
         String ip = DEFAULT_IP;
         Enumeration<?> e1 = null;
@@ -74,8 +75,9 @@ public class Utility {
                 Enumeration<?> e2 = ni.getInetAddresses();
                 while (e2.hasMoreElements()) {
                     InetAddress ia = (InetAddress) e2.nextElement();
-                    if (ia instanceof Inet6Address)
+                    if (ia instanceof Inet6Address) {
                         continue;
+                    }
                     ip = ia.getHostAddress();
                 }
                 break;
@@ -85,38 +87,38 @@ public class Utility {
     }
 
     /*
-    * 通过反射,从getter方法中获取 对于的属性值
-    * */
+     * 通过反射,从getter方法中获取 对于的属性值
+     * */
     public static Map<String, Object> guavaBeanProperties(Object bean) {
         Object NULL = new Object();
         try {
             return Maps.transformValues(
-                    Arrays.stream(
-                            Introspector.getBeanInfo(bean.getClass(), Object.class)
-                                    .getPropertyDescriptors())
-                            .filter(pd -> Objects.nonNull(pd.getReadMethod()))
-                            .collect(ImmutableMap::<String, Object>builder,
-                                    (builder, pd) -> {
-                                        try {
-                                            Object result = pd.getReadMethod()
-                                                    .invoke(bean);
-                                            builder.put(pd.getName(),
-                                                    firstNonNull(result, NULL));
-                                        } catch (Exception e) {
-                                            throw propagate(e);
-                                        }
-                                    },
-                                    (left, right) -> left.putAll(right.build()))
-                            .build(), v -> v == NULL ? null : v);
+                Arrays.stream(
+                    Introspector.getBeanInfo(bean.getClass(), Object.class)
+                        .getPropertyDescriptors())
+                    .filter(pd -> Objects.nonNull(pd.getReadMethod()))
+                    .collect(ImmutableMap::<String, Object>builder,
+                        (builder, pd) -> {
+                            try {
+                                Object result = pd.getReadMethod()
+                                    .invoke(bean);
+                                builder.put(pd.getName(),
+                                    firstNonNull(result, NULL));
+                            } catch (Exception e) {
+                                throw propagate(e);
+                            }
+                        },
+                        (left, right) -> left.putAll(right.build()))
+                    .build(), v -> v == NULL ? null : v);
         } catch (IntrospectionException e) {
             throw propagate(e);
         }
     }
 
     public static void isUrlsAddressListValid(String serverUrls, String fieldName)
-            throws ServerUrlsFormatException {
+        throws ServerUrlsFormatException {
         String errMessage = String.format("The %s are malformed. The %s : \"%s\" .",
-                fieldName, fieldName, serverUrls);
+            fieldName, fieldName, serverUrls);
 
         if (StringUtils.isNotEmpty(serverUrls)) {
             for (String serverUrl : serverUrls.split(",")) {
@@ -135,7 +137,7 @@ public class Utility {
 
     public static void isUrlAddressValid(String serverUrl, String fieldName) throws Exception {
         String errMessage = String.format("The %s are malformed. The %s : \"%s\" .",
-                fieldName, fieldName, serverUrl);
+            fieldName, fieldName, serverUrl);
 
         String[] hostAndPort = serverUrl.split(":");
         if (hostAndPort.length == 2 && !Strings.isNullOrEmpty(hostAndPort[1])) {
@@ -150,6 +152,7 @@ public class Utility {
     }
 
     private static class ServerUrlsFormatException extends Exception {
+
         private static final long serialVersionUID = 1L;
 
         ServerUrlsFormatException(String msg) {
@@ -162,16 +165,16 @@ public class Utility {
     }
 
     /*
-    * get schema String
-    * */
+     * get schema String
+     * */
     public static String getTableFieldSchema(List<String> schemaFieldList, String schemaName) {
         List<String> resultList = Lists.newArrayList();
         String schema = "{"
-                + "\"type\":\"record\","
-                + "\"name\":\""+ schemaName +"\","
-                + "\"fields\":[";
+            + "\"type\":\"record\","
+            + "\"name\":\"" + schemaName + "\","
+            + "\"fields\":[";
 
-        for (String fieldStr: schemaFieldList) {
+        for (String fieldStr : schemaFieldList) {
             String field = "{ \"name\":\"" + fieldStr + "\", \"type\":\"string\" }";
             resultList.add(field);
         }
@@ -182,17 +185,19 @@ public class Utility {
 
 
     /*
-    * deleteFileOrFolder
-    * */
+     * deleteFileOrFolder
+     * */
     public static void deleteFileOrFolder(final Path path) throws IOException {
-        Files.walkFileTree(path, new SimpleFileVisitor<Path>(){
-            @Override public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs)
-                    throws IOException {
+        Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs)
+                throws IOException {
                 Files.delete(file);
                 return CONTINUE;
             }
 
-            @Override public FileVisitResult visitFileFailed(final Path file, final IOException e) {
+            @Override
+            public FileVisitResult visitFileFailed(final Path file, final IOException e) {
                 return handleException(e);
             }
 
@@ -201,12 +206,17 @@ public class Utility {
                 return TERMINATE;
             }
 
-            @Override public FileVisitResult postVisitDirectory(final Path dir, final IOException e)
-                    throws IOException {
-                if(e!=null)return handleException(e);
+            @Override
+            public FileVisitResult postVisitDirectory(final Path dir, final IOException e)
+                throws IOException {
+                if (e != null) {
+                    return handleException(e);
+                }
                 Files.delete(dir);
                 return CONTINUE;
             }
         });
-    };
+    }
+
+    ;
 }

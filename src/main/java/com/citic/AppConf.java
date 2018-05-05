@@ -11,8 +11,9 @@ import java.util.Properties;
 import static com.citic.AppConstants.*;
 
 public class AppConf {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(AppConf.class);
-    private static Properties configProp =  new Properties();
+    private static Properties configProp = new Properties();
 
     static {
 //        PropertyConfigurator.configure("config/log4j.properties");

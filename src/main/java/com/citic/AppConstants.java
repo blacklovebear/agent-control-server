@@ -1,9 +1,11 @@
 package com.citic;
 
 // avro 格式序列化类
+
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
 
 public class AppConstants {
+
     public static final String CLASSPATH_URL_PREFIX = "classpath:";
 
     public static final boolean STATE_ALIVE = true;
@@ -44,12 +46,12 @@ public class AppConstants {
     public static final String TAGENT_PROCESS_NAME = "TAgent";
 
     public static final String KAFKA_AVRO_SERIALIZER =
-            "io.confluent.kafka.serializers.KafkaAvroSerializer";
+        "io.confluent.kafka.serializers.KafkaAvroSerializer";
 
     public static final String DEFAULT_KEY_SERIALIZER =
-            "org.apache.kafka.common.serialization.StringSerializer";
+        "org.apache.kafka.common.serialization.StringSerializer";
     public static final String DEFAULT_VALUE_SERIAIZER =
-            "org.apache.kafka.common.serialization.ByteArraySerializer";
+        "org.apache.kafka.common.serialization.ByteArraySerializer";
 
     public static final String SCHEMA_REGISTRY_URL_NAME = "schema.registry.url";
 

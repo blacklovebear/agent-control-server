@@ -3,10 +3,11 @@ package com.citic.entity;
 import java.util.*;
 
 /*
-* Canal Instance 配置获取实体类
-* instance 区别唯一 Instance
-*/
+ * Canal Instance 配置获取实体类
+ * instance 区别唯一 Instance
+ */
 public class CanalInstance {
+
     // canal instance
     private String instance;
     private String slaveId = String.format("%05d", new Random().nextInt(100000));
@@ -58,8 +59,8 @@ public class CanalInstance {
     }
 
     /*
-    * instance 是判断的唯一值
-    * */
+     * instance 是判断的唯一值
+     * */
     @Override
     public int hashCode() {
         return instance.hashCode();
@@ -68,16 +69,16 @@ public class CanalInstance {
     @Override
     public boolean equals(Object o) {
         return (o instanceof CanalInstance) &&
-                (((CanalInstance)o).getInstance()).equals(this.getInstance());
+            (((CanalInstance) o).getInstance()).equals(this.getInstance());
     }
 
     @Override
     public String toString() {
         return "CanalInstance{" +
-                "slaveId='" + slaveId + '\'' +
-                ", masterAddress='" + masterAddress + '\'' +
-                ", dbUsername='" + dbUsername + '\'' +
-                ", dbPassword='" + dbPassword + '\'' +
-                '}';
+            "slaveId='" + slaveId + '\'' +
+            ", masterAddress='" + masterAddress + '\'' +
+            ", dbUsername='" + dbUsername + '\'' +
+            ", dbPassword='" + dbPassword + '\'' +
+            '}';
     }
 }

@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import static com.citic.AppConstants.*;
 
 public class ProcessMonitor {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessMonitor.class);
 
     private static final String CANAL_STATE = "canal_state";
@@ -37,7 +38,7 @@ public class ProcessMonitor {
     private static final String JSON_PROCESS_MONITOR_TOPIC = "json_process_monitor";
 
     private static final List<String> ATTR_LIST = Lists.newArrayList(CANAL_STATE, TAGENT_STATE,
-            CURRENT_TIME, AGENT_IP);
+        CURRENT_TIME, AGENT_IP);
 
     private ScheduledExecutorService executorService;
     private final SimpleKafkaProducer<Object, Object> producer;
@@ -50,12 +51,13 @@ public class ProcessMonitor {
 
     public void start() {
         executorService = Executors.newSingleThreadScheduledExecutor(
-                new ThreadFactoryBuilder().setNameFormat("process-monitor-%d")
-                        .build());
+            new ThreadFactoryBuilder().setNameFormat("process-monitor-%d")
+                .build());
         // 进程检查时间间隔
         int interval = Integer.parseInt(AppConf.getConfig(PROCESS_MONITOR_INTERVAL));
         // 分两个线程单独监控
-        executorService.scheduleAtFixedRate(new ProcessWatchRunnable(useAvro), 0, interval, TimeUnit.SECONDS);
+        executorService
+            .scheduleAtFixedRate(new ProcessWatchRunnable(useAvro), 0, interval, TimeUnit.SECONDS);
     }
 
     public void stop() {
@@ -80,7 +82,8 @@ public class ProcessMonitor {
         avroRecord.put(TAGENT_STATE, tAgentState);
 
         avroRecord.put(CURRENT_TIME, new SimpleDateFormat(SUPPORT_TIME_FORMAT).format(new Date()));
-        avroRecord.put(AGENT_IP, Utility.getLocalIP(AppConf.getConfig(AppConstants.AGENT_IP_INTERFACE)));
+        avroRecord
+            .put(AGENT_IP, Utility.getLocalIP(AppConf.getConfig(AppConstants.AGENT_IP_INTERFACE)));
         return avroRecord;
     }
 
@@ -89,14 +92,16 @@ public class ProcessMonitor {
         jsonRecord.put(CANAL_STATE, canalState);
         jsonRecord.put(TAGENT_STATE, tAgentState);
         jsonRecord.put(CURRENT_TIME, new SimpleDateFormat(SUPPORT_TIME_FORMAT).format(new Date()));
-        jsonRecord.put(AGENT_IP, Utility.getLocalIP(AppConf.getConfig(AppConstants.AGENT_IP_INTERFACE)));
+        jsonRecord
+            .put(AGENT_IP, Utility.getLocalIP(AppConf.getConfig(AppConstants.AGENT_IP_INTERFACE)));
         return jsonRecord.toJSONString().getBytes(Charset.forName("UTF-8"));
     }
 
     /*
-    * 进程监控执行线程
-    * */
+     * 进程监控执行线程
+     * */
     private class ProcessWatchRunnable implements Runnable {
+
         private final ShellExecutor executor = new ShellExecutor();
         private final String CanalCmd = AppConf.getConfig(CANAL_MONITOR_CMD);
         private final String tAgentCmd = AppConf.getConfig(TAGENT_MONITOR_CMD);

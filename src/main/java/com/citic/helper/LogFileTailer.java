@@ -1,4 +1,5 @@
 package com.citic.helper;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,6 +16,7 @@ import java.util.function.BiConsumer;
 
 
 public class LogFileTailer implements Runnable {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(LogFileTailer.class);
 
     private int tailRunEveryNSeconds = 2000;
@@ -102,8 +104,9 @@ public class LogFileTailer implements Runnable {
         // For windows provide different path like: c:\\temp\\tail.log
         String filePath = "/Users/macbook/git_repo/agent-control-server/logs/test.log";
         LogFileTailer tail_tailF = new LogFileTailer(filePath, 2000, (message, logPath) -> {
-            if (message.contains("ERROR"))
+            if (message.contains("ERROR")) {
                 System.out.println(message);
+            }
         });
 
         // Start running log file tailer on tail.log file

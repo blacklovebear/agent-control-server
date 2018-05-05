@@ -9,17 +9,18 @@ import java.util.Set;
 
 
 /*
-* Canal Server 配置获取实体类
-*/
+ * Canal Server 配置获取实体类
+ */
 public class CanalServer {
+
     // canal server
     private String zkServers;
 
     private Set<CanalInstance> instances = Sets.newHashSet();
 
     /*
-    * 在已有的Canal Server中增加instance
-    * */
+     * 在已有的Canal Server中增加instance
+     * */
     public void addOrReplaceInstance(CanalInstance instance) {
         instances.remove(instance);
         instances.add(instance);
@@ -42,8 +43,8 @@ public class CanalServer {
     }
 
     /*
-    * velocity 模板 destinations
-    * */
+     * velocity 模板 destinations
+     * */
     public String getDestinations() {
         List<String> instancesNames = Lists.newArrayList();
         instances.forEach(instance -> instancesNames.add(instance.getInstance()));
@@ -53,7 +54,7 @@ public class CanalServer {
     @Override
     public String toString() {
         return "CanalServer{" +
-                "zkServers='" + zkServers + '\'' +
-                '}';
+            "zkServers='" + zkServers + '\'' +
+            '}';
     }
 }

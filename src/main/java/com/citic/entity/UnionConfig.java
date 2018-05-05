@@ -13,9 +13,10 @@ import java.util.List;
 import java.util.Set;
 
 /*
-* 联合配置Canal, TAgent
-* */
+ * 联合配置Canal, TAgent
+ * */
 public class UnionConfig {
+
     private String zkServers;
     private String kafkaServers;
     private String registryUrl;
@@ -27,24 +28,29 @@ public class UnionConfig {
     private TAgent tAgent;
 
     public void checkProperties() throws Exception {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(zkServers), "zkServers is null or empty");
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(kafkaServers), "kafkaServers is null or empty");
+        Preconditions
+            .checkArgument(!Strings.isNullOrEmpty(zkServers), "zkServers is null or empty");
+        Preconditions
+            .checkArgument(!Strings.isNullOrEmpty(kafkaServers), "kafkaServers is null or empty");
 
         Utility.isUrlsAddressListValid(zkServers, "zkServers");
         Utility.isUrlsAddressListValid(kafkaServers, "kafkaServers");
 
         if (useAvro) {
-            Preconditions.checkArgument(!Strings.isNullOrEmpty(registryUrl), "kafkaServers is null or empty");
+            Preconditions.checkArgument(!Strings.isNullOrEmpty(registryUrl),
+                "kafkaServers is null or empty");
             // 正确格式 http://localhost:8081
             String[] temp = registryUrl.split("//");
-            Preconditions.checkArgument(temp.length == 2, "registryUrl 格式错误, eg: http://localhost:8081");
-            Preconditions.checkArgument(temp[0].equals("http:"), "registryUrl 格式错误, eg: http://localhost:8081");
+            Preconditions
+                .checkArgument(temp.length == 2, "registryUrl 格式错误, eg: http://localhost:8081");
+            Preconditions.checkArgument(temp[0].equals("http:"),
+                "registryUrl 格式错误, eg: http://localhost:8081");
             Utility.isUrlAddressValid(temp[1], "registryUrl");
         }
 
         Preconditions.checkArgument(units.size() > 0, "units is empty");
 
-        for(Unit unit : units) {
+        for (Unit unit : units) {
             unit.checkProperties(useAvro);
         }
     }
@@ -110,9 +116,13 @@ public class UnionConfig {
         this.kafkaServers = kafkaServers;
     }
 
-    public String getRegistryUrl() { return registryUrl; }
+    public String getRegistryUrl() {
+        return registryUrl;
+    }
 
-    public void setRegistryUrl(String registryUrl) { this.registryUrl = registryUrl; }
+    public void setRegistryUrl(String registryUrl) {
+        this.registryUrl = registryUrl;
+    }
 
     public Set<Unit> getUnits() {
         return units;
@@ -123,9 +133,10 @@ public class UnionConfig {
     }
 
     /*
-    * 一个配置单元,就对应一个 Canal instance 并且带上 TAgent 的一些配置信息
-    * */
+     * 一个配置单元,就对应一个 Canal instance 并且带上 TAgent 的一些配置信息
+     * */
     public static class Unit {
+
         private String masterAddress;
         private String dbUsername;
         private String dbPassword;
@@ -134,74 +145,80 @@ public class UnionConfig {
         private String tableFieldSchemaMap;
 
         public void checkProperties(boolean useAvro) throws Exception {
-            Preconditions.checkArgument(!Strings.isNullOrEmpty(masterAddress), "dbUsername is null or empty");
-            Preconditions.checkArgument(!Strings.isNullOrEmpty(dbUsername), "dbUsername is null or empty");
-            Preconditions.checkArgument(!Strings.isNullOrEmpty(dbPassword), "dbPassword is null or empty");
-            Preconditions.checkArgument(!Strings.isNullOrEmpty(tableTopicSchemaMap), "tableTopicSchemaMap is null or empty");
-
+            Preconditions.checkArgument(!Strings.isNullOrEmpty(masterAddress),
+                "dbUsername is null or empty");
+            Preconditions
+                .checkArgument(!Strings.isNullOrEmpty(dbUsername), "dbUsername is null or empty");
+            Preconditions
+                .checkArgument(!Strings.isNullOrEmpty(dbPassword), "dbPassword is null or empty");
+            Preconditions.checkArgument(!Strings.isNullOrEmpty(tableTopicSchemaMap),
+                "tableTopicSchemaMap is null or empty");
 
             if (useAvro) {
-                Preconditions.checkArgument(!Strings.isNullOrEmpty(tableFieldSchemaMap), "tableFieldSchemaMap is null or empty");
+                Preconditions.checkArgument(!Strings.isNullOrEmpty(tableFieldSchemaMap),
+                    "tableFieldSchemaMap is null or empty");
 
                 Preconditions.checkArgument(StringUtils.countMatches(tableTopicSchemaMap, ";")
-                                == StringUtils.countMatches(tableFieldSchemaMap, ";"),
-                        "tableTopicSchemaMap 和 tableFieldSchemaMap参数个数配置不一致");
+                        == StringUtils.countMatches(tableFieldSchemaMap, ";"),
+                    "tableTopicSchemaMap 和 tableFieldSchemaMap参数个数配置不一致");
 
                 // test.test:test123:schema1;test.test1:test234:schema2
                 Splitter.on(';')
-                        .omitEmptyStrings()
-                        .trimResults()
-                        .split(tableTopicSchemaMap)
-                        .forEach(item ->{
-                            String[] result =  item.split(":");
-                            Preconditions.checkArgument(result.length == 3,
-                                    "tableTopicSchemaMap format incorrect eg: db.tbl1:topic1:schema1");
+                    .omitEmptyStrings()
+                    .trimResults()
+                    .split(tableTopicSchemaMap)
+                    .forEach(item -> {
+                        String[] result = item.split(":");
+                        Preconditions.checkArgument(result.length == 3,
+                            "tableTopicSchemaMap format incorrect eg: db.tbl1:topic1:schema1");
 
-                            Preconditions.checkArgument(!Strings.isNullOrEmpty(result[0].trim()),
-                                    "db.table cannot empty");
-                            Preconditions.checkArgument(!Strings.isNullOrEmpty(result[1].trim()),
-                                    "topic cannot empty");
-                            Preconditions.checkArgument(!Strings.isNullOrEmpty(result[2].trim()),
-                                    "schema cannot empty");
-                        });
+                        Preconditions.checkArgument(!Strings.isNullOrEmpty(result[0].trim()),
+                            "db.table cannot empty");
+                        Preconditions.checkArgument(!Strings.isNullOrEmpty(result[1].trim()),
+                            "topic cannot empty");
+                        Preconditions.checkArgument(!Strings.isNullOrEmpty(result[2].trim()),
+                            "schema cannot empty");
+                    });
 
                 Splitter.on(';')
-                        .omitEmptyStrings()
-                        .trimResults()
-                        .split(tableFieldSchemaMap)
-                        .forEach(item -> {
-                            Splitter.on(",")
-                                    .omitEmptyStrings()
-                                    .trimResults()
-                                    .split(item)
-                                    .forEach(field -> {
-                                        String[] fieldTableSchema = field.split("\\|");
-                                        Preconditions.checkArgument(fieldTableSchema.length == 2,
-                                                "tableFieldSchemaMap 格式错误 eg: id|id1,name|name1");
+                    .omitEmptyStrings()
+                    .trimResults()
+                    .split(tableFieldSchemaMap)
+                    .forEach(item -> {
+                        Splitter.on(",")
+                            .omitEmptyStrings()
+                            .trimResults()
+                            .split(item)
+                            .forEach(field -> {
+                                String[] fieldTableSchema = field.split("\\|");
+                                Preconditions.checkArgument(fieldTableSchema.length == 2,
+                                    "tableFieldSchemaMap 格式错误 eg: id|id1,name|name1");
 
-                                        Preconditions.checkArgument(!Strings.isNullOrEmpty(fieldTableSchema[0].trim()),
-                                                "table field cannot empty");
-                                        Preconditions.checkArgument(!Strings.isNullOrEmpty(fieldTableSchema[1].trim()),
-                                                "schema field cannot empty");
-                                    });
-                        });
+                                Preconditions.checkArgument(
+                                    !Strings.isNullOrEmpty(fieldTableSchema[0].trim()),
+                                    "table field cannot empty");
+                                Preconditions.checkArgument(
+                                    !Strings.isNullOrEmpty(fieldTableSchema[1].trim()),
+                                    "schema field cannot empty");
+                            });
+                    });
 
             } else {
                 // test.test:test123;test.test1:test234
                 Splitter.on(';')
-                        .omitEmptyStrings()
-                        .trimResults()
-                        .split(tableTopicSchemaMap)
-                        .forEach(item ->{
-                            String[] result =  item.split(":");
-                            Preconditions.checkArgument(result.length == 2,
-                                    "tableTopicSchemaMap format incorrect eg:db.tbl1:topic1;db.tbl2:topic2");
+                    .omitEmptyStrings()
+                    .trimResults()
+                    .split(tableTopicSchemaMap)
+                    .forEach(item -> {
+                        String[] result = item.split(":");
+                        Preconditions.checkArgument(result.length == 2,
+                            "tableTopicSchemaMap format incorrect eg:db.tbl1:topic1;db.tbl2:topic2");
 
-                            Preconditions.checkArgument(!Strings.isNullOrEmpty(result[0].trim()),
-                                    "db.table cannot empty");
-                            Preconditions.checkArgument(!Strings.isNullOrEmpty(result[1].trim()),
-                                    "topic cannot empty");
-                        });
+                        Preconditions.checkArgument(!Strings.isNullOrEmpty(result[0].trim()),
+                            "db.table cannot empty");
+                        Preconditions.checkArgument(!Strings.isNullOrEmpty(result[1].trim()),
+                            "topic cannot empty");
+                    });
 
             }
 
@@ -209,13 +226,14 @@ public class UnionConfig {
         }
 
         /*
-        * 关键: 当前默认将 masterAddress 作为 canal instance 名
-        * */
+         * 关键: 当前默认将 masterAddress 作为 canal instance 名
+         * */
         public String getInstance() {
-            if (Strings.isNullOrEmpty(masterAddress))
+            if (Strings.isNullOrEmpty(masterAddress)) {
                 return null;
-            else
+            } else {
                 return masterAddress.replace(":", "-").replace(".", "_");
+            }
         }
 
         public String getMasterAddress() {
@@ -259,13 +277,13 @@ public class UnionConfig {
         }
 
         @Override
-        public int hashCode(){
+        public int hashCode() {
             return masterAddress.hashCode();
         }
 
         @Override
-        public boolean equals(Object obj){
-            return obj instanceof Unit && masterAddress.equals(((Unit)obj).masterAddress);
+        public boolean equals(Object obj) {
+            return obj instanceof Unit && masterAddress.equals(((Unit) obj).masterAddress);
         }
     }
 }

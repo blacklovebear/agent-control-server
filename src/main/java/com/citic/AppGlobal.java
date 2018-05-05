@@ -6,6 +6,7 @@ import com.citic.entity.UnionConfig;
 
 
 public class AppGlobal {
+
     private static TAgent tAgent;
     private static CanalServer canalServer;
 

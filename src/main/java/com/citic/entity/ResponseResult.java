@@ -1,6 +1,7 @@
 package com.citic.entity;
 
 public class ResponseResult {
+
     public final static int ERROR = -1;
     private final static int SUCCESS = 0;
     private final static String SUCCESS_MESSAGE = "success";
@@ -13,7 +14,8 @@ public class ResponseResult {
         this.message = message;
     }
 
-    public ResponseResult() { }
+    public ResponseResult() {
+    }
 
     public void setCode(int code) {
         this.code = code;
@@ -34,8 +36,8 @@ public class ResponseResult {
     @Override
     public String toString() {
         return "ResponseResult{" +
-                "code=" + code +
-                ", message='" + message + '\'' +
-                '}';
+            "code=" + code +
+            ", message='" + message + '\'' +
+            '}';
     }
 }

@@ -1,7 +1,6 @@
 package com.citic.control;
 
 import com.citic.AppConf;
-import com.citic.helper.ShellExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,29 +29,30 @@ public enum ExecuteCmd {
     }
 
     /*
-    * 启动 canal server
-    * */
+     * 启动 canal server
+     * */
     public int startCanal() {
         int exitCode = 0;
         synchronized (canalState) {
-            if (canalState.get() == STATE_ALIVE)
+            if (canalState.get() == STATE_ALIVE) {
                 return exitCode;
+            }
 
             exitCode = exeCmd(AppConf.getConfig(CANAL_HOME_DIR),
-                    AppConf.getConfig(CANAL_START_CMD));
+                AppConf.getConfig(CANAL_START_CMD));
         }
         return exitCode;
     }
 
     /*
-    * 停止 canal server
-    * */
+     * 停止 canal server
+     * */
     public int stopCanal() {
         int exitCode;
         synchronized (canalState) {
             // canal 调用自己的脚本，可重复 stop
             exitCode = exeCmd(AppConf.getConfig(CANAL_HOME_DIR),
-                    AppConf.getConfig(CANAL_STOP_CMD));
+                AppConf.getConfig(CANAL_STOP_CMD));
 
             if (exitCode == 0) {
                 canalState.set(STATE_DEAD);
@@ -62,31 +62,33 @@ public enum ExecuteCmd {
     }
 
     /*
-    * 启动 TAgent
-    * */
+     * 启动 TAgent
+     * */
     public int startTAgent() {
         int exitCode = 0;
         synchronized (tAgentState) {
-            if (tAgentState.get() == STATE_ALIVE)
+            if (tAgentState.get() == STATE_ALIVE) {
                 return exitCode;
+            }
 
             exitCode = exeCmd(AppConf.getConfig(TAGENT_HOME_DIR),
-                    AppConf.getConfig(TAGENT_START_CMD));
+                AppConf.getConfig(TAGENT_START_CMD));
         }
         return exitCode;
     }
 
     /*
-    * 停止 TAgent
-    * */
+     * 停止 TAgent
+     * */
     public int stopTAgent() {
         int exitCode = 0;
         synchronized (tAgentState) {
-            if (tAgentState.get() == STATE_DEAD)
+            if (tAgentState.get() == STATE_DEAD) {
                 return exitCode;
+            }
 
             exitCode = exeCmd(AppConf.getConfig(TAGENT_HOME_DIR),
-                    AppConf.getConfig(TAGENT_STOP_CMD));
+                AppConf.getConfig(TAGENT_STOP_CMD));
 
             if (exitCode == 0) {
                 tAgentState.set(STATE_DEAD);
@@ -94,5 +96,4 @@ public enum ExecuteCmd {
         }
         return exitCode;
     }
-
 }

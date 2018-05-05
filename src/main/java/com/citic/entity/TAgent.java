@@ -8,9 +8,10 @@ import java.util.*;
 
 
 /*
-* TAgent 配置获取实体类
-*/
+ * TAgent 配置获取实体类
+ */
 public class TAgent {
+
     // 这个属性是个Source 使用的,但是当前的设计,所有source 共有一个zookeeper集群
     // 因此提取到上一层
     private String sourceZkServers;
@@ -29,17 +30,21 @@ public class TAgent {
     }
 
     /*
-    * velocity 模板 sourceNames
-    * */
+     * velocity 模板 sourceNames
+     * */
     public String getSourceNames() {
         List<String> sourceNames = Lists.newArrayList();
         sources.forEach(source -> sourceNames.add(source.getSourceName()));
         return Joiner.on(" ").skipNulls().join(sourceNames);
     }
 
-    public boolean isUseAvro() { return useAvro; }
+    public boolean isUseAvro() {
+        return useAvro;
+    }
 
-    public void setUseAvro(boolean useAvro) { this.useAvro = useAvro; }
+    public void setUseAvro(boolean useAvro) {
+        this.useAvro = useAvro;
+    }
 
     public boolean isKafkaHighThroughput() {
         return kafkaHighThroughput;
@@ -62,8 +67,8 @@ public class TAgent {
     }
 
     public void setSinkServers(String sinkServers) {
-            this.sinkServers = sinkServers;
-        }
+        this.sinkServers = sinkServers;
+    }
 
     public String getSourceZkServers() {
         return sourceZkServers;
@@ -73,14 +78,19 @@ public class TAgent {
         this.sourceZkServers = sourceZkServers;
     }
 
-    public String getRegistryUrl() { return registryUrl; }
+    public String getRegistryUrl() {
+        return registryUrl;
+    }
 
-    public void setRegistryUrl(String registryUrl) { this.registryUrl = registryUrl; }
+    public void setRegistryUrl(String registryUrl) {
+        this.registryUrl = registryUrl;
+    }
 
     /*
-    * sourceDestination 确保唯一 Source
-    * */
+     * sourceDestination 确保唯一 Source
+     * */
     public static class Source {
+
         private String sourceDestination;
         private String tableToTopicMap;
         private String tableFieldsFilter;
@@ -92,9 +102,9 @@ public class TAgent {
         }
 
         /*
-        * 当前就将 destination 作为 sourceName
-        * velocity 模板 sourceName
-        * */
+         * 当前就将 destination 作为 sourceName
+         * velocity 模板 sourceName
+         * */
         public String getSourceName() {
             return sourceDestination;
         }
@@ -124,13 +134,14 @@ public class TAgent {
         }
 
         @Override
-        public int hashCode(){
+        public int hashCode() {
             return sourceDestination.hashCode();
         }
 
         @Override
         public boolean equals(Object obj) {
-            return obj instanceof Source && sourceDestination.equals(((Source) obj).sourceDestination);
+            return obj instanceof Source && sourceDestination
+                .equals(((Source) obj).sourceDestination);
         }
 
     }

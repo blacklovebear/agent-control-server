@@ -13,6 +13,7 @@ import java.util.List;
 
 @Path("config")
 public class ConfigurationService {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(AppMain.class);
 
     @POST
@@ -45,7 +46,7 @@ public class ConfigurationService {
     public ResponseResult addUnionConfigUnit(UnionConfig.Unit unitConfig) throws Exception {
         LOGGER.debug("UnitConfig: {}", unitConfig.toString());
 
-        UnionConfig unionConfig =  AppGlobal.getUnionConfig();
+        UnionConfig unionConfig = AppGlobal.getUnionConfig();
         if (unionConfig == null) {
             throw new Exception("Not post UnionConfig info");
         }
@@ -57,7 +58,6 @@ public class ConfigurationService {
         GenerateConf generateConf = new GenerateConf();
         generateConf.generateCanal(unionConfig.getCanalServer());
         generateConf.generateTAgent(unionConfig.getTAgent());
-
 
         List<String> instanceList = Lists.newArrayList();
         unionConfig.getUnits().forEach(unit -> {

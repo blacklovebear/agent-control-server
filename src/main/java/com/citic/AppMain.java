@@ -22,9 +22,10 @@ import static com.citic.AppConstants.KAFKA_USE_AVRO;
  * AppMain class.
  */
 public class AppMain {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(AppMain.class);
     private static Channel server;
-    private static SimpleKafkaProducer<Object, Object>  producer;
+    private static SimpleKafkaProducer<Object, Object> producer;
     private static ProcessMonitor processMonitor;
     private static ErrorLogMonitor errorLogMonitor;
 
@@ -40,9 +41,9 @@ public class AppMain {
         URI BASE_URI = URI.create(baseUri);
 
         ResourceConfig resourceConfig = new ResourceConfig(
-                ConfigurationService.class,
-                ExeService.class,
-                MyExceptionMapper.class
+            ConfigurationService.class,
+            ExeService.class,
+            MyExceptionMapper.class
         );
 
         server = NettyHttpContainerProvider.createHttp2Server(BASE_URI, resourceConfig, null);
@@ -57,7 +58,7 @@ public class AppMain {
 
         errorLogMonitor = new ErrorLogMonitor(producer, useAvro);
         errorLogMonitor.start();
-        
+
         Runtime.getRuntime().addShutdownHook(new Thread(AppMain::stop));
 
         try {

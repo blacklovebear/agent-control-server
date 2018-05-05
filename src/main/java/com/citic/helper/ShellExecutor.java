@@ -12,9 +12,11 @@ import java.util.function.Consumer;
 
 
 public class ShellExecutor {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ShellExecutor.class);
 
     private static class StreamGobbler implements Runnable {
+
         private InputStream inputStream;
         private Consumer<String> consumer;
 
@@ -30,11 +32,13 @@ public class ShellExecutor {
     }
 
     /*
-    * 获取命令执行结果后的数据
-    * */
+     * 获取命令执行结果后的数据
+     * */
     private static class ResponseData {
+
         private List<String> data = new ArrayList<>();
         private String processName;
+
         private ResponseData(String processName) {
             this.processName = processName;
         }
@@ -58,15 +62,16 @@ public class ShellExecutor {
 
     private String homeDirectory = System.getProperty("user.home");
 
-    public ShellExecutor() { }
+    public ShellExecutor() {
+    }
 
     public ShellExecutor(String homeDirectory) {
         this.homeDirectory = homeDirectory;
     }
 
     /*
-    * 在机器执行命令，并用 LOGGER 记录命令执行结果信息
-    * */
+     * 在机器执行命令，并用 LOGGER 记录命令执行结果信息
+     * */
     public int executeCmd(String cmd) throws Exception {
         ProcessBuilder builder = new ProcessBuilder();
         LOGGER.info("home dir: {}, cmd: {}", this.homeDirectory, cmd);
@@ -89,8 +94,8 @@ public class ShellExecutor {
     }
 
     /*
-    * 监控进程状态
-    * */
+     * 监控进程状态
+     * */
     public String monitorProcess(String cmd, String processName) throws Exception {
         ProcessBuilder builder = new ProcessBuilder();
         if (SystemUtils.IS_OS_LINUX) {

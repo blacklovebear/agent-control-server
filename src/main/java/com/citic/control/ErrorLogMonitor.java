@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 import static com.citic.AppConstants.*;
 
 public class ErrorLogMonitor {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ErrorLogMonitor.class);
     private static final String LOG_PATH = "log_path";
     private static final String ERROR_LOG = "error_log";
@@ -35,10 +36,10 @@ public class ErrorLogMonitor {
     private static final String JSON_ERROR_LOG_TOPIC = "json_error_log";
 
     private static final List<String> ATTR_LIST = Lists.newArrayList(LOG_PATH, ERROR_LOG,
-            CURRENT_TIME, AGENT_IP);
+        CURRENT_TIME, AGENT_IP);
 
 
-    private  ExecutorService executorService;
+    private ExecutorService executorService;
     private final SimpleKafkaProducer<Object, Object> producer;
     private final boolean useAvro;
 
@@ -52,10 +53,11 @@ public class ErrorLogMonitor {
     private void sendErrorLog(String logLine, String logPath) {
         Matcher m = ERROR_PATTERN.matcher(logLine);
         if (m.find()) {
-            if (this.useAvro)
+            if (this.useAvro) {
                 sendAvroErrorLog(logLine, logPath);
-            else
+            } else {
                 sendJsonErrorLog(logLine, logPath);
+            }
         }
     }
 
@@ -67,7 +69,8 @@ public class ErrorLogMonitor {
         avroRecord.put(ERROR_LOG, logLine);
 
         avroRecord.put(CURRENT_TIME, new SimpleDateFormat(SUPPORT_TIME_FORMAT).format(new Date()));
-        avroRecord.put(AGENT_IP, Utility.getLocalIP(AppConf.getConfig(AppConstants.AGENT_IP_INTERFACE)));
+        avroRecord
+            .put(AGENT_IP, Utility.getLocalIP(AppConf.getConfig(AppConstants.AGENT_IP_INTERFACE)));
 
         producer.send(AVRO_ERROR_LOG_TOPIC, avroRecord);
     }
@@ -78,7 +81,8 @@ public class ErrorLogMonitor {
         jsonRecord.put(ERROR_LOG, logLine);
 
         jsonRecord.put(CURRENT_TIME, new SimpleDateFormat(SUPPORT_TIME_FORMAT).format(new Date()));
-        jsonRecord.put(AGENT_IP, Utility.getLocalIP(AppConf.getConfig(AppConstants.AGENT_IP_INTERFACE)));
+        jsonRecord
+            .put(AGENT_IP, Utility.getLocalIP(AppConf.getConfig(AppConstants.AGENT_IP_INTERFACE)));
 
         producer.send(JSON_ERROR_LOG_TOPIC, jsonRecord);
     }
@@ -94,23 +98,24 @@ public class ErrorLogMonitor {
     }
 
     private void startTAgent() {
-        String tAgentLogPath =  AppConf.getConfig(TAGENT_HOME_DIR) + File.separator +
-                AppConf.getConfig(TAGENT_LOG_FILE_PATH);
-
+        String tAgentLogPath = AppConf.getConfig(TAGENT_HOME_DIR) + File.separator +
+            AppConf.getConfig(TAGENT_LOG_FILE_PATH);
         startLogFile(tAgentLogPath);
     }
 
     private void startCanal() {
-        String canalLogsDir =  AppConf.getConfig(CANAL_HOME_DIR) + File.separator +
-                AppConf.getConfig(CANAL_LOGS_DIR);
+        String canalLogsDir = AppConf.getConfig(CANAL_HOME_DIR) + File.separator +
+            AppConf.getConfig(CANAL_LOGS_DIR);
 
         File logsDir = new File(canalLogsDir);
-        if (logsDir.listFiles() == null)
+        if (logsDir.listFiles() == null) {
             return;
+        }
         for (File instanceDir : Objects.requireNonNull(logsDir.listFiles())) {
-            if (instanceDir.listFiles() == null)
+            if (instanceDir.listFiles() == null) {
                 continue;
-            for (File logFile: Objects.requireNonNull(instanceDir.listFiles())) {
+            }
+            for (File logFile : Objects.requireNonNull(instanceDir.listFiles())) {
                 if (logFile.isFile() && logFile.getName().contains(".log")) {
                     startLogFile(logFile);
                 }
@@ -120,8 +125,9 @@ public class ErrorLogMonitor {
     }
 
     public synchronized void start() {
-        if (this.executorService != null)
+        if (this.executorService != null) {
             this.stop();
+        }
 
         this.executorService = Executors.newCachedThreadPool();
         startCanal();
@@ -129,8 +135,9 @@ public class ErrorLogMonitor {
     }
 
     public synchronized void start(List<String> instanceList) {
-        if (this.executorService != null)
+        if (this.executorService != null) {
             this.stop();
+        }
 
         this.executorService = Executors.newCachedThreadPool();
         startCanal(instanceList);
@@ -139,13 +146,13 @@ public class ErrorLogMonitor {
 
 
     private void startCanal(List<String> instanceList) {
-        String canalLogsDir =  AppConf.getConfig(CANAL_HOME_DIR) + File.separator +
-                AppConf.getConfig(CANAL_LOGS_DIR);
+        String canalLogsDir = AppConf.getConfig(CANAL_HOME_DIR) + File.separator +
+            AppConf.getConfig(CANAL_LOGS_DIR);
 
         instanceList.forEach(instanceName -> {
             String logFile = canalLogsDir + File.separator
-                    + instanceName + File.separator
-                    + instanceName + ".log";
+                + instanceName + File.separator
+                + instanceName + ".log";
             startLogFile(logFile);
         });
     }
