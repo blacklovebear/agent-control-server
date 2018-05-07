@@ -112,9 +112,9 @@ public class ErrorLogMonitor {
     }
 
     private void startTAgent() {
-        String tagentlogpath = AppConf.getConfig(TAGENT_HOME_DIR) + File.separator
+        String tagentLogPath = AppConf.getConfig(TAGENT_HOME_DIR) + File.separator
             + AppConf.getConfig(TAGENT_LOG_FILE_PATH);
-        startLogFile(tagentlogpath);
+        startLogFile(tagentLogPath);
     }
 
     private void startCanal() {
