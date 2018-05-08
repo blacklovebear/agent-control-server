@@ -15,8 +15,9 @@ import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
  * The type Shell executor.
  */
 public class ShellExecutor {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(ShellExecutor.class);
+    private static final int SUCCESS = 0;
+
     private String homeDirectory = System.getProperty("user.home");
 
     /**
@@ -38,10 +39,9 @@ public class ShellExecutor {
      * 在机器执行命令，并用 LOGGER 记录命令执行结果信息.
      *
      * @param cmd the cmd
-     * @return the int
      * @throws Exception the exception
      */
-    public int executeCmd(String cmd) throws Exception {
+    public int executeCmd(String cmd, boolean isDaemon) throws Exception {
         ProcessExecutor processExecutor = new ProcessExecutor();
 
         if (SystemUtils.IS_OS_WINDOWS) {
@@ -50,11 +50,16 @@ public class ShellExecutor {
             processExecutor.command("sh", "-c", cmd);
         }
 
-        return processExecutor.directory(new File(homeDirectory))
+        processExecutor.directory(new File(homeDirectory))
             .redirectError(Slf4jStream.of(getClass()).asError())
-            .redirectOutput(Slf4jStream.of(getClass()).asInfo())
-            .execute()
-            .getExitValue();
+            .redirectOutput(Slf4jStream.of(getClass()).asInfo());
+
+        if (isDaemon) {
+            processExecutor.start();
+            return SUCCESS;
+        } else {
+            return processExecutor.execute().getExitValue();
+        }
     }
 
     /**

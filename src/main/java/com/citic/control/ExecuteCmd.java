@@ -71,6 +71,7 @@ public enum ExecuteCmd {
                 return exitCode;
             }
 
+            exeCmd(AppConf.getConfig(CANAL_HOME_DIR), AppConf.getConfig(CANAL_STOP_CMD));
             exitCode = exeCmd(AppConf.getConfig(CANAL_HOME_DIR),
                 AppConf.getConfig(CANAL_START_CMD));
         }
@@ -108,8 +109,9 @@ public enum ExecuteCmd {
                 return exitCode;
             }
 
+            exeCmd(AppConf.getConfig(TAGENT_HOME_DIR), AppConf.getConfig(TAGENT_STOP_CMD));
             exitCode = exeCmd(AppConf.getConfig(TAGENT_HOME_DIR),
-                AppConf.getConfig(TAGENT_START_CMD));
+                AppConf.getConfig(TAGENT_START_CMD), true);
         }
         return exitCode;
     }

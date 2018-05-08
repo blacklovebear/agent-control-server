@@ -46,13 +46,33 @@ public class Utility {
      *
      * @param homeDir the home dir
      * @param cmd the cmd
+     * @param isDaemon is daemon
+     * @return the int
+     */
+    public static int exeCmd(String homeDir, String cmd, boolean isDaemon) {
+        int exitCode = 0;
+        ShellExecutor executor = new ShellExecutor(homeDir);
+        try {
+            exitCode = executor.executeCmd(cmd, isDaemon);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        return exitCode;
+    }
+
+
+    /**
+     * Exe cmd int.
+     *
+     * @param homeDir the home dir
+     * @param cmd the cmd
      * @return the int
      */
     public static int exeCmd(String homeDir, String cmd) {
         int exitCode = 0;
         ShellExecutor executor = new ShellExecutor(homeDir);
         try {
-            exitCode = executor.executeCmd(cmd);
+            exitCode = executor.executeCmd(cmd, false);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
