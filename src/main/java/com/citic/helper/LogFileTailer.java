@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
  * The type Log file tailer.
  */
 public class LogFileTailer implements Runnable {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(LogFileTailer.class);
     private final Path filePath;
     private final BiConsumer<String, String> logHandler;

@@ -1,16 +1,14 @@
 package com.citic.helper;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.function.Consumer;
 import org.apache.commons.lang.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.zeroturnaround.exec.ProcessExecutor;
+import org.zeroturnaround.exec.stream.LogOutputStream;
+import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
 
 /**
@@ -44,24 +42,19 @@ public class ShellExecutor {
      * @throws Exception the exception
      */
     public int executeCmd(String cmd) throws Exception {
-        ProcessBuilder builder = new ProcessBuilder();
-        LOGGER.info("home dir: {}, cmd: {}", this.homeDirectory, cmd);
+        ProcessExecutor processExecutor = new ProcessExecutor();
 
         if (SystemUtils.IS_OS_WINDOWS) {
-            builder.command("cmd.exe", "/c", cmd);
+            processExecutor.command("cmd.exe", "/c", cmd);
         } else {
-            builder.command("sh", "-c", cmd);
+            processExecutor.command("sh", "-c", cmd);
         }
-        builder.directory(new File(homeDirectory));
-        Process process = builder.start();
 
-        StreamGobbler output = new StreamGobbler(process.getInputStream(), LOGGER::debug);
-        StreamGobbler error = new StreamGobbler(process.getErrorStream(), LOGGER::error);
-
-        Executors.newSingleThreadExecutor().submit(output);
-        Executors.newSingleThreadExecutor().submit(error);
-
-        return process.waitFor();
+        return processExecutor.directory(new File(homeDirectory))
+            .redirectError(Slf4jStream.of(getClass()).asError())
+            .redirectOutput(Slf4jStream.of(getClass()).asInfo())
+            .execute()
+            .getExitValue();
     }
 
     /**
@@ -73,45 +66,27 @@ public class ShellExecutor {
      * @throws Exception the exception
      */
     public String monitorProcess(String cmd, String processName) throws Exception {
-        ProcessBuilder builder = new ProcessBuilder();
-        if (SystemUtils.IS_OS_LINUX) {
-            builder.command("sh", "-c", cmd);
-        } else {
-            builder.command("cmd.exe", "/c", cmd);
-        }
-        Process process = builder.start();
+        ProcessExecutor processExecutor = new ProcessExecutor();
         ResponseData responseData = new ResponseData(processName);
 
-        StreamGobbler output = new StreamGobbler(process.getInputStream(), responseData::putData);
-        StreamGobbler error = new StreamGobbler(process.getErrorStream(), LOGGER::error);
-
-        Executors.newSingleThreadExecutor().submit(output);
-        Executors.newSingleThreadExecutor().submit(error);
-
-        process.waitFor();
-        return responseData.getProcessState();
-    }
-
-    private static class StreamGobbler implements Runnable {
-
-        private InputStream inputStream;
-        private Consumer<String> consumer;
-
-        /**
-         * Instantiates a new Stream gobbler.
-         *
-         * @param inputStream the input stream
-         * @param consumer the consumer
-         */
-        StreamGobbler(InputStream inputStream, Consumer<String> consumer) {
-            this.inputStream = inputStream;
-            this.consumer = consumer;
+        if (SystemUtils.IS_OS_WINDOWS) {
+            processExecutor.command("cmd.exe", "/c", cmd);
+        } else {
+            processExecutor.command("sh", "-c", cmd);
         }
 
-        @Override
-        public void run() {
-            new BufferedReader(new InputStreamReader(inputStream)).lines().forEach(consumer);
-        }
+        processExecutor.directory(new File(homeDirectory))
+            .redirectError(Slf4jStream.of(getClass()).asError())
+            .redirectOutput(new LogOutputStream() {
+                @Override
+                protected void processLine(String line) {
+                    responseData.putData(line);
+                }
+            })
+            .execute();
+        String output = responseData.getProcessState();
+        LOGGER.info("monitor process output:{}", output);
+        return output;
     }
 
     /*

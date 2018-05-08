@@ -133,7 +133,7 @@ public class ProcessMonitor {
         }
 
         private String monitorCanal() {
-            if (SystemUtils.IS_OS_LINUX) {
+            if (!SystemUtils.IS_OS_WINDOWS) {
                 try {
                     String state = executor.monitorProcess(this.canalCmd, CANAL_PROCESS_NAME);
                     if (state.contains("running")) {
@@ -146,13 +146,13 @@ public class ProcessMonitor {
                     LOGGER.error(e.getMessage(), e);
                 }
             } else {
-                LOGGER.debug("not linux platform monitor process");
+                LOGGER.debug("not unix platform monitor process");
             }
             return null;
         }
 
         private String monitorTAgent() {
-            if (SystemUtils.IS_OS_LINUX) {
+            if (!SystemUtils.IS_OS_WINDOWS) {
                 try {
                     String state = executor.monitorProcess(this.tagentCmd, TAGENT_PROCESS_NAME);
                     if (state.contains("running")) {
@@ -165,7 +165,7 @@ public class ProcessMonitor {
                     LOGGER.error(e.getMessage(), e);
                 }
             } else {
-                LOGGER.debug("not linux platform monitor process");
+                LOGGER.debug("not unix platform monitor process");
             }
             return null;
         }
