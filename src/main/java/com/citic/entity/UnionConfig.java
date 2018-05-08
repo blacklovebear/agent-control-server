@@ -1,5 +1,6 @@
 package com.citic.entity;
 
+import com.citic.helper.AesUtil;
 import com.citic.helper.Utility;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
@@ -234,6 +235,10 @@ public class UnionConfig {
                 .checkArgument(!Strings.isNullOrEmpty(dbUsername), "dbUsername is null or empty");
             Preconditions
                 .checkArgument(!Strings.isNullOrEmpty(dbPassword), "dbPassword is null or empty");
+
+            Preconditions.checkArgument(AesUtil.decForTd(dbPassword) != null,
+                "dbPassword decrypt error");
+
             Preconditions.checkArgument(!Strings.isNullOrEmpty(tableTopicSchemaMap),
                 "tableTopicSchemaMap is null or empty");
 

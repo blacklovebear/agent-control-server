@@ -104,7 +104,7 @@ public class AesUtil {
             IvParameterSpec iv = new IvParameterSpec(skey.getBytes());
             cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
 
-            //先用bAES64解密    
+            //先用bAES64解密
             byte[] encrypted1 = Base64.decodeBase64(ssrc);
             byte[] original = cipher.doFinal(encrypted1);
 

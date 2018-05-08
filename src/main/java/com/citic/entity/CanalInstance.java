@@ -1,5 +1,6 @@
 package com.citic.entity;
 
+import com.citic.helper.AesUtil;
 import java.util.Random;
 
 /**
@@ -10,13 +11,13 @@ import java.util.Random;
  * instance 区别唯一 Instance
  */
 public class CanalInstance {
+    private final String slaveId = String.format("%05d", new Random().nextInt(100000));
 
     // canal instance
-    private String instance;
-    private String slaveId = String.format("%05d", new Random().nextInt(100000));
-    private String masterAddress;
-    private String dbUsername;
-    private String dbPassword;
+    private final String instance;
+    private final String masterAddress;
+    private final String dbUsername;
+    private final String dbPassword;
 
     /**
      * Instantiates a new Canal instance.
@@ -27,7 +28,9 @@ public class CanalInstance {
         instance = unit.getInstance();
         masterAddress = unit.getMasterAddress();
         dbUsername = unit.getDbUsername();
-        dbPassword = unit.getDbPassword();
+
+        // 通过管理平台传过来的秘密为密文，在canal的配置文件中密码为密文，需要转换
+        dbPassword = AesUtil.decForTd(unit.getDbPassword());
     }
 
     /**
@@ -37,15 +40,6 @@ public class CanalInstance {
      */
     public String getInstance() {
         return instance;
-    }
-
-    /**
-     * Sets instance.
-     *
-     * @param instance the instance
-     */
-    public void setInstance(String instance) {
-        this.instance = instance;
     }
 
     /**
@@ -67,15 +61,6 @@ public class CanalInstance {
     }
 
     /**
-     * Sets master address.
-     *
-     * @param masterAddress the master address
-     */
-    public void setMasterAddress(String masterAddress) {
-        this.masterAddress = masterAddress;
-    }
-
-    /**
      * Gets db username.
      *
      * @return the db username
@@ -85,30 +70,12 @@ public class CanalInstance {
     }
 
     /**
-     * Sets db username.
-     *
-     * @param dbUsername the db username
-     */
-    public void setDbUsername(String dbUsername) {
-        this.dbUsername = dbUsername;
-    }
-
-    /**
      * Gets db password.
      *
      * @return the db password
      */
     public String getDbPassword() {
         return dbPassword;
-    }
-
-    /**
-     * Sets db password.
-     *
-     * @param dbPassword the db password
-     */
-    public void setDbPassword(String dbPassword) {
-        this.dbPassword = dbPassword;
     }
 
     /*

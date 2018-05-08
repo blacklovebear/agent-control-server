@@ -159,9 +159,9 @@ public class TAgent {
      */
     public static class Source {
 
-        private String sourceDestination;
-        private String tableToTopicMap;
-        private String tableFieldsFilter;
+        private final String sourceDestination;
+        private final String tableToTopicMap;
+        private final String tableFieldsFilter;
 
         /**
          * Instantiates a new Source.
@@ -193,15 +193,6 @@ public class TAgent {
         }
 
         /**
-         * Sets source destination.
-         *
-         * @param sourceDestination the source destination
-         */
-        public void setSourceDestination(String sourceDestination) {
-            this.sourceDestination = sourceDestination;
-        }
-
-        /**
          * Gets table to topic map.
          *
          * @return the table to topic map
@@ -210,14 +201,6 @@ public class TAgent {
             return tableToTopicMap;
         }
 
-        /**
-         * Sets table to topic map.
-         *
-         * @param tableToTopicMap the table to topic map
-         */
-        public void setTableToTopicMap(String tableToTopicMap) {
-            this.tableToTopicMap = tableToTopicMap;
-        }
 
         /**
          * Gets table fields filter.
@@ -226,15 +209,6 @@ public class TAgent {
          */
         public String getTableFieldsFilter() {
             return tableFieldsFilter;
-        }
-
-        /**
-         * Sets table fields filter.
-         *
-         * @param tableFieldsFilter the table fields filter
-         */
-        public void setTableFieldsFilter(String tableFieldsFilter) {
-            this.tableFieldsFilter = tableFieldsFilter;
         }
 
         @Override
