@@ -122,14 +122,16 @@ public class ErrorLogMonitor {
             + AppConf.getConfig(CANAL_LOGS_DIR);
 
         File logsDir = new File(canalLogsDir);
-        if (logsDir.listFiles() == null) {
+        File [] listFiles = logsDir.listFiles();
+        if (listFiles == null) {
             return;
         }
-        for (File instanceDir : Objects.requireNonNull(logsDir.listFiles())) {
-            if (instanceDir.listFiles() == null) {
+        for (File instanceDir : Objects.requireNonNull(listFiles)) {
+            File[] childFiles = instanceDir.listFiles();
+            if (childFiles == null) {
                 continue;
             }
-            for (File logFile : Objects.requireNonNull(instanceDir.listFiles())) {
+            for (File logFile : Objects.requireNonNull(childFiles)) {
                 if (logFile.isFile() && logFile.getName().contains(".log")) {
                     startLogFile(logFile);
                 }

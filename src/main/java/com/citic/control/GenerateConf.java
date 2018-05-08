@@ -91,10 +91,10 @@ public class GenerateConf {
         StringWriter sw = new StringWriter();
         template.merge(ctx, sw);
         Utility.createParentDirs(confFilePath);
-        try (PrintWriter out = new PrintWriter(confFilePath)) {
+        try (PrintWriter out = new PrintWriter(confFilePath, "UTF-8")) {
             out.print(sw.toString());
             out.flush();
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
     }
