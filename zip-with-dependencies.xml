@@ -48,9 +48,12 @@
 			<directory>src/main/scripts</directory>
 			<outputDirectory>/</outputDirectory>
 			<includes>
-				<include>*</include>
+				<include>start.bat</include>
+				<include>start.sh</include>
+				<include>flume_sh/</include>
 			</includes>
 		</fileSet>
+
 
 	</fileSets>
 	<dependencySets>
