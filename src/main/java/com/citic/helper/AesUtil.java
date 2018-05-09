@@ -1,8 +1,10 @@
 package com.citic.helper;
 
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Random;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -19,6 +21,7 @@ public class AesUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(AesUtil.class);
     private static final String SKEY = "tospurexmindcomp";
     private static final int SKEY_MUST_LENGTH = 16;
+    private static final Charset UTF8 = Charset.forName("UTF-8");
 
     /**
      * The entry point of application.
@@ -60,7 +63,7 @@ public class AesUtil {
             return null;
         }
 
-        byte[] raw = skey.getBytes();
+        byte[] raw = skey.getBytes(UTF8);
         SecretKeySpec skeySpec = new SecretKeySpec(raw, "AES");
 
         try {
@@ -68,11 +71,11 @@ public class AesUtil {
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
 
             //使用CBC模式，需要一个向量iv，可增加加密算法的强度
-            IvParameterSpec iv = new IvParameterSpec(skey.getBytes());
+            IvParameterSpec iv = new IvParameterSpec(skey.getBytes(UTF8));
 
             cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv);
 
-            byte[] encrypted = cipher.doFinal(ssrc.getBytes());
+            byte[] encrypted = cipher.doFinal(ssrc.getBytes(UTF8));
 
             //此处使用BAES64做转码功能，同时能起到2次加密的作用。
             return Base64.encodeBase64String(encrypted);
@@ -101,14 +104,14 @@ public class AesUtil {
             byte[] raw = skey.getBytes("ASCII");
             SecretKeySpec skeySpec = new SecretKeySpec(raw, "AES");
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            IvParameterSpec iv = new IvParameterSpec(skey.getBytes());
+            IvParameterSpec iv = new IvParameterSpec(skey.getBytes(UTF8));
             cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
 
             //先用bAES64解密
             byte[] encrypted1 = Base64.decodeBase64(ssrc);
             byte[] original = cipher.doFinal(encrypted1);
 
-            return new String(original);
+            return new String(original, UTF8);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
@@ -122,8 +125,8 @@ public class AesUtil {
         StringBuilder sb = new StringBuilder();
 
         for (Integer i = 0; i < len; i++) {
-            int intRand = (int) (Math.random() * 52);
-            int numValue = (int) (Math.random() * 10);
+            int intRand = new Random().nextInt(52);
+            int numValue = new Random().nextInt(10);
             char base = (intRand < 26) ? 'A' : 'a';
             char c = (char) (base + intRand % 26);
             if (numValue % 2 == 0) {

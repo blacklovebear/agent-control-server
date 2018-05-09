@@ -88,6 +88,9 @@ public class Utility {
     public static void createParentDirs(String filePath) {
         Path file = Paths.get(filePath);
         Path parent = file.getParent();
+        if (parent == null) {
+            return;
+        }
         if (!Files.exists(parent)) {
             try {
                 Files.createDirectories(parent);

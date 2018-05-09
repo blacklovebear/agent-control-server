@@ -4,6 +4,7 @@ import static com.citic.AppConstants.CLASSPATH_URL_PREFIX;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -18,16 +19,26 @@ public class AppConf {
         // PropertyConfigurator.configure("config/log4j.properties");
         LOGGER.info("## load app configurations");
         String conf = System.getProperty("server.conf", "classpath:conf/application.properties");
-
+        InputStream confInput = null;
         try {
             if (conf.startsWith(CLASSPATH_URL_PREFIX)) {
                 conf = StringUtils.substringAfter(conf, CLASSPATH_URL_PREFIX);
-                configProp.load(AppMain.class.getClassLoader().getResourceAsStream(conf));
+                confInput = AppMain.class.getClassLoader().getResourceAsStream(conf);
+                configProp.load(confInput);
             } else {
-                configProp.load(new FileInputStream(conf));
+                confInput = new FileInputStream(conf);
+                configProp.load(confInput);
             }
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
+        } finally {
+            if (confInput != null) {
+                try {
+                    confInput.close();
+                } catch (IOException e) {
+                    LOGGER.error(e.getMessage(), e);
+                }
+            }
         }
     }
 

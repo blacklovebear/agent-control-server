@@ -1,5 +1,7 @@
 package com.citic.helper;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -33,6 +35,8 @@ public class LogFileTailer implements Runnable {
      * @param logHandler the log handler
      */
     public LogFileTailer(String filePath, int myInterval, BiConsumer<String, String> logHandler) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(filePath),
+            "filePath is null or empty");
         this.filePath = Paths.get(filePath);
         tailFile = new File(filePath);
         this.tailRunEveryNSeconds = myInterval;
@@ -48,6 +52,8 @@ public class LogFileTailer implements Runnable {
      * @param logHandler the log handler
      */
     public LogFileTailer(File filePath, int myInterval, BiConsumer<String, String> logHandler) {
+        Preconditions.checkNotNull(filePath, "filePath is null");
+
         this.filePath = filePath.toPath();
         tailFile = filePath;
         this.tailRunEveryNSeconds = myInterval;
@@ -65,7 +71,7 @@ public class LogFileTailer implements Runnable {
 
         // Replace username with your real value
         // For windows provide different path like: c:\\temp\\tail.log
-        String filePath = "/Users/macbook/git_repo/agent-control-server/logs/test.log";
+        String filePath = "logs/test.log";
         LogFileTailer logFileTailer = new LogFileTailer(filePath, 2000, (message, logPath) -> {
             if (message.contains("ERROR")) {
                 System.out.println(message);
@@ -97,7 +103,10 @@ public class LogFileTailer implements Runnable {
         Utility.createParentDirs(this.filePath.toString());
         if (!Files.exists(this.filePath)) {
             String cmd = "touch " + this.filePath.getFileName();
-            Utility.exeCmd(this.filePath.getParent().toString(), cmd);
+            Path parent = this.filePath.getParent();
+            if (parent != null) {
+                Utility.exeCmd(parent.toString(), cmd);
+            }
         }
         // 已有的文件内容不做解析
         lastKnownPosition = tailFile.length();
