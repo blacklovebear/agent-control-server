@@ -12,6 +12,8 @@ import static com.citic.helper.Utility.exeCmd;
 
 import com.citic.AppConf;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,15 +29,18 @@ public enum ExecuteCmd {
     /**
      * The Logger.
      */
-    static final Logger LOGGER = LoggerFactory.getLogger(ExecuteCmd.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExecuteCmd.class);
     /**
      * The Canal state.
      */
-    final AtomicBoolean canalState = new AtomicBoolean(STATE_DEAD);
+    private final AtomicBoolean canalState = new AtomicBoolean(STATE_DEAD);
     /**
      * The T agent state.
      */
-    final AtomicBoolean tagentState = new AtomicBoolean(STATE_DEAD);
+    private final AtomicBoolean tagentState = new AtomicBoolean(STATE_DEAD);
+
+    private final Lock canalLock = new ReentrantLock();
+    private final Lock tagentLock = new ReentrantLock();
 
     /**
      * Sets canal state.
@@ -43,8 +48,11 @@ public enum ExecuteCmd {
      * @param state the state
      */
     void setCanalState(boolean state) {
-        synchronized (canalState) {
+        canalLock.lock();
+        try {
             this.canalState.set(state);
+        } finally {
+            canalLock.unlock();
         }
     }
 
@@ -54,8 +62,11 @@ public enum ExecuteCmd {
      * @param state the state
      */
     void setTAgentState(boolean state) {
-        synchronized (tagentState) {
+        tagentLock.lock();
+        try {
             this.tagentState.set(state);
+        } finally {
+            tagentLock.unlock();
         }
     }
 
@@ -66,7 +77,8 @@ public enum ExecuteCmd {
      */
     public int startCanal() {
         int exitCode = 0;
-        synchronized (canalState) {
+        canalLock.lock();
+        try {
             if (canalState.get() == STATE_ALIVE) {
                 return exitCode;
             }
@@ -74,6 +86,8 @@ public enum ExecuteCmd {
             exeCmd(AppConf.getConfig(CANAL_HOME_DIR), AppConf.getConfig(CANAL_STOP_CMD));
             exitCode = exeCmd(AppConf.getConfig(CANAL_HOME_DIR),
                 AppConf.getConfig(CANAL_START_CMD));
+        } finally {
+            canalLock.unlock();
         }
         return exitCode;
     }
@@ -85,7 +99,8 @@ public enum ExecuteCmd {
      */
     public int stopCanal() {
         int exitCode;
-        synchronized (canalState) {
+        canalLock.lock();
+        try {
             // canal 调用自己的脚本，可重复 stop
             exitCode = exeCmd(AppConf.getConfig(CANAL_HOME_DIR),
                 AppConf.getConfig(CANAL_STOP_CMD));
@@ -93,6 +108,8 @@ public enum ExecuteCmd {
             if (exitCode == 0) {
                 canalState.set(STATE_DEAD);
             }
+        } finally {
+            canalLock.unlock();
         }
         return exitCode;
     }
@@ -104,7 +121,8 @@ public enum ExecuteCmd {
      */
     public int startTAgent() {
         int exitCode = 0;
-        synchronized (tagentState) {
+        tagentLock.lock();
+        try {
             if (tagentState.get() == STATE_ALIVE) {
                 return exitCode;
             }
@@ -112,6 +130,8 @@ public enum ExecuteCmd {
             exeCmd(AppConf.getConfig(TAGENT_HOME_DIR), AppConf.getConfig(TAGENT_STOP_CMD));
             exitCode = exeCmd(AppConf.getConfig(TAGENT_HOME_DIR),
                 AppConf.getConfig(TAGENT_START_CMD), true);
+        } finally {
+            tagentLock.unlock();
         }
         return exitCode;
     }
@@ -123,7 +143,8 @@ public enum ExecuteCmd {
      */
     public int stopTAgent() {
         int exitCode = 0;
-        synchronized (tagentState) {
+        tagentLock.lock();
+        try {
             if (tagentState.get() == STATE_DEAD) {
                 return exitCode;
             }
@@ -134,6 +155,8 @@ public enum ExecuteCmd {
             if (exitCode == 0) {
                 tagentState.set(STATE_DEAD);
             }
+        } finally {
+            tagentLock.unlock();
         }
         return exitCode;
     }
