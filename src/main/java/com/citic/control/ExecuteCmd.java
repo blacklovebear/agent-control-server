@@ -8,9 +8,9 @@ import static com.citic.AppConstants.STATE_DEAD;
 import static com.citic.AppConstants.TAGENT_HOME_DIR;
 import static com.citic.AppConstants.TAGENT_START_CMD;
 import static com.citic.AppConstants.TAGENT_STOP_CMD;
-import static com.citic.helper.Utility.exeCmd;
 
 import com.citic.AppConf;
+import com.citic.helper.Utility;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -83,8 +83,8 @@ public enum ExecuteCmd {
                 return exitCode;
             }
 
-            exeCmd(AppConf.getConfig(CANAL_HOME_DIR), AppConf.getConfig(CANAL_STOP_CMD));
-            exitCode = exeCmd(AppConf.getConfig(CANAL_HOME_DIR),
+            Utility.exeCmd(AppConf.getConfig(CANAL_HOME_DIR), AppConf.getConfig(CANAL_STOP_CMD));
+            exitCode = Utility.exeCmd(AppConf.getConfig(CANAL_HOME_DIR),
                 AppConf.getConfig(CANAL_START_CMD));
         } finally {
             canalLock.unlock();
@@ -102,7 +102,7 @@ public enum ExecuteCmd {
         canalLock.lock();
         try {
             // canal 调用自己的脚本，可重复 stop
-            exitCode = exeCmd(AppConf.getConfig(CANAL_HOME_DIR),
+            exitCode = Utility.exeCmd(AppConf.getConfig(CANAL_HOME_DIR),
                 AppConf.getConfig(CANAL_STOP_CMD));
 
             if (exitCode == 0) {
@@ -127,8 +127,8 @@ public enum ExecuteCmd {
                 return exitCode;
             }
 
-            exitCode = exeCmd(AppConf.getConfig(TAGENT_HOME_DIR),
-                AppConf.getConfig(TAGENT_START_CMD), true);
+            exitCode = Utility.exeCmd(AppConf.getConfig(TAGENT_HOME_DIR),
+                AppConf.getConfig(TAGENT_START_CMD));
         } finally {
             tagentLock.unlock();
         }
@@ -148,7 +148,7 @@ public enum ExecuteCmd {
                 return exitCode;
             }
 
-            exitCode = exeCmd(AppConf.getConfig(TAGENT_HOME_DIR),
+            exitCode = Utility.exeCmd(AppConf.getConfig(TAGENT_HOME_DIR),
                 AppConf.getConfig(TAGENT_STOP_CMD));
 
             if (exitCode == 0) {

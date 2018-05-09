@@ -39,28 +39,7 @@ public class Utility {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Utility.class);
     private static final String DEFAULT_IP = "127.0.0.1";
-
-
-    /**
-     * Exe cmd int.
-     *
-     * @param homeDir the home dir
-     * @param cmd the cmd
-     * @param isDaemon is daemon
-     * @return the int
-     */
-    public static int exeCmd(String homeDir, String cmd, boolean isDaemon) {
-        int exitCode = 0;
-        ShellExecutor executor = new ShellExecutor(homeDir);
-        try {
-            exitCode = executor.executeCmd(cmd, isDaemon);
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-        return exitCode;
-    }
-
-
+    
     /**
      * Exe cmd int.
      *
