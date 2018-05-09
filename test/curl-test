@@ -10,7 +10,7 @@ curl -H "Content-Type: application/json" -X POST -d '
         {
             "masterAddress": "127.0.0.1:3306",
             "dbUsername": "root",
-            "dbPassword": "123456",
+            "dbPassword": "Co9ME/Agq664+ZimAcnckA==",
 
             "tableTopicSchemaMap": "test.test:test123:schema1;test.test1:test234:schema2",
             "tableFieldSchemaMap": "uid|uid1,name|name1;id|id2,name|name2"

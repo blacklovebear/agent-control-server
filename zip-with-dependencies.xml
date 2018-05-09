@@ -48,8 +48,7 @@
 			<directory>src/main/scripts</directory>
 			<outputDirectory>/</outputDirectory>
 			<includes>
-				<include>start.bat</include>
-				<include>start.sh</include>
+				<include>*</include>
 			</includes>
 		</fileSet>
 

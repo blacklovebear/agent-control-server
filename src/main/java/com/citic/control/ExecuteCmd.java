@@ -127,7 +127,6 @@ public enum ExecuteCmd {
                 return exitCode;
             }
 
-            exeCmd(AppConf.getConfig(TAGENT_HOME_DIR), AppConf.getConfig(TAGENT_STOP_CMD));
             exitCode = exeCmd(AppConf.getConfig(TAGENT_HOME_DIR),
                 AppConf.getConfig(TAGENT_START_CMD), true);
         } finally {
