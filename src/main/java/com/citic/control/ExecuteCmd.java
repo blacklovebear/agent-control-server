@@ -1,15 +1,20 @@
 package com.citic.control;
 
 import static com.citic.AppConstants.CANAL_HOME_DIR;
+import static com.citic.AppConstants.CANAL_MONITOR_CMD;
+import static com.citic.AppConstants.CANAL_PROCESS_NAME;
 import static com.citic.AppConstants.CANAL_START_CMD;
 import static com.citic.AppConstants.CANAL_STOP_CMD;
 import static com.citic.AppConstants.STATE_ALIVE;
 import static com.citic.AppConstants.STATE_DEAD;
 import static com.citic.AppConstants.TAGENT_HOME_DIR;
+import static com.citic.AppConstants.TAGENT_MONITOR_CMD;
+import static com.citic.AppConstants.TAGENT_PROCESS_NAME;
 import static com.citic.AppConstants.TAGENT_START_CMD;
 import static com.citic.AppConstants.TAGENT_STOP_CMD;
 
 import com.citic.AppConf;
+import com.citic.helper.ShellExecutor;
 import com.citic.helper.Utility;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
@@ -34,6 +39,7 @@ public enum ExecuteCmd {
      * The Canal state.
      */
     private final AtomicBoolean canalState = new AtomicBoolean(STATE_DEAD);
+    private final ShellExecutor executor = new ShellExecutor();
     /**
      * The T agent state.
      */
@@ -86,6 +92,18 @@ public enum ExecuteCmd {
             Utility.exeCmd(AppConf.getConfig(CANAL_HOME_DIR), AppConf.getConfig(CANAL_STOP_CMD));
             exitCode = Utility.exeCmd(AppConf.getConfig(CANAL_HOME_DIR),
                 AppConf.getConfig(CANAL_START_CMD));
+
+            String state = null;
+            try {
+                state = executor.monitorProcess(AppConf.getConfig(CANAL_MONITOR_CMD),
+                    CANAL_PROCESS_NAME);
+            } catch (Exception e) {
+                LOGGER.error(e.getMessage(), e);
+            }
+            if (state != null && state.contains("running")) {
+                canalState.set(STATE_ALIVE);
+            }
+
         } finally {
             canalLock.unlock();
         }
@@ -129,6 +147,19 @@ public enum ExecuteCmd {
 
             exitCode = Utility.exeCmd(AppConf.getConfig(TAGENT_HOME_DIR),
                 AppConf.getConfig(TAGENT_START_CMD));
+
+            String state = null;
+            try {
+                state = executor.monitorProcess(AppConf.getConfig(TAGENT_MONITOR_CMD),
+                    TAGENT_PROCESS_NAME);
+            } catch (Exception e) {
+                LOGGER.error(e.getMessage(), e);
+            }
+
+            if (state != null && state.contains("running")) {
+                tagentState.set(STATE_ALIVE);
+            }
+
         } finally {
             tagentLock.unlock();
         }
