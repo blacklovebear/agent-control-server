@@ -1,5 +1,6 @@
 package com.citic.control;
 
+import static com.citic.AppConstants.AGENT_VELOCITY_LOG;
 import static com.citic.AppConstants.CANAL_CONF_DIR;
 import static com.citic.AppConstants.CANAL_HOME_DIR;
 import static com.citic.AppConstants.CANAL_INSTANCE_TEMPLATE;
@@ -27,6 +28,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
@@ -50,6 +52,7 @@ public class GenerateConf {
     public GenerateConf() {
 
         ve = new VelocityEngine();
+        ve.setProperty(Velocity.RUNTIME_LOG, AppConf.getConfig(AGENT_VELOCITY_LOG));
 
         if (templateDir.startsWith(CLASSPATH_URL_PREFIX)) {
             templateDir = StringUtils.substringAfter(templateDir, CLASSPATH_URL_PREFIX);
