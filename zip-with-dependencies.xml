@@ -45,7 +45,7 @@
 			<directory>bin</directory>
 			<outputDirectory>/</outputDirectory>
 			<includes>
-				<include>start.bat</include>
+				<include>stop.sh</include>
 				<include>start.sh</include>
 				<include>flume_sh/</include>
 			</includes>
