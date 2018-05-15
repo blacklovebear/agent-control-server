@@ -132,7 +132,7 @@ public class ErrorLogMonitor {
                 continue;
             }
             for (File logFile : Objects.requireNonNull(childFiles)) {
-                if (logFile.isFile() && logFile.getName().contains(".log")) {
+                if (logFile.isFile() && logFile.getName().endsWith(".log")) {
                     startLogFile(logFile);
                 }
             }
