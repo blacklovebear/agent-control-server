@@ -98,7 +98,7 @@ public class LogFileTailer implements Runnable {
      * run.
      */
     public void run() {
-        LOGGER.debug("tail -f {}", this.filePath.toString());
+        LOGGER.info("tail -f {}", this.filePath.toString());
         // 确保log文件存在
         Utility.createParentDirs(this.filePath.toString());
         if (!Files.exists(this.filePath)) {
