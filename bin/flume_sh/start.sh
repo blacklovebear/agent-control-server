@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if ps ax | grep flume.node.Application | grep -v grep > /dev/null
+if ! mkdir /tmp/tagent.lock > /dev/null 2>&1
 then
   echo "running, please stop first"
 else
