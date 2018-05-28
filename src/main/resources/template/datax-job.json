@@ -1,0 +1,51 @@
+{
+  "job": {
+    "setting": {
+      "speed": {
+        "channel":1
+      }
+    },
+    "content": [
+      {
+        "reader": {
+          "name": "mysqlreader",
+          "parameter": {
+            "username": "$reader.username",
+            "password": "$reader.password",
+            "connection": [
+              {
+                "querySql": [
+                  "select db_id,on_line_flag from db_info where db_id < 10;"
+                ],
+                "jdbcUrl": [
+                  "jdbc:mysql://bad_ip:3306/database"
+                ]
+              }
+            ]
+          }
+        },
+        "writer": {
+          "name": "ftpwriter",
+          "parameter": {
+            "protocol": "sftp",
+            "host": "***",
+            "port": 22,
+            "username": "$writer.username",
+            "password": "$writer.password",
+            "timeout": "60000",
+            "connectPattern": "PASV",
+            "path": "/tmp/data/",
+            "fileName": "yixiao",
+            "writeMode": "truncate|append|nonConflict",
+            "fieldDelimiter": ",",
+            "encoding": "UTF-8",
+            "nullFormat": "null",
+            "dateFormat": "yyyy-MM-dd",
+            "fileFormat": "csv",
+            "header": []
+          }
+        }
+      }
+    ]
+  }
+}

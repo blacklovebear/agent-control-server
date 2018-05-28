@@ -7,6 +7,7 @@ import com.citic.control.ProcessMonitor;
 import com.citic.entity.MyExceptionMapper;
 import com.citic.helper.SimpleKafkaProducer;
 import com.citic.service.ConfigurationService;
+import com.citic.service.DataXService;
 import com.citic.service.ExeService;
 import io.netty.channel.Channel;
 import java.net.URI;
@@ -50,7 +51,8 @@ public class AppMain {
         ResourceConfig resourceConfig = new ResourceConfig(
             ConfigurationService.class,
             ExeService.class,
-            MyExceptionMapper.class
+            MyExceptionMapper.class,
+            DataXService.class
         );
 
         server = NettyHttpContainerProvider.createHttp2Server(uri, resourceConfig, null);

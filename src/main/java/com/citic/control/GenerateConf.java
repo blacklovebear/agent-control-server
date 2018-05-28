@@ -6,6 +6,9 @@ import static com.citic.AppConstants.CANAL_HOME_DIR;
 import static com.citic.AppConstants.CANAL_INSTANCE_TEMPLATE;
 import static com.citic.AppConstants.CANAL_SERVER_TEMPLATE;
 import static com.citic.AppConstants.CLASSPATH_URL_PREFIX;
+import static com.citic.AppConstants.DATAX_HOME_DIR;
+import static com.citic.AppConstants.DATAX_JOB_DIR;
+import static com.citic.AppConstants.DATAX_TEMPLATE;
 import static com.citic.AppConstants.TAGENT_CONF;
 import static com.citic.AppConstants.TAGENT_HOME_DIR;
 import static com.citic.AppConstants.TAGENT_TEMPLATE;
@@ -13,11 +16,11 @@ import static com.citic.AppConstants.TAGENT_TEMPLATE;
 import com.citic.AppConf;
 import com.citic.entity.CanalInstance;
 import com.citic.entity.CanalServer;
+import com.citic.entity.DataXJobConfig;
 import com.citic.entity.TAgent;
 import com.citic.helper.Utility;
 import com.google.common.collect.Lists;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -204,5 +207,24 @@ public class GenerateConf {
         String confPath =
             AppConf.getConfig(TAGENT_HOME_DIR) + File.separator + AppConf.getConfig(TAGENT_CONF);
         this.writeConf(canalServer, confPath, vx);
+    }
+
+
+    /**
+     * Generate data x.
+     *
+     * @param config the config
+     */
+    public void generateDataX(DataXJobConfig config) {
+        if (config == null) {
+            return;
+        }
+        VelocityContext vx = getVelContext(config);
+        // datax configuration
+        Template dataxJob = ve.getTemplate(getTemplatePath(DATAX_TEMPLATE), "utf-8");
+        String confPath =
+            AppConf.getConfig(DATAX_HOME_DIR) + File.separator + AppConf.getConfig(DATAX_JOB_DIR)
+                + File.separator + config.getJobName() + ".json";
+        this.writeConf(dataxJob, confPath, vx);
     }
 }

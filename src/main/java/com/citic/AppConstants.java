@@ -61,6 +61,11 @@ public class AppConstants {
     public static final String KAFKA_REGISTRY_URL = "kafka.registryUrl";
     public static final String KAFKA_USE_AVRO = "kafka.useAvro";
 
+    // DataX
+    public static final String DATAX_TEMPLATE = "datax.template";
+    public static final String DATAX_JOB_DIR = "datax.job.dir";
+    public static final String DATAX_HOME_DIR = "datax.home.dir";
+
 
     // constant
     public static final String CURRENT_TIME = "ctime";

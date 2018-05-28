@@ -41,3 +41,19 @@ curl http://localhost:8080/executor/stop/tagent
 curl http://localhost:8080/executor/start/canal
 curl http://localhost:8080/executor/stop/canal
 
+# dataX test
+curl -H "Content-Type: application/json" -X POST -d '
+{
+    "jobName":"dataX-job2",
+    "reader": {
+      "username":"root",
+      "password":"123456"
+    },
+    "writer": {
+      "username":"root",
+      "password":"123"
+    }
+}
+' \
+http://localhost:8080/datax/config
+
