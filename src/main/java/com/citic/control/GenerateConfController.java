@@ -42,9 +42,9 @@ import org.slf4j.LoggerFactory;
 /**
  * The type Generate conf.
  */
-public class GenerateConf {
+public class GenerateConfController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GenerateConf.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GenerateConfController.class);
 
     private VelocityEngine ve;
     private String templateDir = System.getProperty("template.dir", "classpath:template");
@@ -52,7 +52,7 @@ public class GenerateConf {
     /**
      * Instantiates a new Generate conf.
      */
-    public GenerateConf() {
+    public GenerateConfController() {
 
         ve = new VelocityEngine();
         ve.setProperty(Velocity.RUNTIME_LOG, AppConf.getConfig(AGENT_VELOCITY_LOG));

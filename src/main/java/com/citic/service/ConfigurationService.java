@@ -2,7 +2,7 @@ package com.citic.service;
 
 import com.citic.AppGlobal;
 import com.citic.AppMain;
-import com.citic.control.GenerateConf;
+import com.citic.control.GenerateConfController;
 import com.citic.entity.ResponseResult;
 import com.citic.entity.UnionConfig;
 import com.google.common.collect.Lists;
@@ -40,7 +40,7 @@ public class ConfigurationService {
         unionConfig.checkProperties();
         AppGlobal.setUnionConfig(unionConfig);
 
-        GenerateConf generateConf = new GenerateConf();
+        GenerateConfController generateConf = new GenerateConfController();
         generateConf.generateCanal(unionConfig.getCanalServer());
         generateConf.generateTAgent(unionConfig.getTAgent());
 
@@ -76,7 +76,7 @@ public class ConfigurationService {
 
         unionConfig.addOrReplaceUnit(unitConfig);
 
-        GenerateConf generateConf = new GenerateConf();
+        GenerateConfController generateConf = new GenerateConfController();
         generateConf.generateCanal(unionConfig.getCanalServer());
         generateConf.generateTAgent(unionConfig.getTAgent());
 

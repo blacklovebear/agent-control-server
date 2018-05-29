@@ -196,29 +196,6 @@ public class Utility {
     }
 
     /**
-     * Gets table field schema.
-     *
-     * @param schemaFieldList the schema field list
-     * @param schemaName the schema name
-     * @return the table field schema
-     */
-    public static String getTableFieldSchema(List<String> schemaFieldList, String schemaName) {
-        List<String> resultList = Lists.newArrayList();
-        String schema = "{"
-            + "\"type\":\"record\","
-            + "\"name\":\"" + schemaName + "\","
-            + "\"fields\":[";
-
-        for (String fieldStr : schemaFieldList) {
-            String field = "{ \"name\":\"" + fieldStr + "\", \"type\":\"string\" }";
-            resultList.add(field);
-        }
-        schema += Joiner.on(",").join(resultList);
-        schema += "]}";
-        return schema;
-    }
-
-    /**
      * Delete file or folder.
      *
      * @param path the path

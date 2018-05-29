@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The enum Execute cmd.
  */
-public enum ExecuteCmd {
+public enum ExecuteCmdController {
     /**
      * Instance execute cmd.
      */
@@ -34,7 +34,7 @@ public enum ExecuteCmd {
     /**
      * The Logger.
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExecuteCmd.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExecuteCmdController.class);
     /**
      * The Canal state.
      */

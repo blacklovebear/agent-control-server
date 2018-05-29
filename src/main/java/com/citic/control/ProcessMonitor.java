@@ -95,9 +95,7 @@ public class ProcessMonitor {
 
 
     private GenericRecord buildAvroRecord(String canalState, String tagentState) {
-        String schemaString = Utility.getTableFieldSchema(ATTR_LIST, AVRO_PROCESS_MONITOR_TOPIC);
-
-        Schema schema = SchemaCache.getSchema(schemaString);
+        Schema schema = SchemaCache.getSchema(ATTR_LIST, AVRO_PROCESS_MONITOR_TOPIC);
         GenericRecord avroRecord = new GenericData.Record(schema);
         avroRecord.put(CANAL_STATE, canalState);
         avroRecord.put(TAGENT_STATE, tagentState);
@@ -137,9 +135,9 @@ public class ProcessMonitor {
                 try {
                     String state = executor.monitorProcess(this.canalCmd, CANAL_PROCESS_NAME);
                     if (state.contains("running")) {
-                        ExecuteCmd.INSTANCE.setCanalState(STATE_ALIVE);
+                        ExecuteCmdController.INSTANCE.setCanalState(STATE_ALIVE);
                     } else if (state.contains("dead")) {
-                        ExecuteCmd.INSTANCE.setCanalState(STATE_DEAD);
+                        ExecuteCmdController.INSTANCE.setCanalState(STATE_DEAD);
                     }
                     return state;
                 } catch (Exception e) {
@@ -156,9 +154,9 @@ public class ProcessMonitor {
                 try {
                     String state = executor.monitorProcess(this.tagentCmd, TAGENT_PROCESS_NAME);
                     if (state.contains("running")) {
-                        ExecuteCmd.INSTANCE.setTAgentState(STATE_ALIVE);
+                        ExecuteCmdController.INSTANCE.setTAgentState(STATE_ALIVE);
                     } else if (state.contains("dead")) {
-                        ExecuteCmd.INSTANCE.setTAgentState(STATE_DEAD);
+                        ExecuteCmdController.INSTANCE.setTAgentState(STATE_DEAD);
                     }
                     return state;
                 } catch (Exception e) {

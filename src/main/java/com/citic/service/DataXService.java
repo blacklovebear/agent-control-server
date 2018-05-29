@@ -1,15 +1,22 @@
 package com.citic.service;
 
-import com.citic.control.GenerateConf;
+import com.citic.control.DataXJobController;
+import com.citic.control.GenerateConfController;
 import com.citic.entity.DataXJobConfig;
 import com.citic.entity.ResponseResult;
+import java.io.IOException;
+import java.util.concurrent.Future;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.zeroturnaround.exec.ProcessExecutor;
+import org.zeroturnaround.exec.ProcessResult;
 
 /**
  * The type Data x service.
@@ -33,10 +40,25 @@ public class DataXService {
         LOGGER.debug("DataXJobConfig: {}", dataXJobConfig.toString());
 
         dataXJobConfig.checkProperties();
-
-        GenerateConf generateConf = new GenerateConf();
+        GenerateConfController generateConf = new GenerateConfController();
         generateConf.generateDataX(dataXJobConfig);
 
+        return new ResponseResult();
+    }
+
+    @GET
+    @Path("start")
+    @Produces(MediaType.APPLICATION_JSON)
+    public ResponseResult startJob(@QueryParam("jobId") String jobId) throws IOException {
+        DataXJobController.startJob(jobId);
+        return new ResponseResult();
+    }
+
+    @GET
+    @Path("stop")
+    @Produces(MediaType.APPLICATION_JSON)
+    public ResponseResult stopJob(@QueryParam("jobId") String jobId) {
+        DataXJobController.stopJob(jobId);
         return new ResponseResult();
     }
 }

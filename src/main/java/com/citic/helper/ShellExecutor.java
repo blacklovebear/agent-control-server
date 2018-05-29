@@ -15,6 +15,7 @@ import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
  * The type Shell executor.
  */
 public class ShellExecutor {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ShellExecutor.class);
     private static final int SUCCESS = 0;
 

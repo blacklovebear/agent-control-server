@@ -1,6 +1,6 @@
 package com.citic.service;
 
-import com.citic.control.ExecuteCmd;
+import com.citic.control.ExecuteCmdController;
 import com.citic.entity.ResponseResult;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -13,7 +13,7 @@ import javax.ws.rs.core.MediaType;
 @Path("executor")
 public class ExeService {
 
-    private static final ExecuteCmd EXECUTE_CMD = ExecuteCmd.INSTANCE;
+    private static final ExecuteCmdController EXECUTE_CMD = ExecuteCmdController.INSTANCE;
 
     /**
      * Start canal response result.

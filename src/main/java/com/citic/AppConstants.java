@@ -65,6 +65,7 @@ public class AppConstants {
     public static final String DATAX_TEMPLATE = "datax.template";
     public static final String DATAX_JOB_DIR = "datax.job.dir";
     public static final String DATAX_HOME_DIR = "datax.home.dir";
+    public static final String DATAX_START_CMD = "datax.start.cmd";
 
 
     // constant

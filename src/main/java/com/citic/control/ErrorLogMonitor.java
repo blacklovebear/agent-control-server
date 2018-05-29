@@ -76,8 +76,7 @@ public class ErrorLogMonitor {
     }
 
     private void sendAvroErrorLog(String logLine, String logPath) {
-        String schemaString = Utility.getTableFieldSchema(ATTR_LIST, AVRO_ERROR_LOG_TOPIC);
-        Schema schema = SchemaCache.getSchema(schemaString);
+        Schema schema = SchemaCache.getSchema(ATTR_LIST, AVRO_ERROR_LOG_TOPIC);
         GenericRecord avroRecord = new GenericData.Record(schema);
         avroRecord.put(LOG_PATH, logPath);
         avroRecord.put(ERROR_LOG, logLine);
