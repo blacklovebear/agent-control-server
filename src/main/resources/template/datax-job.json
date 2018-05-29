@@ -15,10 +15,10 @@
             "connection": [
               {
                 "querySql": [
-                  "select db_id,on_line_flag from db_info where db_id < 10;"
+                  "$reader.querySql"
                 ],
                 "jdbcUrl": [
-                  "jdbc:mysql://bad_ip:3306/database"
+                  "$reader.jdbcUrl"
                 ]
               }
             ]
@@ -28,20 +28,20 @@
           "name": "ftpwriter",
           "parameter": {
             "protocol": "sftp",
-            "host": "***",
-            "port": 22,
+            "host": "$writer.host",
+            "port": $writer.port,
             "username": "$writer.username",
             "password": "$writer.password",
             "timeout": "60000",
             "connectPattern": "PASV",
-            "path": "/tmp/data/",
-            "fileName": "yixiao",
-            "writeMode": "truncate|append|nonConflict",
-            "fieldDelimiter": ",",
-            "encoding": "UTF-8",
+            "path": "$writer.path",
+            "fileName": "$writer.fileName",
+            "writeMode": "$writer.writeMode",
+            "fieldDelimiter": "$writer.fieldDelimiter",
+            "encoding": "$writer.encoding",
             "nullFormat": "null",
-            "dateFormat": "yyyy-MM-dd",
-            "fileFormat": "csv",
+            "dateFormat": "$writer.dateFormat",
+            "fileFormat": "$writer.fileFormat",
             "header": []
           }
         }

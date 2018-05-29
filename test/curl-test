@@ -44,16 +44,27 @@ curl http://localhost:8080/executor/stop/canal
 # dataX test
 curl -H "Content-Type: application/json" -X POST -d '
 {
-    "jobName":"dataX-job2",
+    "jobId":"1233434",
+    "responseUrl":"xxxx",
     "reader": {
-      "username":"root",
-      "password":"123456"
+        "username":"root",
+        "password":"Co9ME/Agq664+ZimAcnckA==",
+        "querySql":"select db_id,on_line_flag from db_info where db_id < 10;",
+        "jdbcUrl":"jdbc:mysql://bad_ip:3306/database"
     },
     "writer": {
-      "username":"root",
-      "password":"123"
+        "host": "***",
+        "port": 22,
+        "username": "xxx",
+        "password": "Co9ME/Agq664+ZimAcnckA==",
+        "path": "/tmp/data/",
+        "fileName": "yixiao",
+        "writeMode": "truncate",
+        "fieldDelimiter": ",",
+        "encoding": "UTF-8",
+        "dateFormat": "yyyy-MM-dd",
+        "fileFormat": "csv"
     }
 }
 ' \
 http://localhost:8080/datax/config
-

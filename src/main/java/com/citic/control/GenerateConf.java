@@ -224,7 +224,7 @@ public class GenerateConf {
         Template dataxJob = ve.getTemplate(getTemplatePath(DATAX_TEMPLATE), "utf-8");
         String confPath =
             AppConf.getConfig(DATAX_HOME_DIR) + File.separator + AppConf.getConfig(DATAX_JOB_DIR)
-                + File.separator + config.getJobName() + ".json";
+                + File.separator + config.getJobId() + ".json";
         this.writeConf(dataxJob, confPath, vx);
     }
 }

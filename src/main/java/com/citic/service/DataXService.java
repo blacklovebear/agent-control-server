@@ -32,6 +32,8 @@ public class DataXService {
     public ResponseResult newConfig(DataXJobConfig dataXJobConfig) throws Exception {
         LOGGER.debug("DataXJobConfig: {}", dataXJobConfig.toString());
 
+        dataXJobConfig.checkProperties();
+
         GenerateConf generateConf = new GenerateConf();
         generateConf.generateDataX(dataXJobConfig);
 
