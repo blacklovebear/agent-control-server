@@ -52,6 +52,7 @@ public class ShellExecutor {
         }
 
         processExecutor.directory(new File(homeDirectory))
+            .destroyOnExit()
             .redirectError(Slf4jStream.of(getClass()).asError())
             .redirectOutput(Slf4jStream.of(getClass()).asInfo());
 
@@ -82,6 +83,7 @@ public class ShellExecutor {
         }
 
         processExecutor.directory(new File(homeDirectory))
+            .destroyOnExit()
             .redirectError(Slf4jStream.of(getClass()).asError())
             .redirectOutput(new LogOutputStream() {
                 @Override

@@ -33,7 +33,7 @@ public class DataXService {
      * @throws Exception the exception
      */
     @POST
-    @Path("config")
+    @Path("start")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public ResponseResult newConfig(DataXJobConfig dataXJobConfig) throws Exception {
@@ -43,11 +43,12 @@ public class DataXService {
         GenerateConfController generateConf = new GenerateConfController();
         generateConf.generateDataX(dataXJobConfig);
 
+        DataXJobController.startJob(dataXJobConfig.getJobId());
         return new ResponseResult();
     }
 
     @GET
-    @Path("start")
+    @Path("start_test")
     @Produces(MediaType.APPLICATION_JSON)
     public ResponseResult startJob(@QueryParam("jobId") String jobId) throws IOException {
         DataXJobController.startJob(jobId);

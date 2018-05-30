@@ -2,6 +2,7 @@ package com.citic;
 
 import static com.citic.AppConstants.KAFKA_USE_AVRO;
 
+import com.citic.control.DataXJobMonitor;
 import com.citic.control.ErrorLogMonitor;
 import com.citic.control.ProcessMonitor;
 import com.citic.entity.MyExceptionMapper;
@@ -28,6 +29,7 @@ public class AppMain {
     private static SimpleKafkaProducer<Object, Object> producer;
     private static ProcessMonitor processMonitor;
     private static ErrorLogMonitor errorLogMonitor;
+    private static DataXJobMonitor dataXJobMonitor;
 
 
     /**
@@ -62,11 +64,13 @@ public class AppMain {
         producer = new SimpleKafkaProducer<>(false, useAvro);
         // 启动对进程的监控
         processMonitor = new ProcessMonitor(producer, useAvro);
-
         processMonitor.start();
 
         errorLogMonitor = new ErrorLogMonitor(producer, useAvro);
         errorLogMonitor.start();
+
+        dataXJobMonitor = new DataXJobMonitor();
+        dataXJobMonitor.start();
 
         Runtime.getRuntime().addShutdownHook(new Thread(AppMain::stop));
 
@@ -83,6 +87,7 @@ public class AppMain {
     public static void stop() {
         processMonitor.stop();
         errorLogMonitor.stop();
+        dataXJobMonitor.stop();
         producer.close();
         server.close();
     }
