@@ -32,6 +32,9 @@ import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.ProcessResult;
 import org.zeroturnaround.exec.stream.LogOutputStream;
 
+/**
+ * The type Data x job controller.
+ */
 public class DataXJobController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataXJobController.class);
@@ -57,10 +60,22 @@ public class DataXJobController {
             .start().getFuture();
     }
 
+    /**
+     * Add job response url.
+     *
+     * @param jobId the job id
+     * @param responseUrl the response url
+     */
     public static void addJobResponseUrl(String jobId, String responseUrl) {
         jobResponseUrl.put(jobId, responseUrl);
     }
 
+    /**
+     * Start job.
+     *
+     * @param jobId the job id
+     * @throws IOException the io exception
+     */
     public static void startJob(String jobId) throws IOException {
         runningJobs.computeIfAbsent(jobId, key -> {
             String homeDir = AppConf.getConfig(DATAX_HOME_DIR);
@@ -76,6 +91,11 @@ public class DataXJobController {
         });
     }
 
+    /**
+     * Stop job.
+     *
+     * @param jobId the job id
+     */
     public static void stopJob(String jobId) {
         runningJobs.computeIfPresent(jobId, (k, v) -> {
             v.cancel(true);
@@ -83,7 +103,10 @@ public class DataXJobController {
         });
     }
 
-    public static void checkJobStateAndSendResponse() {
+    /**
+     * Check job state and send response.
+     */
+    static void checkJobStateAndSendResponse() {
         List<String> jobDoneList = Lists.newArrayList();
 
         runningJobs.forEach((jobId, jobFuture) -> {
