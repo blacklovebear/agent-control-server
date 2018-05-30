@@ -5,7 +5,6 @@ import com.citic.control.GenerateConfController;
 import com.citic.entity.DataXJobConfig;
 import com.citic.entity.ResponseResult;
 import java.io.IOException;
-import java.util.concurrent.Future;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -15,14 +14,13 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.zeroturnaround.exec.ProcessExecutor;
-import org.zeroturnaround.exec.ProcessResult;
 
 /**
  * The type Data x service.
  */
 @Path("datax")
 public class DataXService {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(DataXService.class);
 
     /**
@@ -44,6 +42,8 @@ public class DataXService {
         generateConf.generateDataX(dataXJobConfig);
 
         DataXJobController.startJob(dataXJobConfig.getJobId());
+        DataXJobController
+            .addJobResponseUrl(dataXJobConfig.getJobId(), dataXJobConfig.getResponseUrl());
         return new ResponseResult();
     }
 
