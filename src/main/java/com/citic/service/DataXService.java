@@ -4,7 +4,11 @@ import com.citic.control.DataXJobController;
 import com.citic.control.GenerateConfController;
 import com.citic.entity.DataXJobConfig;
 import com.citic.entity.ResponseResult;
+import com.citic.entity.ResponseTest;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import java.io.IOException;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -47,18 +51,53 @@ public class DataXService {
         return new ResponseResult();
     }
 
+    /**
+     * Start job response result.
+     *
+     * @param jobId the job id
+     * @return the response result
+     * @throws IOException the io exception
+     */
     @GET
     @Path("start_test")
     @Produces(MediaType.APPLICATION_JSON)
     public ResponseResult startJob(@QueryParam("jobId") String jobId) throws IOException {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(jobId), "jobId param is null or empty ");
         DataXJobController.startJob(jobId);
+        String testResponseUrl = "http://localhost:8080/datax/response_test";
+        DataXJobController
+            .addJobResponseUrl(jobId, testResponseUrl);
+
         return new ResponseResult();
     }
 
+    /**
+     * Response test response result.
+     *
+     * @param responseTest the response test
+     * @return the response result
+     * @throws Exception the exception
+     */
+    @POST
+    @Path("response_test")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public ResponseResult responseTest(ResponseTest responseTest) throws Exception {
+        LOGGER.debug("responseTest: {}", responseTest.toString());
+        return new ResponseResult();
+    }
+
+    /**
+     * Stop job response result.
+     *
+     * @param jobId the job id
+     * @return the response result
+     */
     @GET
     @Path("stop")
     @Produces(MediaType.APPLICATION_JSON)
-    public ResponseResult stopJob(@QueryParam("jobId") String jobId) {
+    public ResponseResult stopJob(@NotNull @QueryParam("jobId") String jobId) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(jobId), "jobId param is null or empty ");
         DataXJobController.stopJob(jobId);
         return new ResponseResult();
     }

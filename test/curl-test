@@ -67,7 +67,23 @@ curl -H "Content-Type: application/json" -X POST -d '
     }
 }
 ' \
-http://localhost:8080/datax/config
+http://localhost:8080/datax/start
 
-# dataX start job
-curl http://localhost:8080/datax/start_test?jobId=job
+# dataX start test job
+curl http://localhost:8080/datax/start_test?jobId=job123
+
+# dataX stop job
+curl http://localhost:8080/datax/stop?jobId=job123
+
+# test response
+curl -H "Content-Type: application/json" -X POST -d '
+{
+    "jobId":"job",
+    "execCode":"2",
+    "inputNum":"100000",
+    "outputNum":"100000",
+    "execMessage":"success",
+    "endTime":"2018-05-31 10:46:21"
+}
+' \
+http://localhost:8080/datax/response_test

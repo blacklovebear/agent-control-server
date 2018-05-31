@@ -3,7 +3,6 @@ package com.citic.control;
 import static com.citic.AppConstants.DATAX_HOME_DIR;
 import static com.citic.AppConstants.DATAX_JOB_DIR;
 import static com.citic.AppConstants.DATAX_START_CMD;
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 import com.citic.AppConf;
 import com.google.common.base.Preconditions;
@@ -20,12 +19,11 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.message.BasicNameValuePair;
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeroturnaround.exec.ProcessExecutor;
@@ -89,6 +87,7 @@ public class DataXJobController {
                 return null;
             }
         });
+        LOGGER.debug("running jobs: {}", runningJobs.keySet());
     }
 
     /**
@@ -109,6 +108,7 @@ public class DataXJobController {
     static void checkJobStateAndSendResponse() {
         List<String> jobDoneList = Lists.newArrayList();
 
+        LOGGER.debug("running jobs: {}", runningJobs.keySet());
         runningJobs.forEach((jobId, jobFuture) -> {
             String output;
             if (!jobFuture.isDone()) {
@@ -117,19 +117,20 @@ public class DataXJobController {
             jobDoneList.add(jobId);
 
             if (jobFuture.isCancelled()) {
-                output = String.format("Job: %s is cancelled.", jobId);
+                output = String.format("Job: %s is cancelled.\n", jobId);
             } else {
                 try {
                     output = jobFuture.get().outputUTF8();
                 } catch (InterruptedException | ExecutionException e) {
                     LOGGER.error(e.getMessage(), e);
-                    output = String.format("Job: %s run with exception: %s", jobId, e.getMessage());
+                    output = String
+                        .format("Job: %s run with exception: %s.\n", jobId, e.getMessage());
                 }
             }
 
             String jobResponse = output;
             if (jobErrors.containsKey(jobId)) {
-                jobResponse += "\n" + String.join("\n", jobErrors.get(jobId));
+                jobResponse += String.join("\n", jobErrors.get(jobId));
             }
             sendJobResultToControlPlatform(jobId, jobResponse, jobResponseUrl.get(jobId));
         });
@@ -153,7 +154,7 @@ public class DataXJobController {
         jobDoneList.forEach(jobResponseUrl::remove);
     }
 
-    private static Map<String, String> grabMessageFromOutput(String jobId, String jobOutput) {
+    private static JSONObject grabMessageFromOutput(String jobId, String jobOutput) {
         Preconditions.checkNotNull(jobOutput);
         String endTime = null;
         int inputNum = 0;
@@ -170,7 +171,7 @@ public class DataXJobController {
                     endTime = msg.substring(msg.indexOf(":") + 1).trim();
                 } else if (msg.contains("读出记录总数")) {
                     inputNum = Integer.parseInt(msg.substring(msg.indexOf(":") + 1).trim());
-                } else if (msg.contains("读书失败总数")) {
+                } else if (msg.contains("读写失败总数")) {
                     outputNum =
                         inputNum - Integer.parseInt(msg.substring(msg.indexOf(":") + 1).trim());
                 }
@@ -187,7 +188,7 @@ public class DataXJobController {
                 .format(new Timestamp(System.currentTimeMillis()));
         }
 
-        Map<String, String> parameters = Maps.newHashMap();
+        JSONObject parameters = new JSONObject();
         parameters.put("jobId", jobId);
         parameters.put("endTime", endTime);
         parameters.put("inputNum", String.valueOf(inputNum));
@@ -201,13 +202,13 @@ public class DataXJobController {
 
     private static void sendJobResultToControlPlatform(String jobId, String jobOutput,
         String jobResponseUrl) {
-        Map<String, String> postData = grabMessageFromOutput(jobId, jobOutput);
+        JSONObject postData = grabMessageFromOutput(jobId, jobOutput);
         sendResponsePost(jobId, jobResponseUrl, postData);
     }
 
 
     private static void sendResponsePost(String jobId, String responseUrl,
-        Map<String, String> postData) {
+        JSONObject postData) {
         LOGGER.debug("job: {}, responseUrl: {} post data: {}", jobId, responseUrl, postData);
 
         Preconditions.checkArgument(!Strings.isNullOrEmpty(jobId));
@@ -215,15 +216,16 @@ public class DataXJobController {
         Preconditions.checkNotNull(postData);
 
         HttpClient client = HttpClientBuilder.create().build();
-        HttpPost post = new HttpPost(responseUrl);
-        List<NameValuePair> urlParameters = Lists.newArrayList();
-        postData.forEach((k, v) -> urlParameters.add(new BasicNameValuePair(k, v)));
+        HttpPost httpPost = new HttpPost(responseUrl);
+        httpPost.addHeader("Content-Type", "application/json;charset=UTF-8");
 
-        post.setEntity(new UrlEncodedFormEntity(urlParameters, UTF_8));
+        StringEntity stringEntity = new StringEntity(postData.toString(), "UTF-8");
+        stringEntity.setContentEncoding("UTF-8");
+        httpPost.setEntity(stringEntity);
 
         HttpResponse response;
         try {
-            response = client.execute(post);
+            response = client.execute(httpPost);
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
             return;
@@ -237,7 +239,9 @@ public class DataXJobController {
 
 
     private static void appendJobError(String jobId, String errorInfo) {
-        jobErrors.computeIfAbsent(jobId, key -> new ArrayList<>()).add("\n" + errorInfo);
+        if (errorInfo != null && !Strings.isNullOrEmpty(errorInfo.trim())) {
+            jobErrors.computeIfAbsent(jobId, key -> new ArrayList<>()).add(errorInfo);
+        }
     }
 
 }
