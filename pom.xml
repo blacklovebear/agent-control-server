@@ -4,7 +4,7 @@
 
     <groupId>com.citic</groupId>
     <artifactId>drc-streaming-control</artifactId>
-    <version>1.0.0.20180525</version>
+    <version>1.0.0</version>
 
     <repositories>
         <repository>
