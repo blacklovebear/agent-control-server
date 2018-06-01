@@ -40,7 +40,6 @@
             "fieldDelimiter": "$writer.fieldDelimiter",
             "encoding": "$writer.encoding",
             "nullFormat": "null",
-            "dateFormat": "$writer.dateFormat",
             "fileFormat": "$writer.fileFormat",
             "header": []
           }

@@ -125,7 +125,6 @@ public class DataXJobConfig {
         private String writeMode;
         private String fieldDelimiter;
         private String encoding;
-        private String dateFormat;
         private String fileFormat;
 
         private void checkProperties() throws Exception {
@@ -144,8 +143,6 @@ public class DataXJobConfig {
                 "fieldDelimiter is null or empty");
             Preconditions
                 .checkArgument(!Strings.isNullOrEmpty(encoding), "encoding is null or empty");
-            Preconditions
-                .checkArgument(!Strings.isNullOrEmpty(dateFormat), "dateFormat is null or empty");
             Preconditions
                 .checkArgument(!Strings.isNullOrEmpty(fileFormat), "fileFormat is null or empty");
             Preconditions.checkArgument(AesUtil.decForTd(password) != null,
@@ -206,14 +203,6 @@ public class DataXJobConfig {
 
         public void setEncoding(String encoding) {
             this.encoding = encoding;
-        }
-
-        public String getDateFormat() {
-            return dateFormat;
-        }
-
-        public void setDateFormat(String dateFormat) {
-            this.dateFormat = dateFormat;
         }
 
         public String getFileFormat() {
