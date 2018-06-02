@@ -4,7 +4,6 @@ import com.citic.control.DataXJobController;
 import com.citic.control.GenerateConfController;
 import com.citic.entity.DataXJobConfig;
 import com.citic.entity.ResponseResult;
-import com.citic.entity.ResponseTest;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import java.io.IOException;
@@ -16,6 +15,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,21 +71,16 @@ public class DataXService {
         return new ResponseResult();
     }
 
-    /**
-     * Response test response result.
-     *
-     * @param responseTest the response test
-     * @return the response result
-     * @throws Exception the exception
-     */
+
     @POST
     @Path("response_test")
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Consumes("application/x-www-form-urlencoded")
     @Produces(MediaType.APPLICATION_JSON)
-    public ResponseResult responseTest(ResponseTest responseTest) throws Exception {
-        LOGGER.debug("responseTest: {}", responseTest.toString());
+    public ResponseResult responseTest(final MultivaluedMap<String, String> formParams) {
+        LOGGER.debug("formParams: {}", formParams.toString());
         return new ResponseResult();
     }
+
 
     /**
      * Stop job response result.

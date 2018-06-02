@@ -11,6 +11,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -19,11 +20,12 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.json.simple.JSONObject;
+import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeroturnaround.exec.ProcessExecutor;
@@ -154,7 +156,7 @@ public class DataXJobController {
         jobDoneList.forEach(jobResponseUrl::remove);
     }
 
-    private static JSONObject grabMessageFromOutput(String jobId, String jobOutput) {
+    private static Map<String, String> grabMessageFromOutput(String jobId, String jobOutput) {
         Preconditions.checkNotNull(jobOutput);
         String endTime = null;
         int inputNum = 0;
@@ -188,7 +190,7 @@ public class DataXJobController {
                 .format(new Timestamp(System.currentTimeMillis()));
         }
 
-        JSONObject parameters = new JSONObject();
+        Map<String, String> parameters = Maps.newHashMap();
         parameters.put("jobId", jobId);
         parameters.put("endTime", endTime);
         parameters.put("inputNum", String.valueOf(inputNum));
@@ -202,13 +204,13 @@ public class DataXJobController {
 
     private static void sendJobResultToControlPlatform(String jobId, String jobOutput,
         String jobResponseUrl) {
-        JSONObject postData = grabMessageFromOutput(jobId, jobOutput);
+        Map<String, String> postData = grabMessageFromOutput(jobId, jobOutput);
         sendResponsePost(jobId, jobResponseUrl, postData);
     }
 
 
     private static void sendResponsePost(String jobId, String responseUrl,
-        JSONObject postData) {
+        Map<String, String> postData) {
         LOGGER.debug("job: {}, responseUrl: {} post data: {}", jobId, responseUrl, postData);
 
         Preconditions.checkArgument(!Strings.isNullOrEmpty(jobId));
@@ -217,11 +219,17 @@ public class DataXJobController {
 
         HttpClient client = HttpClientBuilder.create().build();
         HttpPost httpPost = new HttpPost(responseUrl);
-        httpPost.addHeader("Content-Type", "application/json;charset=UTF-8");
 
-        StringEntity stringEntity = new StringEntity(postData.toString(), "UTF-8");
-        stringEntity.setContentEncoding("UTF-8");
-        httpPost.setEntity(stringEntity);
+        List<NameValuePair> params = Lists.newArrayList();
+        postData.forEach((k, v) -> {
+            params.add(new BasicNameValuePair(k, v));
+        });
+
+        try {
+            httpPost.setEntity(new UrlEncodedFormEntity(params));
+        } catch (UnsupportedEncodingException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
 
         HttpResponse response;
         try {
