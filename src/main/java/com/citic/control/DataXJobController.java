@@ -3,6 +3,7 @@ package com.citic.control;
 import static com.citic.AppConstants.DATAX_HOME_DIR;
 import static com.citic.AppConstants.DATAX_JOB_DIR;
 import static com.citic.AppConstants.DATAX_START_CMD;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 import com.citic.AppConf;
 import com.google.common.base.Preconditions;
@@ -225,11 +226,7 @@ public class DataXJobController {
             params.add(new BasicNameValuePair(k, v));
         });
 
-        try {
-            httpPost.setEntity(new UrlEncodedFormEntity(params));
-        } catch (UnsupportedEncodingException e) {
-            LOGGER.error(e.getMessage(), e);
-        }
+        httpPost.setEntity(new UrlEncodedFormEntity(params, UTF_8));
 
         HttpResponse response;
         try {

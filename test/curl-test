@@ -45,7 +45,7 @@ curl http://localhost:8080/executor/stop/canal
 curl -H "Content-Type: application/json" -X POST -d '
 {
     "jobId":"1233434",
-    "responseUrl":"xxxx",
+    "responseUrl":"http://localhost:8080/datax/response_test",
     "reader": {
         "username":"root",
         "password":"Co9ME/Agq664+ZimAcnckA==",
@@ -62,7 +62,6 @@ curl -H "Content-Type: application/json" -X POST -d '
         "writeMode": "truncate",
         "fieldDelimiter": ",",
         "encoding": "UTF-8",
-        "dateFormat": "yyyy-MM-dd",
         "fileFormat": "csv"
     }
 }
