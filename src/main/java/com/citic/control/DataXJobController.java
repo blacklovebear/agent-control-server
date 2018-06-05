@@ -6,13 +6,13 @@ import static com.citic.AppConstants.DATAX_START_CMD;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import com.citic.AppConf;
+import com.citic.helper.Utility;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -207,6 +207,16 @@ public class DataXJobController {
         String jobResponseUrl) {
         Map<String, String> postData = grabMessageFromOutput(jobId, jobOutput);
         sendResponsePost(jobId, jobResponseUrl, postData);
+        deleteJobs(jobId);
+    }
+
+    private static void deleteJobs(String jobId) {
+        String homeDir = AppConf.getConfig(DATAX_HOME_DIR);
+
+        String cmd = String.format(
+            "mkdir -p job/bak;mv job/%s.json job/bak;find job/bak -mtime +1 -exec rm {} \\;",
+            jobId);
+        Utility.exeCmd(homeDir, cmd);
     }
 
 
