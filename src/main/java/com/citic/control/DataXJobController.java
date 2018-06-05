@@ -207,10 +207,10 @@ public class DataXJobController {
         String jobResponseUrl) {
         Map<String, String> postData = grabMessageFromOutput(jobId, jobOutput);
         sendResponsePost(jobId, jobResponseUrl, postData);
-        deleteJobs(jobId);
+        deleteJobConfigFile(jobId);
     }
 
-    private static void deleteJobs(String jobId) {
+    private static void deleteJobConfigFile(String jobId) {
         String homeDir = AppConf.getConfig(DATAX_HOME_DIR);
 
         String cmd = String.format(
