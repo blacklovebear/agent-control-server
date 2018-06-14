@@ -14,6 +14,7 @@ import org.apache.commons.lang.StringUtils;
  */
 public class UnionConfig {
 
+    private boolean multiTopicJob = true;
     private String zkServers;
     private String kafkaServers;
     private String registryUrl;
@@ -53,7 +54,7 @@ public class UnionConfig {
         Preconditions.checkArgument(units.size() > 0, "units is empty");
 
         for (Unit unit : units) {
-            unit.checkProperties(useAvro);
+            unit.checkProperties(useAvro, multiTopicJob);
         }
     }
 
@@ -66,6 +67,7 @@ public class UnionConfig {
             tagent = new TAgent();
         }
         canalServer.setZkServers(this.zkServers);
+        tagent.setMultiTopicJob(this.multiTopicJob);
         tagent.setSourceZkServers(this.zkServers);
         tagent.setSinkServers(this.kafkaServers);
         tagent.setRegistryUrl(this.registryUrl);
@@ -76,6 +78,14 @@ public class UnionConfig {
             canalServer.addOrReplaceInstance(new CanalInstance(unit));
             tagent.addOrReplaceSource(new TAgent.Source(unit));
         });
+    }
+
+    public boolean isMultiTopicJob() {
+        return multiTopicJob;
+    }
+
+    public void setMultiTopicJob(boolean multiTopicJob) {
+        this.multiTopicJob = multiTopicJob;
     }
 
     /**
@@ -221,6 +231,8 @@ public class UnionConfig {
 
         private String tableTopicSchemaMap;
         private String tableFieldSchemaMap;
+        // trans only
+        private String removeFilter;
 
         /**
          * Check properties.
@@ -228,7 +240,7 @@ public class UnionConfig {
          * @param useAvro the use avro
          * @throws Exception the exception
          */
-        public void checkProperties(boolean useAvro) throws Exception {
+        public void checkProperties(boolean useAvro, boolean multiTopicJob) throws Exception {
             Preconditions.checkArgument(!Strings.isNullOrEmpty(masterAddress),
                 "dbUsername is null or empty");
             Preconditions
@@ -242,14 +254,9 @@ public class UnionConfig {
             Preconditions.checkArgument(!Strings.isNullOrEmpty(tableTopicSchemaMap),
                 "tableTopicSchemaMap is null or empty");
 
+            Utility.isUrlAddressValid(masterAddress, "masterAddress");
+
             if (useAvro) {
-                Preconditions.checkArgument(!Strings.isNullOrEmpty(tableFieldSchemaMap),
-                    "tableFieldSchemaMap is null or empty");
-
-                Preconditions.checkArgument(StringUtils.countMatches(tableTopicSchemaMap, ";")
-                        == StringUtils.countMatches(tableFieldSchemaMap, ";"),
-                    "tableTopicSchemaMap 和 tableFieldSchemaMap参数个数配置不一致");
-
                 // test.test:test123:schema1;test.test1:test234:schema2
                 Splitter.on(';')
                     .omitEmptyStrings()
@@ -267,7 +274,34 @@ public class UnionConfig {
                         Preconditions.checkArgument(!Strings.isNullOrEmpty(result[2].trim()),
                             "schema cannot empty");
                     });
+            } else {
+                // test.test:test123;test.test1:test234
+                Splitter.on(';')
+                    .omitEmptyStrings()
+                    .trimResults()
+                    .split(tableTopicSchemaMap)
+                    .forEach(item -> {
+                        String[] result = item.split(":");
+                        Preconditions.checkArgument(result.length == 2,
+                            "tableTopicSchemaMap format "
+                                + "incorrect eg:db.tbl1:topic1;db.tbl2:topic2");
 
+                        Preconditions.checkArgument(!Strings.isNullOrEmpty(result[0].trim()),
+                            "db.table cannot empty");
+                        Preconditions.checkArgument(!Strings.isNullOrEmpty(result[1].trim()),
+                            "topic cannot empty");
+                    });
+
+            }
+
+
+            if (useAvro && multiTopicJob) {
+                Preconditions.checkArgument(!Strings.isNullOrEmpty(tableFieldSchemaMap),
+                    "tableFieldSchemaMap is null or empty");
+
+                Preconditions.checkArgument(StringUtils.countMatches(tableTopicSchemaMap, ";")
+                        == StringUtils.countMatches(tableFieldSchemaMap, ";"),
+                    "tableTopicSchemaMap 和 tableFieldSchemaMap参数个数配置不一致");
                 Splitter.on(';')
                     .omitEmptyStrings()
                     .trimResults()
@@ -290,28 +324,16 @@ public class UnionConfig {
                                     "schema field cannot empty");
                             });
                     });
-
-            } else {
-                // test.test:test123;test.test1:test234
-                Splitter.on(';')
-                    .omitEmptyStrings()
-                    .trimResults()
-                    .split(tableTopicSchemaMap)
-                    .forEach(item -> {
-                        String[] result = item.split(":");
-                        Preconditions.checkArgument(result.length == 2,
-                            "tableTopicSchemaMap format "
-                                + "incorrect eg:db.tbl1:topic1;db.tbl2:topic2");
-
-                        Preconditions.checkArgument(!Strings.isNullOrEmpty(result[0].trim()),
-                            "db.table cannot empty");
-                        Preconditions.checkArgument(!Strings.isNullOrEmpty(result[1].trim()),
-                            "topic cannot empty");
-                    });
-
             }
 
-            Utility.isUrlAddressValid(masterAddress, "masterAddress");
+        }
+
+        public String getRemoveFilter() {
+            return removeFilter;
+        }
+
+        public void setRemoveFilter(String removeFilter) {
+            this.removeFilter = removeFilter;
         }
 
         /**

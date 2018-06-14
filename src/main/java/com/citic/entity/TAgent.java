@@ -17,6 +17,7 @@ public class TAgent {
 
     // 这个属性是个Source 使用的,但是当前的设计,所有source 共有一个zookeeper集群
     // 因此提取到上一层
+    private boolean multiTopicJob;
     private String sourceZkServers;
     private String sinkServers;
     private String registryUrl;
@@ -33,6 +34,24 @@ public class TAgent {
     public void addOrReplaceSource(Source source) {
         sources.remove(source);
         sources.add(source);
+    }
+
+    /**
+     * Is multi topic job boolean.
+     *
+     * @return the boolean
+     */
+    public boolean isMultiTopicJob() {
+        return multiTopicJob;
+    }
+
+    /**
+     * Sets multi topic job.
+     *
+     * @param multiTopicJob the multi topic job
+     */
+    public void setMultiTopicJob(boolean multiTopicJob) {
+        this.multiTopicJob = multiTopicJob;
     }
 
     /**
@@ -162,6 +181,7 @@ public class TAgent {
         private final String sourceDestination;
         private final String tableToTopicMap;
         private final String tableFieldsFilter;
+        private final String removeFilter;
 
         /**
          * Instantiates a new Source.
@@ -172,11 +192,13 @@ public class TAgent {
             sourceDestination = unit.getInstance();
             tableToTopicMap = unit.getTableTopicSchemaMap();
             tableFieldsFilter = unit.getTableFieldSchemaMap();
+            // trans only
+            removeFilter = unit.getRemoveFilter();
         }
 
         /**
-         * 当前就将 destination 作为 sourceName.
-         * velocity 模板 sourceName.
+         * 当前就将 destination 作为 sourceName. velocity 模板 sourceName.
+         *
          * @return the source name
          */
         public String getSourceName() {
@@ -209,6 +231,15 @@ public class TAgent {
          */
         public String getTableFieldsFilter() {
             return tableFieldsFilter;
+        }
+
+        /**
+         * Gets remove filter.
+         *
+         * @return the remove filter
+         */
+        public String getRemoveFilter() {
+            return removeFilter;
         }
 
         @Override

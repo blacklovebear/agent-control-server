@@ -72,7 +72,7 @@ public class ConfigurationService {
             throw new Exception("Not post UnionConfig info");
         }
 
-        unitConfig.checkProperties(unionConfig.isUseAvro());
+        unitConfig.checkProperties(unionConfig.isUseAvro(), unionConfig.isMultiTopicJob());
 
         unionConfig.addOrReplaceUnit(unitConfig);
 
