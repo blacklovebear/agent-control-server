@@ -231,8 +231,6 @@ public class UnionConfig {
 
         private String tableTopicSchemaMap;
         private String tableFieldSchemaMap;
-        // trans only
-        private String removeFilter;
 
         /**
          * Check properties.
@@ -326,14 +324,6 @@ public class UnionConfig {
                     });
             }
 
-        }
-
-        public String getRemoveFilter() {
-            return removeFilter;
-        }
-
-        public void setRemoveFilter(String removeFilter) {
-            this.removeFilter = removeFilter;
         }
 
         /**

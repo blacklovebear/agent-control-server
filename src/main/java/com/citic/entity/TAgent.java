@@ -181,7 +181,6 @@ public class TAgent {
         private final String sourceDestination;
         private final String tableToTopicMap;
         private final String tableFieldsFilter;
-        private final String removeFilter;
 
         /**
          * Instantiates a new Source.
@@ -192,8 +191,6 @@ public class TAgent {
             sourceDestination = unit.getInstance();
             tableToTopicMap = unit.getTableTopicSchemaMap();
             tableFieldsFilter = unit.getTableFieldSchemaMap();
-            // trans only
-            removeFilter = unit.getRemoveFilter();
         }
 
         /**
@@ -231,15 +228,6 @@ public class TAgent {
          */
         public String getTableFieldsFilter() {
             return tableFieldsFilter;
-        }
-
-        /**
-         * Gets remove filter.
-         *
-         * @return the remove filter
-         */
-        public String getRemoveFilter() {
-            return removeFilter;
         }
 
         @Override

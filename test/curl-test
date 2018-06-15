@@ -12,9 +12,30 @@ curl -H "Content-Type: application/json" -X POST -d '
             "masterAddress": "127.0.0.1:3306",
             "dbUsername": "root",
             "dbPassword": "Co9ME/Agq664+ZimAcnckA==",
-            "removeFilter": "test\\..*;test1.test2;test1.test3:id,name",
             "tableTopicSchemaMap": "test.test:test123:schema1;test.test1:test234:schema2",
             "tableFieldSchemaMap": "uid|uid1,name|name1;id|id2,name|name2"
+        }
+    ]
+}
+' \
+http://localhost:8080/config/union
+
+# trans only
+curl -H "Content-Type: application/json" -X POST -d '
+{
+    "multiTopicJob":false,
+    "zkServers": "192.168.2.25:2181",
+    "kafkaServers":"192.168.2.25:9092",
+    "registryUrl":"http://localhost:8081",
+    "kafkaHighThroughput":false,
+    "useAvro":true,
+    "units":[
+        {
+            "masterAddress": "127.0.0.1:3306",
+            "dbUsername": "root",
+            "dbPassword": "Co9ME/Agq664+ZimAcnckA==",
+            "tableTopicSchemaMap": "test\\..*:test_trans:test_trans",
+            "tableFieldSchemaMap": "test1.test2;test1.test3:id,name"
         }
     ]
 }
