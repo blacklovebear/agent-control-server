@@ -189,8 +189,8 @@ public class TAgent {
          */
         public Source(UnionConfig.Unit unit) {
             sourceDestination = unit.getInstance();
-            tableToTopicMap = unit.getTableTopicSchemaMap();
-            tableFieldsFilter = unit.getTableFieldSchemaMap();
+            tableToTopicMap = unit.getTableToTopicMap();
+            tableFieldsFilter = unit.getTableFieldsFilter();
         }
 
         /**

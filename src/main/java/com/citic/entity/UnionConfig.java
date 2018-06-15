@@ -229,8 +229,8 @@ public class UnionConfig {
         private String dbUsername;
         private String dbPassword;
 
-        private String tableTopicSchemaMap;
-        private String tableFieldSchemaMap;
+        private String tableToTopicMap;
+        private String tableFieldsFilter;
 
         /**
          * Check properties.
@@ -249,8 +249,8 @@ public class UnionConfig {
             Preconditions.checkArgument(AesUtil.decForTd(dbPassword) != null,
                 "dbPassword decrypt error");
 
-            Preconditions.checkArgument(!Strings.isNullOrEmpty(tableTopicSchemaMap),
-                "tableTopicSchemaMap is null or empty");
+            Preconditions.checkArgument(!Strings.isNullOrEmpty(tableToTopicMap),
+                "tableToTopicMap is null or empty");
 
             Utility.isUrlAddressValid(masterAddress, "masterAddress");
 
@@ -259,11 +259,11 @@ public class UnionConfig {
                 Splitter.on(';')
                     .omitEmptyStrings()
                     .trimResults()
-                    .split(tableTopicSchemaMap)
+                    .split(tableToTopicMap)
                     .forEach(item -> {
                         String[] result = item.split(":");
                         Preconditions.checkArgument(result.length == 3,
-                            "tableTopicSchemaMap format incorrect eg: db.tbl1:topic1:schema1");
+                            "tableToTopicMap format incorrect eg: db.tbl1:topic1:schema1");
 
                         Preconditions.checkArgument(!Strings.isNullOrEmpty(result[0].trim()),
                             "db.table cannot empty");
@@ -277,11 +277,11 @@ public class UnionConfig {
                 Splitter.on(';')
                     .omitEmptyStrings()
                     .trimResults()
-                    .split(tableTopicSchemaMap)
+                    .split(tableToTopicMap)
                     .forEach(item -> {
                         String[] result = item.split(":");
                         Preconditions.checkArgument(result.length == 2,
-                            "tableTopicSchemaMap format "
+                            "tableToTopicMap format "
                                 + "incorrect eg:db.tbl1:topic1;db.tbl2:topic2");
 
                         Preconditions.checkArgument(!Strings.isNullOrEmpty(result[0].trim()),
@@ -294,16 +294,16 @@ public class UnionConfig {
 
 
             if (useAvro && multiTopicJob) {
-                Preconditions.checkArgument(!Strings.isNullOrEmpty(tableFieldSchemaMap),
-                    "tableFieldSchemaMap is null or empty");
+                Preconditions.checkArgument(!Strings.isNullOrEmpty(tableFieldsFilter),
+                    "tableFieldsFilter is null or empty");
 
-                Preconditions.checkArgument(StringUtils.countMatches(tableTopicSchemaMap, ";")
-                        == StringUtils.countMatches(tableFieldSchemaMap, ";"),
-                    "tableTopicSchemaMap 和 tableFieldSchemaMap参数个数配置不一致");
+                Preconditions.checkArgument(StringUtils.countMatches(tableToTopicMap, ";")
+                        == StringUtils.countMatches(tableFieldsFilter, ";"),
+                    "tableToTopicMap 和 tableFieldSchemaMap参数个数配置不一致");
                 Splitter.on(';')
                     .omitEmptyStrings()
                     .trimResults()
-                    .split(tableFieldSchemaMap)
+                    .split(tableFieldsFilter)
                     .forEach(item -> {
                         Splitter.on(",")
                             .omitEmptyStrings()
@@ -312,7 +312,7 @@ public class UnionConfig {
                             .forEach(field -> {
                                 String[] fieldTableSchema = field.split("\\|");
                                 Preconditions.checkArgument(fieldTableSchema.length == 2,
-                                    "tableFieldSchemaMap 格式错误 eg: id|id1,name|name1");
+                                    "tableFieldsFilter 格式错误 eg: id|id1,name|name1");
 
                                 Preconditions.checkArgument(
                                     !Strings.isNullOrEmpty(fieldTableSchema[0].trim()),
@@ -398,17 +398,17 @@ public class UnionConfig {
          *
          * @return the table topic schema map
          */
-        public String getTableTopicSchemaMap() {
-            return tableTopicSchemaMap;
+        public String getTableToTopicMap() {
+            return tableToTopicMap;
         }
 
         /**
          * Sets table topic schema map.
          *
-         * @param tableTopicSchemaMap the table topic schema map
+         * @param tableToTopicMap the table topic schema map
          */
-        public void setTableTopicSchemaMap(String tableTopicSchemaMap) {
-            this.tableTopicSchemaMap = tableTopicSchemaMap;
+        public void setTableToTopicMap(String tableToTopicMap) {
+            this.tableToTopicMap = tableToTopicMap;
         }
 
         /**
@@ -416,17 +416,17 @@ public class UnionConfig {
          *
          * @return the table field schema map
          */
-        public String getTableFieldSchemaMap() {
-            return tableFieldSchemaMap;
+        public String getTableFieldsFilter() {
+            return tableFieldsFilter;
         }
 
         /**
          * Sets table field schema map.
          *
-         * @param tableFieldSchemaMap the table field schema map
+         * @param tableFieldsFilter the table field schema map
          */
-        public void setTableFieldSchemaMap(String tableFieldSchemaMap) {
-            this.tableFieldSchemaMap = tableFieldSchemaMap;
+        public void setTableFieldsFilter(String tableFieldsFilter) {
+            this.tableFieldsFilter = tableFieldsFilter;
         }
 
         @Override

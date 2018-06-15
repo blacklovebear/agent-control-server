@@ -12,8 +12,8 @@ curl -H "Content-Type: application/json" -X POST -d '
             "masterAddress": "127.0.0.1:3306",
             "dbUsername": "root",
             "dbPassword": "Co9ME/Agq664+ZimAcnckA==",
-            "tableTopicSchemaMap": "test.test:test123:schema1;test.test1:test234:schema2",
-            "tableFieldSchemaMap": "uid|uid1,name|name1;id|id2,name|name2"
+            "tableToTopicMap": "test.test:test123:schema1;test.test1:test234:schema2",
+            "tableFieldsFilter": "uid|uid1,name|name1;id|id2,name|name2"
         }
     ]
 }
@@ -34,8 +34,8 @@ curl -H "Content-Type: application/json" -X POST -d '
             "masterAddress": "127.0.0.1:3306",
             "dbUsername": "root",
             "dbPassword": "Co9ME/Agq664+ZimAcnckA==",
-            "tableTopicSchemaMap": "test\\..*:test_trans:test_trans",
-            "tableFieldSchemaMap": "test1.test2;test1.test3:id,name"
+            "tableToTopicMap": "test\\..*:test_trans:test_trans",
+            "tableFieldsFilter": "test1.test2;test1.test3:id,name"
         }
     ]
 }
@@ -49,8 +49,8 @@ curl -H "Content-Type: application/json" -X POST -d '
     "dbUsername": "root",
     "dbPassword": "123456",
 
-    "tableTopicSchemaMap": "test.test:test123:schema1;test.test1:test234:schema2",
-    "tableFieldSchemaMap": "uid|uid1,name|name1;id|id2,name|name2"
+    "tableToTopicMap": "test.test:test123:schema1;test.test1:test234:schema2",
+    "tableFieldsFilter": "uid|uid1,name|name1;id|id2,name|name2"
 }
 ' \
 http://localhost:8080/config/union/unit
