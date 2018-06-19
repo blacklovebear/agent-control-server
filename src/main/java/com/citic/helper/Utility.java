@@ -5,10 +5,8 @@ import static com.google.common.base.Throwables.propagate;
 import static java.nio.file.FileVisitResult.CONTINUE;
 import static java.nio.file.FileVisitResult.TERMINATE;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -25,7 +23,6 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import org.apache.commons.lang.StringUtils;
@@ -39,7 +36,7 @@ public class Utility {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Utility.class);
     private static final String DEFAULT_IP = "127.0.0.1";
-    
+
     /**
      * Exe cmd int.
      *
@@ -255,6 +252,4 @@ public class Utility {
             super(msg, throwable);
         }
     }
-
-    ;
 }

@@ -1,7 +1,14 @@
 package com.citic.entity;
 
+import static com.citic.AppConstants.CANAL_PASSWD_ENCRYPT;
+import static com.citic.AppConstants.DEFAULT_CANAL_PASSWD_ENCRYPT;
+import static com.citic.AppConstants.KAFKA_USE_AVRO;
+
+import com.citic.AppConf;
 import com.citic.helper.AesUtil;
+import com.citic.helper.Utility;
 import java.util.Random;
+import org.apache.commons.lang.BooleanUtils;
 
 /**
  * The type Canal instance.
@@ -29,8 +36,23 @@ public class CanalInstance {
         masterAddress = unit.getMasterAddress();
         dbUsername = unit.getDbUsername();
 
-        // 通过管理平台传过来的秘密为密文，在canal的配置文件中密码为密文，需要转换
-        dbPassword = AesUtil.decForTd(unit.getDbPassword());
+        // 通过管理平台传过来的秘密为密文
+        if (this.isCanalPasswordEncrypt(dbUsername)) {
+            // 配置文件中保持密文密码
+            dbPassword = unit.getDbPassword();
+        } else {
+            // 转换为明文密码
+            dbPassword = AesUtil.decForTd(unit.getDbPassword());
+        }
+    }
+
+    private boolean isCanalPasswordEncrypt(String dbPassword) {
+        boolean isEncrypt = DEFAULT_CANAL_PASSWD_ENCRYPT;
+        String test = AppConf.getConfig(CANAL_PASSWD_ENCRYPT);
+        if (test != null) {
+            isEncrypt = BooleanUtils.toBoolean(test);
+        }
+        return isEncrypt;
     }
 
     /**

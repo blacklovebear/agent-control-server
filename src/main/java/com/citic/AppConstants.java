@@ -18,6 +18,9 @@ public class AppConstants {
     public static final String CANAL_START_CMD = "canal.start.cmd";
     public static final String CANAL_STOP_CMD = "canal.stop.cmd";
 
+    public static final String CANAL_PASSWD_ENCRYPT = "canal.passwd.encrypt";
+    public static final boolean DEFAULT_CANAL_PASSWD_ENCRYPT = true;
+
     // conf
     public static final String CANAL_CONF_DIR = "canal.conf.dir";
     public static final String CANAL_LOGS_DIR = "canal.logs.dir";
