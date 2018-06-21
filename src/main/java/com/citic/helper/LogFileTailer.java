@@ -5,7 +5,6 @@ import com.google.common.base.Strings;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.ExecutorService;
@@ -19,11 +18,11 @@ import org.slf4j.LoggerFactory;
  * The type Log file tailer.
  */
 public class LogFileTailer implements Runnable {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(LogFileTailer.class);
     private final Path filePath;
     private final BiConsumer<String, String> logHandler;
     private int tailRunEveryNSeconds = 2000;
-    private long lastKnownPosition = 0;
     private boolean shouldIRun = true;
     private File tailFile = null;
 
@@ -74,7 +73,7 @@ public class LogFileTailer implements Runnable {
         String filePath = "logs/test.log";
         LogFileTailer logFileTailer = new LogFileTailer(filePath, 2000, (message, logPath) -> {
             if (message.contains("ERROR")) {
-                System.out.println(message);
+                LOGGER.debug(message);
             }
         });
 
@@ -94,14 +93,31 @@ public class LogFileTailer implements Runnable {
         shouldIRun = false;
     }
 
+
+    private long readFileContent(long lastKnownPosition) {
+        try (RandomAccessFile readWriteFileAccess = new RandomAccessFile(tailFile, "r")) {
+            // Reading and writing file
+            readWriteFileAccess.seek(lastKnownPosition);
+            String tailLine;
+            while ((tailLine = readWriteFileAccess.readLine()) != null) {
+                this.printLine(tailLine);
+            }
+            lastKnownPosition = readWriteFileAccess.getFilePointer();
+            return lastKnownPosition;
+        } catch (IOException ex) {
+            LOGGER.error(ex.getMessage(), ex);
+        }
+        return 0;
+    }
+
     /**
      * run.
      */
     public void run() {
-        LOGGER.info("tail -f {}", this.filePath.toString());
+        LOGGER.info("tail -f {}", this.filePath);
         // 确保log文件存在
         Utility.createParentDirs(this.filePath.toString());
-        if (!Files.exists(this.filePath)) {
+        if (!this.filePath.toFile().exists()) {
             String cmd = "touch " + this.filePath.getFileName();
             Path parent = this.filePath.getParent();
             if (parent != null) {
@@ -109,39 +125,24 @@ public class LogFileTailer implements Runnable {
             }
         }
         // 已有的文件内容不做解析
-        lastKnownPosition = tailFile.length();
+        long lastKnownPosition = tailFile.length();
         try {
             while (shouldIRun && !Thread.currentThread().isInterrupted()) {
                 Thread.sleep(tailRunEveryNSeconds);
                 long fileLength = tailFile.length();
+
                 if (fileLength > lastKnownPosition) {
-                    // Reading and writing file
-                    RandomAccessFile readWriteFileAccess = new RandomAccessFile(tailFile, "r");
-                    readWriteFileAccess.seek(lastKnownPosition);
-                    String tailLine = null;
-                    while ((tailLine = readWriteFileAccess.readLine()) != null) {
-                        this.printLine(tailLine);
-                    }
-                    lastKnownPosition = readWriteFileAccess.getFilePointer();
-                    readWriteFileAccess.close();
+                    lastKnownPosition = this.readFileContent(lastKnownPosition);
                 } else if (fileLength < lastKnownPosition) {
                     // rotate file
                     lastKnownPosition = 0;
-                    // Reading and writing file
-                    RandomAccessFile readWriteFileAccess = new RandomAccessFile(tailFile, "r");
-                    readWriteFileAccess.seek(lastKnownPosition);
-                    String tailLine = null;
-                    while ((tailLine = readWriteFileAccess.readLine()) != null) {
-                        this.printLine(tailLine);
-                    }
-                    lastKnownPosition = readWriteFileAccess.getFilePointer();
-                    readWriteFileAccess.close();
+                    lastKnownPosition = this.readFileContent(lastKnownPosition);
                 }
+
             }
-        } catch (InterruptedException e) {
-            stopRunning();
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage(), e);
+        } catch (InterruptedException ex) {
+            LOGGER.warn(ex.getMessage(), ex);
+            Thread.currentThread().interrupt();
             stopRunning();
         }
     }

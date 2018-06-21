@@ -199,7 +199,7 @@ public class TAgent {
          * @return the source name
          */
         public String getSourceName() {
-            return sourceDestination;
+            return getSourceDestination();
         }
 
         /**
@@ -237,8 +237,16 @@ public class TAgent {
 
         @Override
         public boolean equals(Object obj) {
-            return obj instanceof Source && sourceDestination
-                .equals(((Source) obj).sourceDestination);
+            if (obj == this) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (this.getClass() == obj.getClass()) {
+                return sourceDestination.equals(((Source) obj).getSourceDestination());
+            }
+            return false;
         }
 
     }

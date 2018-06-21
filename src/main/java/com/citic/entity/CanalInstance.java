@@ -1,12 +1,10 @@
 package com.citic.entity;
 
-import static com.citic.AppConstants.CANAL_PASSWD_ENCRYPT;
+import static com.citic.AppConstants.CANAL_PSWD_ENCRYPT;
 import static com.citic.AppConstants.DEFAULT_CANAL_PASSWD_ENCRYPT;
-import static com.citic.AppConstants.KAFKA_USE_AVRO;
 
 import com.citic.AppConf;
 import com.citic.helper.AesUtil;
-import com.citic.helper.Utility;
 import java.util.Random;
 import org.apache.commons.lang.BooleanUtils;
 
@@ -18,6 +16,7 @@ import org.apache.commons.lang.BooleanUtils;
  * instance 区别唯一 Instance
  */
 public class CanalInstance {
+
     private final String slaveId = String.format("%05d", new Random().nextInt(100000));
 
     // canal instance
@@ -37,7 +36,7 @@ public class CanalInstance {
         dbUsername = unit.getDbUsername();
 
         // 通过管理平台传过来的秘密为密文
-        if (this.isCanalPasswordEncrypt(dbUsername)) {
+        if (this.isCanalPasswordEncrypt()) {
             // 配置文件中保持密文密码
             dbPassword = unit.getDbPassword();
         } else {
@@ -46,9 +45,9 @@ public class CanalInstance {
         }
     }
 
-    private boolean isCanalPasswordEncrypt(String dbPassword) {
+    private boolean isCanalPasswordEncrypt() {
         boolean isEncrypt = DEFAULT_CANAL_PASSWD_ENCRYPT;
-        String test = AppConf.getConfig(CANAL_PASSWD_ENCRYPT);
+        String test = AppConf.getConfig(CANAL_PSWD_ENCRYPT);
         if (test != null) {
             isEncrypt = BooleanUtils.toBoolean(test);
         }
@@ -109,9 +108,17 @@ public class CanalInstance {
     }
 
     @Override
-    public boolean equals(Object o) {
-        return (o instanceof CanalInstance)
-            && (((CanalInstance) o).getInstance()).equals(this.getInstance());
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (this.getClass() == obj.getClass()) {
+            return instance.equals(((CanalInstance) obj).getInstance());
+        }
+        return false;
     }
 
     @Override

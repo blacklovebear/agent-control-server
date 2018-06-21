@@ -4,6 +4,10 @@ package com.citic;
 
 public class AppConstants {
 
+    private AppConstants() {
+        throw new IllegalStateException("AppConstants class");
+    }
+
     public static final String CLASSPATH_URL_PREFIX = "classpath:";
 
     public static final boolean STATE_ALIVE = true;
@@ -18,7 +22,7 @@ public class AppConstants {
     public static final String CANAL_START_CMD = "canal.start.cmd";
     public static final String CANAL_STOP_CMD = "canal.stop.cmd";
 
-    public static final String CANAL_PASSWD_ENCRYPT = "canal.passwd.encrypt";
+    public static final String CANAL_PSWD_ENCRYPT = "canal.passwd.encrypt";
     public static final boolean DEFAULT_CANAL_PASSWD_ENCRYPT = true;
 
     // conf

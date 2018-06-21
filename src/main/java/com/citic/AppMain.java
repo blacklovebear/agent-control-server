@@ -77,7 +77,8 @@ public class AppMain {
         try {
             Thread.currentThread().join();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOGGER.warn("Interrupted!", e);
+            Thread.currentThread().interrupt();
         }
     }
 

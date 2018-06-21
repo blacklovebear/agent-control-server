@@ -51,7 +51,7 @@ public class UnionConfig {
             Utility.isUrlAddressValid(temp[1], "registryUrl");
         }
 
-        Preconditions.checkArgument(units.size() > 0, "units is empty");
+        Preconditions.checkArgument(!units.isEmpty(), "units is empty");
 
         for (Unit unit : units) {
             unit.checkProperties(useAvro, multiTopicJob);
@@ -292,7 +292,6 @@ public class UnionConfig {
 
             }
 
-
             if (useAvro && multiTopicJob) {
                 Preconditions.checkArgument(!Strings.isNullOrEmpty(tableFieldsFilter),
                     "tableFieldsFilter is null or empty");
@@ -304,24 +303,22 @@ public class UnionConfig {
                     .omitEmptyStrings()
                     .trimResults()
                     .split(tableFieldsFilter)
-                    .forEach(item -> {
-                        Splitter.on(",")
-                            .omitEmptyStrings()
-                            .trimResults()
-                            .split(item)
-                            .forEach(field -> {
-                                String[] fieldTableSchema = field.split("\\|");
-                                Preconditions.checkArgument(fieldTableSchema.length == 2,
-                                    "tableFieldsFilter 格式错误 eg: id|id1,name|name1");
+                    .forEach(item -> Splitter.on(",")
+                        .omitEmptyStrings()
+                        .trimResults()
+                        .split(item)
+                        .forEach(field -> {
+                            String[] fieldTableSchema = field.split("\\|");
+                            Preconditions.checkArgument(fieldTableSchema.length == 2,
+                                "tableFieldsFilter 格式错误 eg: id|id1,name|name1");
 
-                                Preconditions.checkArgument(
-                                    !Strings.isNullOrEmpty(fieldTableSchema[0].trim()),
-                                    "table field cannot empty");
-                                Preconditions.checkArgument(
-                                    !Strings.isNullOrEmpty(fieldTableSchema[1].trim()),
-                                    "schema field cannot empty");
-                            });
-                    });
+                            Preconditions.checkArgument(
+                                !Strings.isNullOrEmpty(fieldTableSchema[0].trim()),
+                                "table field cannot empty");
+                            Preconditions.checkArgument(
+                                !Strings.isNullOrEmpty(fieldTableSchema[1].trim()),
+                                "schema field cannot empty");
+                        }));
             }
 
         }
@@ -436,7 +433,16 @@ public class UnionConfig {
 
         @Override
         public boolean equals(Object obj) {
-            return obj instanceof Unit && masterAddress.equals(((Unit) obj).masterAddress);
+            if (obj == this) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (this.getClass() == obj.getClass()) {
+                return masterAddress.equals(((Unit) obj).getMasterAddress());
+            }
+            return false;
         }
     }
 }
