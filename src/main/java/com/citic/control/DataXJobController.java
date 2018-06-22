@@ -45,6 +45,10 @@ public class DataXJobController {
     private static final int EXE_SUCCESS_CODE = 2;
     private static final int EXE_ERROR_CODE = 3;
 
+    private DataXJobController() {
+        throw new IllegalStateException("Utility class");
+    }
+
     private static Future<ProcessResult> executeDataXJob(String homeDir, String cmd, String jobId)
         throws IOException {
         return new ProcessExecutor()
@@ -75,9 +79,8 @@ public class DataXJobController {
      * Start job.
      *
      * @param jobId the job id
-     * @throws IOException the io exception
      */
-    public static void startJob(String jobId) throws IOException {
+    public static void startJob(String jobId) {
         runningJobs.computeIfAbsent(jobId, key -> {
             String homeDir = AppConf.getConfig(DATAX_HOME_DIR);
 
@@ -120,14 +123,14 @@ public class DataXJobController {
             jobDoneList.add(jobId);
 
             if (jobFuture.isCancelled()) {
-                output = String.format("Job: %s is cancelled.\n", jobId);
+                output = String.format("Job: %s is cancelled.%n", jobId);
             } else {
                 try {
                     output = jobFuture.get().outputUTF8();
                 } catch (InterruptedException | ExecutionException e) {
                     LOGGER.error(e.getMessage(), e);
                     output = String
-                        .format("Job: %s run with exception: %s.\n", jobId, e.getMessage());
+                        .format("Job: %s run with exception: %s.%n", jobId, e.getMessage());
                 }
             }
 
@@ -171,12 +174,12 @@ public class DataXJobController {
             String[] msgs = validateMsg.split("[\n\r]");
             for (String msg : msgs) {
                 if (msg.contains("任务结束时刻")) {
-                    endTime = msg.substring(msg.indexOf(":") + 1).trim();
+                    endTime = msg.substring(msg.indexOf(':') + 1).trim();
                 } else if (msg.contains("读出记录总数")) {
-                    inputNum = Integer.parseInt(msg.substring(msg.indexOf(":") + 1).trim());
+                    inputNum = Integer.parseInt(msg.substring(msg.indexOf(':') + 1).trim());
                 } else if (msg.contains("读写失败总数")) {
                     outputNum =
-                        inputNum - Integer.parseInt(msg.substring(msg.indexOf(":") + 1).trim());
+                        inputNum - Integer.parseInt(msg.substring(msg.indexOf(':') + 1).trim());
                 }
             }
         } else if ((startIndex = jobOutput.indexOf("该任务最可能的错误原因是:")) != -1) {
@@ -232,9 +235,7 @@ public class DataXJobController {
         HttpPost httpPost = new HttpPost(responseUrl);
 
         List<NameValuePair> params = Lists.newArrayList();
-        postData.forEach((k, v) -> {
-            params.add(new BasicNameValuePair(k, v));
-        });
+        postData.forEach((k, v) -> params.add(new BasicNameValuePair(k, v)));
 
         httpPost.setEntity(new UrlEncodedFormEntity(params, UTF_8));
 

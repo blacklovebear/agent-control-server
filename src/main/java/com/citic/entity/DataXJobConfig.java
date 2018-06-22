@@ -16,9 +16,8 @@ public class DataXJobConfig {
     /**
      * Check properties.
      *
-     * @throws Exception the exception
      */
-    public void checkProperties() throws Exception {
+    public void checkProperties() {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(jobId), "jobId is null or empty");
         Preconditions
             .checkArgument(!Strings.isNullOrEmpty(responseUrl), "responseUrl is null or empty");
@@ -68,7 +67,7 @@ public class DataXJobConfig {
         private String querySql;
         private String jdbcUrl;
 
-        private void checkProperties() throws Exception {
+        private void checkProperties() {
             Preconditions
                 .checkArgument(!Strings.isNullOrEmpty(username), "username is null or empty");
             Preconditions
@@ -127,7 +126,7 @@ public class DataXJobConfig {
         private String encoding;
         private String fileFormat;
 
-        private void checkProperties() throws Exception {
+        private void checkProperties() {
             Preconditions.checkArgument(!Strings.isNullOrEmpty(host), "host is null or empty");
             Preconditions.checkArgument(!Strings.isNullOrEmpty(port), "port is null or empty");
             Preconditions

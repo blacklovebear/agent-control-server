@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
 public class GenerateConfController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GenerateConfController.class);
+    private static final String UTF_8 = "utf-8";
 
     private VelocityEngine ve;
     private String templateDir = System.getProperty("template.dir", "classpath:template");
@@ -174,7 +175,7 @@ public class GenerateConfController {
         VelocityContext vx = getVelContext(config);
         // canal server configuration
         LOGGER.info("{} path: {}", CANAL_SERVER_TEMPLATE, getTemplatePath(CANAL_SERVER_TEMPLATE));
-        Template canalServer = ve.getTemplate(getTemplatePath(CANAL_SERVER_TEMPLATE), "utf-8");
+        Template canalServer = ve.getTemplate(getTemplatePath(CANAL_SERVER_TEMPLATE), UTF_8);
         this.writeConf(canalServer, getCanalServerConf(), vx);
     }
 
@@ -188,7 +189,7 @@ public class GenerateConfController {
         }
         VelocityContext vx = getVelContext(config);
         // canal instance configuration
-        Template canalInstance = ve.getTemplate(getTemplatePath(CANAL_INSTANCE_TEMPLATE), "utf-8");
+        Template canalInstance = ve.getTemplate(getTemplatePath(CANAL_INSTANCE_TEMPLATE), UTF_8);
         this.writeConf(canalInstance, getCanalInstanceConf(config.getInstance()), vx);
     }
 
@@ -203,7 +204,7 @@ public class GenerateConfController {
         }
         VelocityContext vx = getVelContext(config);
         // TAgent configuration
-        Template canalServer = ve.getTemplate(getTemplatePath(TAGENT_TEMPLATE), "utf-8");
+        Template canalServer = ve.getTemplate(getTemplatePath(TAGENT_TEMPLATE), UTF_8);
         String confPath =
             AppConf.getConfig(TAGENT_HOME_DIR) + File.separator + AppConf.getConfig(TAGENT_CONF);
         this.writeConf(canalServer, confPath, vx);
@@ -221,7 +222,7 @@ public class GenerateConfController {
         }
         VelocityContext vx = getVelContext(config);
         // datax configuration
-        Template dataxJob = ve.getTemplate(getTemplatePath(DATAX_TEMPLATE), "utf-8");
+        Template dataxJob = ve.getTemplate(getTemplatePath(DATAX_TEMPLATE), UTF_8);
         String confPath =
             AppConf.getConfig(DATAX_HOME_DIR) + File.separator + AppConf.getConfig(DATAX_JOB_DIR)
                 + File.separator + config.getJobId() + ".json";

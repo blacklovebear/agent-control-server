@@ -93,29 +93,6 @@ public class ProcessMonitor {
         }
     }
 
-
-    private GenericRecord buildAvroRecord(String canalState, String tagentState) {
-        Schema schema = SchemaCache.getSchema(ATTR_LIST, AVRO_PROCESS_MONITOR_TOPIC);
-        GenericRecord avroRecord = new GenericData.Record(schema);
-        avroRecord.put(CANAL_STATE, canalState);
-        avroRecord.put(TAGENT_STATE, tagentState);
-
-        avroRecord.put(CURRENT_TIME, new SimpleDateFormat(SUPPORT_TIME_FORMAT).format(new Date()));
-        avroRecord
-            .put(AGENT_IP, Utility.getLocalIp(AppConf.getConfig(AppConstants.AGENT_IP_INTERFACE)));
-        return avroRecord;
-    }
-
-    private byte[] buildJsonRecord(String canalState, String tagentState) {
-        JSONObject jsonRecord = new JSONObject();
-        jsonRecord.put(CANAL_STATE, canalState);
-        jsonRecord.put(TAGENT_STATE, tagentState);
-        jsonRecord.put(CURRENT_TIME, new SimpleDateFormat(SUPPORT_TIME_FORMAT).format(new Date()));
-        jsonRecord
-            .put(AGENT_IP, Utility.getLocalIp(AppConf.getConfig(AppConstants.AGENT_IP_INTERFACE)));
-        return jsonRecord.toJSONString().getBytes(Charset.forName("UTF-8"));
-    }
-
     /*
      * 进程监控执行线程
      * */
@@ -128,6 +105,28 @@ public class ProcessMonitor {
 
         private ProcessWatchRunnable(boolean useAvro) {
             this.useAvro = useAvro;
+        }
+
+        private GenericRecord buildAvroRecord(String canalState, String tagentState) {
+            Schema schema = SchemaCache.getSchema(ATTR_LIST, AVRO_PROCESS_MONITOR_TOPIC);
+            GenericRecord avroRecord = new GenericData.Record(schema);
+            avroRecord.put(CANAL_STATE, canalState);
+            avroRecord.put(TAGENT_STATE, tagentState);
+
+            avroRecord.put(CURRENT_TIME, new SimpleDateFormat(SUPPORT_TIME_FORMAT).format(new Date()));
+            avroRecord
+                .put(AGENT_IP, Utility.getLocalIp(AppConf.getConfig(AppConstants.AGENT_IP_INTERFACE)));
+            return avroRecord;
+        }
+
+        private byte[] buildJsonRecord(String canalState, String tagentState) {
+            JSONObject jsonRecord = new JSONObject();
+            jsonRecord.put(CANAL_STATE, canalState);
+            jsonRecord.put(TAGENT_STATE, tagentState);
+            jsonRecord.put(CURRENT_TIME, new SimpleDateFormat(SUPPORT_TIME_FORMAT).format(new Date()));
+            jsonRecord
+                .put(AGENT_IP, Utility.getLocalIp(AppConf.getConfig(AppConstants.AGENT_IP_INTERFACE)));
+            return jsonRecord.toJSONString().getBytes(Charset.forName("UTF-8"));
         }
 
         private String monitorCanal() {
