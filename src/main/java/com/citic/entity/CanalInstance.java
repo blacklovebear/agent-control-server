@@ -2,7 +2,7 @@ package com.citic.entity;
 
 import com.citic.AppConf;
 import com.citic.helper.AesUtil;
-import java.util.Random;
+import java.security.SecureRandom;
 
 /**
  * The type Canal instance.
@@ -13,7 +13,7 @@ import java.util.Random;
  */
 public class CanalInstance {
 
-    private final String slaveId = String.format("%05d", new Random().nextInt(100000));
+    private final String slaveId = String.format("%05d", new SecureRandom().nextInt(100000));
 
     // canal instance
     private final String instance;

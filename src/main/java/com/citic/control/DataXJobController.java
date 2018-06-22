@@ -115,7 +115,11 @@ public class DataXJobController {
         List<String> jobDoneList = Lists.newArrayList();
 
         LOGGER.debug("running jobs: {}", runningJobs.keySet());
-        runningJobs.forEach((jobId, jobFuture) -> {
+
+        for (Map.Entry<String, Future<ProcessResult>> entry : runningJobs.entrySet()) {
+            String jobId = entry.getKey();
+            Future<ProcessResult> jobFuture = entry.getValue();
+
             String output;
             if (!jobFuture.isDone()) {
                 return;
@@ -127,7 +131,12 @@ public class DataXJobController {
             } else {
                 try {
                     output = jobFuture.get().outputUTF8();
-                } catch (InterruptedException | ExecutionException e) {
+                } catch (InterruptedException e) {
+                    LOGGER.error(e.getMessage(), e);
+                    Thread.currentThread().interrupt();
+                    //立刻结束所有操作
+                    return;
+                } catch (ExecutionException e) {
                     LOGGER.error(e.getMessage(), e);
                     output = String
                         .format("Job: %s run with exception: %s.%n", jobId, e.getMessage());
@@ -139,7 +148,7 @@ public class DataXJobController {
                 jobResponse += String.join("\n", jobErrors.get(jobId));
             }
             sendJobResultToControlPlatform(jobId, jobResponse, jobResponseUrl.get(jobId));
-        });
+        }
 
         jobDoneList.forEach(runningJobs::remove);
         jobDoneList.forEach(jobErrors::remove);

@@ -236,9 +236,8 @@ public class UnionConfig {
          * Check properties.
          *
          * @param useAvro the use avro
-         * @throws Exception the exception
          */
-        public void checkProperties(boolean useAvro, boolean multiTopicJob) throws Exception {
+        public void checkProperties(boolean useAvro, boolean multiTopicJob) {
             Preconditions.checkArgument(!Strings.isNullOrEmpty(masterAddress),
                 "dbUsername is null or empty");
             Preconditions

@@ -2,10 +2,10 @@ package com.citic.helper;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Random;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -126,8 +126,8 @@ public class AesUtil {
         StringBuilder sb = new StringBuilder();
 
         for (Integer i = 0; i < len; i++) {
-            int intRand = new Random().nextInt(52);
-            int numValue = new Random().nextInt(10);
+            int intRand = new SecureRandom().nextInt(52);
+            int numValue = new SecureRandom().nextInt(10);
             char base = (intRand < 26) ? 'A' : 'a';
             char c = (char) (base + intRand % 26);
             if (numValue % 2 == 0) {
