@@ -5,6 +5,7 @@ import com.citic.AppMain;
 import com.citic.control.GenerateConfController;
 import com.citic.entity.ResponseResult;
 import com.citic.entity.UnionConfig;
+import com.citic.helper.Utility.ServerUrlsFormatException;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import java.util.List;
@@ -35,7 +36,7 @@ public class ConfigurationService {
     @Path("union")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public ResponseResult configUnion(UnionConfig unionConfig) throws Exception {
+    public ResponseResult configUnion(UnionConfig unionConfig) throws ServerUrlsFormatException {
         LOGGER.debug("UnionConfig: {}", unionConfig);
 
         unionConfig.checkProperties();
@@ -57,13 +58,12 @@ public class ConfigurationService {
      *
      * @param unitConfig the unit config
      * @return the response result
-     * @throws Exception the exception
      */
     @POST
     @Path("union/unit")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public ResponseResult addUnionConfigUnit(UnionConfig.Unit unitConfig) throws Exception {
+    public ResponseResult addUnionConfigUnit(UnionConfig.Unit unitConfig) {
         LOGGER.debug("UnitConfig: {}", unitConfig);
 
         UnionConfig unionConfig = AppGlobal.getUnionConfig();

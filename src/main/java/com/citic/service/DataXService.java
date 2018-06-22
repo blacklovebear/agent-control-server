@@ -32,13 +32,12 @@ public class DataXService {
      *
      * @param dataXJobConfig the data x job config
      * @return the response result
-     * @throws Exception the exception
      */
     @POST
     @Path("start")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public ResponseResult newConfig(DataXJobConfig dataXJobConfig) throws Exception {
+    public ResponseResult newConfig(DataXJobConfig dataXJobConfig) {
         LOGGER.debug("DataXJobConfig: {}", dataXJobConfig);
 
         dataXJobConfig.checkProperties();

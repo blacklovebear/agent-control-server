@@ -123,7 +123,7 @@ public class SimpleKafkaProducer<K, V> {
      */
     public void send(String topic, int partition, K key, V value, Callback callback) {
         if (shutDown) {
-            throw new RuntimeException("Producer is closed.");
+            throw new MyRuntimeException("Producer is closed.");
         }
 
         try {
@@ -165,8 +165,11 @@ public class SimpleKafkaProducer<K, V> {
             }
 
             if (recordMetadata != null) {
+                String topic = recordMetadata.topic();
+                int partition = recordMetadata.partition();
+                long offset = recordMetadata.offset();
                 LOGGER.debug("sent message to topic:{} partition:{}  offset:{}",
-                    recordMetadata.topic(), recordMetadata.partition(), recordMetadata.offset());
+                    topic, partition, offset);
             }
         }
     }

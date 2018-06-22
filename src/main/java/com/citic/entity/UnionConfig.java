@@ -2,6 +2,7 @@ package com.citic.entity;
 
 import com.citic.helper.AesUtil;
 import com.citic.helper.Utility;
+import com.citic.helper.Utility.ServerUrlsFormatException;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -30,7 +31,7 @@ public class UnionConfig {
      *
      * @throws Exception the exception
      */
-    public void checkProperties() throws Exception {
+    public void checkProperties() throws ServerUrlsFormatException {
         Preconditions
             .checkArgument(!Strings.isNullOrEmpty(zkServers), "zkServers is null or empty");
         Preconditions

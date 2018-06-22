@@ -135,13 +135,13 @@ public class Utility {
                                 builder.put(pd.getName(),
                                     firstNonNull(result, nullObject));
                             } catch (Exception e) {
-                                throw new RuntimeException(e);
+                                throw new MyRuntimeException(e);
                             }
                         },
                         (left, right) -> left.putAll(right.build()))
                     .build(), v -> v == nullObject ? null : v);
         } catch (IntrospectionException e) {
-            throw new RuntimeException(e);
+            throw new MyRuntimeException(e);
         }
     }
 
@@ -232,7 +232,7 @@ public class Utility {
         });
     }
 
-    private static class ServerUrlsFormatException extends Exception {
+    public static class ServerUrlsFormatException extends Exception {
 
         private static final long serialVersionUID = 1L;
 
