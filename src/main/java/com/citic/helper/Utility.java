@@ -37,6 +37,10 @@ public class Utility {
     private static final Logger LOGGER = LoggerFactory.getLogger(Utility.class);
     private static final String DEFAULT_IP = "127.0.0.1";
 
+    private Utility() {
+        throw new IllegalStateException("Utility class");
+    }
+
     /**
      * Exe cmd int.
      *
@@ -67,7 +71,7 @@ public class Utility {
         if (parent == null) {
             return;
         }
-        if (!Files.exists(parent)) {
+        if (!parent.toFile().exists()) {
             try {
                 Files.createDirectories(parent);
             } catch (IOException e) {
@@ -132,13 +136,13 @@ public class Utility {
                                 builder.put(pd.getName(),
                                     firstNonNull(result, nullObject));
                             } catch (Exception e) {
-                                throw propagate(e);
+                                throw new RuntimeException(e);
                             }
                         },
                         (left, right) -> left.putAll(right.build()))
                     .build(), v -> v == nullObject ? null : v);
         } catch (IntrospectionException e) {
-            throw propagate(e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -174,9 +178,9 @@ public class Utility {
      *
      * @param serverUrl the server url
      * @param fieldName the field name
-     * @throws Exception the exception
+     * @throws IllegalArgumentException the exception
      */
-    public static void isUrlAddressValid(String serverUrl, String fieldName) throws Exception {
+    public static void isUrlAddressValid(String serverUrl, String fieldName)  {
         String errMessage = String.format("The %s are malformed. The %s : \"%s\" .",
             fieldName, fieldName, serverUrl);
 
@@ -185,10 +189,10 @@ public class Utility {
             try {
                 Integer.parseInt(hostAndPort[1]);
             } catch (Exception e) {
-                throw new Exception(errMessage);
+                throw new IllegalArgumentException(errMessage);
             }
         } else {
-            throw new Exception(errMessage);
+            throw new IllegalArgumentException(errMessage);
         }
     }
 
@@ -213,7 +217,7 @@ public class Utility {
             }
 
             private FileVisitResult handleException(final IOException e) {
-                e.printStackTrace(); // replace with more robust error handling
+                LOGGER.error(e.getMessage(), e);
                 return TERMINATE;
             }
 

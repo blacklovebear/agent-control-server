@@ -1,8 +1,10 @@
 package com.citic.helper;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 import org.apache.commons.lang.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +44,8 @@ public class ShellExecutor {
      * @param cmd the cmd
      * @throws Exception the exception
      */
-    public int executeCmd(String cmd, boolean isDaemon) throws Exception {
+    public int executeCmd(String cmd, boolean isDaemon)
+        throws IOException, TimeoutException, InterruptedException {
         ProcessExecutor processExecutor = new ProcessExecutor();
 
         if (SystemUtils.IS_OS_WINDOWS) {
@@ -72,7 +75,8 @@ public class ShellExecutor {
      * @return the string
      * @throws Exception the exception
      */
-    public String monitorProcess(String cmd, String processName) throws Exception {
+    public String monitorProcess(String cmd, String processName)
+        throws InterruptedException, TimeoutException, IOException {
         ProcessExecutor processExecutor = new ProcessExecutor();
         ResponseData responseData = new ResponseData(processName);
 

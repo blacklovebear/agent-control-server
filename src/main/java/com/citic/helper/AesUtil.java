@@ -30,11 +30,11 @@ public class AesUtil {
      * @param args the input arguments
      */
     public static void main(String[] args) {
-        System.out.println(AesUtil.encForTd("123456"));
-        System.out.println(AesUtil.encForTd("root"));
-        System.out.println(AesUtil.encForTd("hdfs"));
-        System.out.println(AesUtil.encForTd("hive"));
-        System.out.println(AesUtil.decForTd("Co9ME/Agq664+ZimAcnckA=="));
+        AesUtil.encForTd("123456");
+        AesUtil.encForTd("root");
+        AesUtil.encForTd("hdfs");
+        AesUtil.encForTd("hive");
+        AesUtil.decForTd("Co9ME/Agq664+ZimAcnckA==");
     }
 
     /**

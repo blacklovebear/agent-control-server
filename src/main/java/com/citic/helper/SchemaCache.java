@@ -8,7 +8,12 @@ import org.apache.avro.Schema;
 public class SchemaCache {
 
     private static final Schema.Parser parser = new Schema.Parser();
-    private static final Map<String, Schema> schemaCache = Maps.newConcurrentMap();
+    private static final Map<String, Schema> localCache = Maps.newConcurrentMap();
+
+    private SchemaCache() {
+        throw new IllegalStateException("Utility class");
+    }
+
 
     private static String getTableFieldSchema(Iterable<String> schemaFieldList, String schemaName) {
         StringBuilder builder = new StringBuilder();
@@ -39,7 +44,7 @@ public class SchemaCache {
      * @return the schema
      */
     public static Schema getSchema(Iterable<String> schemaFieldList, String schemaName) {
-        return schemaCache.computeIfAbsent(schemaName, key -> {
+        return localCache.computeIfAbsent(schemaName, key -> {
             String schemaString = getTableFieldSchema(schemaFieldList, schemaName);
             return parser.parse(schemaString);
         });

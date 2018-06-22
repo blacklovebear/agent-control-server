@@ -113,9 +113,11 @@ public class ProcessMonitor {
             avroRecord.put(CANAL_STATE, canalState);
             avroRecord.put(TAGENT_STATE, tagentState);
 
-            avroRecord.put(CURRENT_TIME, new SimpleDateFormat(SUPPORT_TIME_FORMAT).format(new Date()));
             avroRecord
-                .put(AGENT_IP, Utility.getLocalIp(AppConf.getConfig(AppConstants.AGENT_IP_INTERFACE)));
+                .put(CURRENT_TIME, new SimpleDateFormat(SUPPORT_TIME_FORMAT).format(new Date()));
+            avroRecord
+                .put(AGENT_IP,
+                    Utility.getLocalIp(AppConf.getConfig(AppConstants.AGENT_IP_INTERFACE)));
             return avroRecord;
         }
 
@@ -123,9 +125,11 @@ public class ProcessMonitor {
             JSONObject jsonRecord = new JSONObject();
             jsonRecord.put(CANAL_STATE, canalState);
             jsonRecord.put(TAGENT_STATE, tagentState);
-            jsonRecord.put(CURRENT_TIME, new SimpleDateFormat(SUPPORT_TIME_FORMAT).format(new Date()));
             jsonRecord
-                .put(AGENT_IP, Utility.getLocalIp(AppConf.getConfig(AppConstants.AGENT_IP_INTERFACE)));
+                .put(CURRENT_TIME, new SimpleDateFormat(SUPPORT_TIME_FORMAT).format(new Date()));
+            jsonRecord
+                .put(AGENT_IP,
+                    Utility.getLocalIp(AppConf.getConfig(AppConstants.AGENT_IP_INTERFACE)));
             return jsonRecord.toJSONString().getBytes(Charset.forName("UTF-8"));
         }
 

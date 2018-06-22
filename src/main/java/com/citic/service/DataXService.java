@@ -39,7 +39,7 @@ public class DataXService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public ResponseResult newConfig(DataXJobConfig dataXJobConfig) throws Exception {
-        LOGGER.debug("DataXJobConfig: {}", dataXJobConfig.toString());
+        LOGGER.debug("DataXJobConfig: {}", dataXJobConfig);
 
         dataXJobConfig.checkProperties();
         GenerateConfController generateConf = new GenerateConfController();
@@ -77,7 +77,7 @@ public class DataXService {
     @Consumes("application/x-www-form-urlencoded")
     @Produces(MediaType.APPLICATION_JSON)
     public ResponseResult responseTest(final MultivaluedMap<String, String> formParams) {
-        LOGGER.debug("formParams: {}", formParams.toString());
+        LOGGER.debug("formParams: {}", formParams);
         return new ResponseResult();
     }
 

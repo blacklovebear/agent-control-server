@@ -59,7 +59,7 @@ public class AppMain {
 
         server = NettyHttpContainerProvider.createHttp2Server(uri, resourceConfig, null);
 
-        LOGGER.info("Jersey App on Netty Server starting: {}", uri.toString());
+        LOGGER.info("Jersey App on Netty Server starting: {}", uri);
 
         producer = new SimpleKafkaProducer<>(false, useAvro);
         // 启动对进程的监控

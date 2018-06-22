@@ -18,7 +18,7 @@ public class MyExceptionMapper implements ExceptionMapper<Throwable> {
 
     @Override
     public Response toResponse(Throwable e) {
-        LOGGER.error(e.toString());
+        LOGGER.error("request with error: {}", e);
         return Response.status(Response.Status.OK)
             .entity(new ResponseResult(ResponseResult.ERROR, e.toString()))
             .type(MediaType.APPLICATION_JSON)

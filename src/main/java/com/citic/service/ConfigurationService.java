@@ -5,6 +5,7 @@ import com.citic.AppMain;
 import com.citic.control.GenerateConfController;
 import com.citic.entity.ResponseResult;
 import com.citic.entity.UnionConfig;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import java.util.List;
 import javax.ws.rs.Consumes;
@@ -35,7 +36,7 @@ public class ConfigurationService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public ResponseResult configUnion(UnionConfig unionConfig) throws Exception {
-        LOGGER.debug("UnionConfig: {}", unionConfig.toString());
+        LOGGER.debug("UnionConfig: {}", unionConfig);
 
         unionConfig.checkProperties();
         AppGlobal.setUnionConfig(unionConfig);
@@ -45,9 +46,7 @@ public class ConfigurationService {
         generateConf.generateTAgent(unionConfig.getTAgent());
 
         List<String> instanceList = Lists.newArrayList();
-        unionConfig.getUnits().forEach(unit -> {
-            instanceList.add(unit.getInstance());
-        });
+        unionConfig.getUnits().forEach(unit -> instanceList.add(unit.getInstance()));
         AppMain.getErrorLogMonitor().start(instanceList);
 
         return new ResponseResult();
@@ -65,12 +64,10 @@ public class ConfigurationService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public ResponseResult addUnionConfigUnit(UnionConfig.Unit unitConfig) throws Exception {
-        LOGGER.debug("UnitConfig: {}", unitConfig.toString());
+        LOGGER.debug("UnitConfig: {}", unitConfig);
 
         UnionConfig unionConfig = AppGlobal.getUnionConfig();
-        if (unionConfig == null) {
-            throw new Exception("Not post UnionConfig info");
-        }
+        Preconditions.checkNotNull(unionConfig, "Not post UnionConfig info");
 
         unitConfig.checkProperties(unionConfig.isUseAvro(), unionConfig.isMultiTopicJob());
 
@@ -81,9 +78,7 @@ public class ConfigurationService {
         generateConf.generateTAgent(unionConfig.getTAgent());
 
         List<String> instanceList = Lists.newArrayList();
-        unionConfig.getUnits().forEach(unit -> {
-            instanceList.add(unit.getInstance());
-        });
+        unionConfig.getUnits().forEach(unit -> instanceList.add(unit.getInstance()));
         AppMain.getErrorLogMonitor().start(instanceList);
 
         return new ResponseResult();
