@@ -108,6 +108,27 @@ public class DataXJobController {
         });
     }
 
+    private static void sendJobResponse(String jobId, Future<ProcessResult> jobFuture)
+        throws InterruptedException {
+        String output;
+        if (jobFuture.isCancelled()) {
+            output = String.format("Job: %s is cancelled.%n", jobId);
+        } else {
+            try {
+                output = jobFuture.get().outputUTF8();
+            } catch (ExecutionException e) {
+                LOGGER.error(e.getMessage(), e);
+                output = String
+                    .format("Job: %s run with exception: %s.%n", jobId, e.getMessage());
+            }
+        }
+
+        if (jobErrors.containsKey(jobId)) {
+            output += String.join("\n", jobErrors.get(jobId));
+        }
+        sendJobResultToControlPlatform(jobId, output, jobResponseUrl.get(jobId));
+    }
+
     /**
      * Check job state and send response.
      */
@@ -120,34 +141,20 @@ public class DataXJobController {
             String jobId = entry.getKey();
             Future<ProcessResult> jobFuture = entry.getValue();
 
-            String output;
+
             if (!jobFuture.isDone()) {
                 return;
             }
             jobDoneList.add(jobId);
 
-            if (jobFuture.isCancelled()) {
-                output = String.format("Job: %s is cancelled.%n", jobId);
-            } else {
-                try {
-                    output = jobFuture.get().outputUTF8();
-                } catch (InterruptedException e) {
-                    LOGGER.error(e.getMessage(), e);
-                    Thread.currentThread().interrupt();
-                    //立刻结束所有操作
-                    return;
-                } catch (ExecutionException e) {
-                    LOGGER.error(e.getMessage(), e);
-                    output = String
-                        .format("Job: %s run with exception: %s.%n", jobId, e.getMessage());
-                }
+            try {
+                sendJobResponse(jobId, jobFuture);
+            } catch (InterruptedException e) {
+                LOGGER.error(e.getMessage(), e);
+                Thread.currentThread().interrupt();
+                //立刻结束所有操作
+                return;
             }
-
-            String jobResponse = output;
-            if (jobErrors.containsKey(jobId)) {
-                jobResponse += String.join("\n", jobErrors.get(jobId));
-            }
-            sendJobResultToControlPlatform(jobId, jobResponse, jobResponseUrl.get(jobId));
         }
 
         jobDoneList.forEach(runningJobs::remove);
