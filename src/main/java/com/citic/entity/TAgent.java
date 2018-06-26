@@ -1,5 +1,7 @@
 package com.citic.entity;
 
+import com.citic.AppConf;
+import com.citic.AppConstants;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -25,6 +27,12 @@ public class TAgent {
     private boolean useAvro;
 
     private Set<Source> sources = Sets.newHashSet();
+
+
+    public String getIpInterface() {
+        String ipInterface = AppConf.getConfig(AppConstants.AGENT_IP_INTERFACE);
+        return ipInterface == null ? "eth0" : ipInterface;
+    }
 
     /**
      * Add or replace source.
